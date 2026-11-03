@@ -1,0 +1,21 @@
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+target/
+
+# Data and models are never committed.
+data/raw/*
+data/interim/*
+data/gold/*
+!data/*/.gitkeep
+*.gguf
+*.safetensors
+*.onnx
+
+# Raw results stay local; only the folder skeleton and curated samples are tracked.
+results/*
+!results/.gitkeep
+!results/samples/

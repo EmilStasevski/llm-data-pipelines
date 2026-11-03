@@ -1,0 +1,10 @@
+# Lint, types and tests. Run before every commit.
+check:
+    uv run ruff check src tests
+    uv run ruff format --check src tests
+    uv run mypy
+    uv run pytest -q
+
+# Rewrite the generated tables in docs/gold_quality.md.
+gold-report:
+    uv run ruhrbench gold-report
