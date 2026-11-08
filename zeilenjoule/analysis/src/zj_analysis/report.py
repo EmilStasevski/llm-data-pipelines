@@ -80,7 +80,7 @@ class Summary:
     cpu_fallback: bool
 
 
-def _fmt(v: float | None, digits: int, lang: str) -> str:
+def fmt_num(v: float | None, digits: int, lang: str) -> str:
     if v is None:
         return NM[lang]
     s = f"{v:,.{digits}f}"
@@ -107,7 +107,7 @@ def section_filter(section: str) -> tuple[str, str]:
     return SECTION_TASK.get(section, (section, "%"))
 
 
-def _summaries(con: duckdb.DuckDBPyConnection, section: str) -> list[Summary]:
+def summaries(con: duckdb.DuckDBPyConnection, section: str) -> list[Summary]:
     rows = con.execute(SUMMARY_SQL, list(section_filter(section))).fetchall()
     return [
         Summary(
@@ -238,23 +238,23 @@ def _row(s: Summary, best_wall: float, best_e: float | None, prices: Prices, lan
     return [
         f"`{s.contestant}`" + (" ⚠anti" if s.anti else "") + (FALLBACK[lang] if s.cpu_fallback else ""),
         str(s.n),
-        _fmt(s.wall, 3, lang) + cv_flag,
-        f"{_fmt(s.q1, 3, lang)}–{_fmt(s.q3, 3, lang)}",
-        _fmt(s.rows / s.wall if s.wall else None, 0, lang),
-        _fmt(s.e_gross, 1, lang),
-        _fmt(s.e_net, 1, lang),
-        _fmt(j_row * 1e3 if j_row is not None else None, 3, lang),
+        fmt_num(s.wall, 3, lang) + cv_flag,
+        f"{fmt_num(s.q1, 3, lang)}–{fmt_num(s.q3, 3, lang)}",
+        fmt_num(s.rows / s.wall if s.wall else None, 0, lang),
+        fmt_num(s.e_gross, 1, lang),
+        fmt_num(s.e_net, 1, lang),
+        fmt_num(j_row * 1e3 if j_row is not None else None, 3, lang),
         fmt_sig(per_million(prices.household), 3, lang),
         fmt_sig(per_million(prices.industry), 3, lang),
-        _fmt(per_million(prices.co2_g_per_kwh), 2, lang),
-        _fmt(score, 2, lang),
+        fmt_num(per_million(prices.co2_g_per_kwh), 2, lang),
+        fmt_num(score, 2, lang),
         f"{100 * s.low_conf:.0f} %",
     ]
 
 
 def track_section(con: duckdb.DuckDBPyConnection, track: str, prices: Prices, lang: str) -> str:
     de = lang == "de"
-    summary = _summaries(con, track)
+    summary = summaries(con, track)
     problems = con.execute(PROBLEM_SQL, list(section_filter(track))).fetchall()
     title_t, units, _, note = TRACKS[track][lang]
     out: list[str] = [f"## {title_t}", ""] + ([note, ""] if note else [])
@@ -265,7 +265,7 @@ def track_section(con: duckdb.DuckDBPyConnection, track: str, prices: Prices, la
         energies = [s.e_gross for s in rows if s.e_gross is not None]
         best_e = min(energies) if energies else None
         label = "Skala" if de else "Scale"
-        title = f"### {label} {scale} ({_fmt(float(rows[0].rows), 0, lang)} {units})"
+        title = f"### {label} {scale} ({fmt_num(float(rows[0].rows), 0, lang)} {units})"
         body = [_row(s, rows[0].wall, best_e, prices, lang) for s in rows]
         out += [title, "", _table(body, headers(track, lang)), ""]
     if track.startswith("C"):
@@ -282,7 +282,7 @@ def track_section(con: duckdb.DuckDBPyConnection, track: str, prices: Prices, la
     return "\n".join(out)
 
 
-def _median(xs: list[float]) -> float | None:
+def median_of(xs: list[float]) -> float | None:
     return float(statistics.median(xs)) if xs else None
 
 
@@ -313,7 +313,7 @@ DETAIL_NOTE = {
 }
 
 
-def _accumulate(d: dict[str, list[float]], st: Any, lat: Any, q: Any, tp: Any) -> None:
+def accumulate(d: dict[str, list[float]], st: Any, lat: Any, q: Any, tp: Any) -> None:
     """One run's stage times, per-query energy, throughput, latency and quality into `d`."""
     for stg in cast("list[dict[str, Any]]", json.loads(st) or []):
         name = str(stg["name"])
@@ -343,7 +343,7 @@ def _details(con: duckdb.DuckDBPyConnection, track: str, lang: str) -> list[str]
     de = lang == "de"
     acc: dict[tuple[str, str], dict[str, list[float]]] = {}
     for c, scale, st, lat, q, tp in con.execute(DETAIL_SQL, list(section_filter(track))).fetchall():
-        _accumulate(acc.setdefault((str(c), str(scale)), {}), st, lat, q, tp)
+        accumulate(acc.setdefault((str(c), str(scale)), {}), st, lat, q, tp)
     if not acc:
         return []
     extra = DETAIL_COLUMNS.get(section_filter(track)[1], [])
@@ -355,7 +355,9 @@ def _details(con: duckdb.DuckDBPyConnection, track: str, lang: str) -> list[str]
     header = ["Wettbewerber" if de else "Contestant", "Skala" if de else "Scale", *metrics]
     body: list[list[str]] = []
     for (c, scale), d in sorted(acc.items(), key=lambda kv: (SCALE_ORDER.get(kv[0][1], 9), kv[0][0])):
-        cells = [("–" if (m := _median(d.get(k, []))) is None else _fmt(m, _digits(k), lang)) for k in keys]
+        cells = [
+            ("–" if (m := median_of(d.get(k, []))) is None else fmt_num(m, _digits(k), lang)) for k in keys
+        ]
         body.append([f"`{c}`", scale, *cells])
     return [f"### {title}", "", DETAIL_NOTE[lang], "", _table(body, header), ""]
 
@@ -425,7 +427,14 @@ def main(argv: list[str] | None = None) -> int:
     out.mkdir(exist_ok=True)
     (out / "REPORT.de.md").write_text(render(a.repo, "de"), encoding="utf-8")
     (out / "REPORT.md").write_text(render(a.repo, "en"), encoding="utf-8")
-    print(f"reports/REPORT.de.md, reports/REPORT.md from {counts['runs']} runs")
+    from zj_analysis import readme  # noqa: PLC0415  (readme imports this module)
+
+    con = duckdb.connect(str(a.repo / "results" / "zj.duckdb"), read_only=True)
+    done = readme.update(a.repo, con) if readme.has_runs(con) else []
+    con.close()
+    print(
+        f"reports/REPORT.de.md, reports/REPORT.md{''.join(', ' + d for d in done)} from {counts['runs']} runs"
+    )
     return 0
 
 

@@ -1,0 +1,70 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 820 400" width="820" height="400" role="img" aria-label="wall time s (log) · energy J gross"><style>
+.bg{fill:#fcfcfb}.ink{fill:#0b0b0b}.sec{fill:#52514e}.mut{fill:#898781}.grid{stroke:#e1e0d9}
+.axis{stroke:#c3c2b7}.s1{fill:#2a78d6}.s2{fill:#eb6834}.anti{fill:#c3c2b7}
+@media (prefers-color-scheme:dark){.bg{fill:#1a1a19}.ink{fill:#f0efec}.sec{fill:#c3c2b7}
+.grid{stroke:#2c2c2a}.axis{stroke:#383835}.s1{fill:#3987e5}.s2{fill:#d95926}.anti{fill:#52514e}}
+text{font-family:ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;font-size:12px}
+.mono{font-family:ui-monospace,SFMono-Regular,Menlo,monospace}
+</style>
+<rect class="bg" width="820" height="400" rx="6"/>
+<text class="ink" x="16" y="20" font-weight="600">wall time s (log) · energy J gross</text>
+<line class="grid" x1="200.0" x2="200.0" y1="30" y2="370"/>
+<text class="mut" x="200.0" y="386" text-anchor="middle">0.5</text>
+<line class="grid" x1="261.5" x2="261.5" y1="30" y2="370"/>
+<text class="mut" x="261.5" y="386" text-anchor="middle">1</text>
+<line class="grid" x1="323.0" x2="323.0" y1="30" y2="370"/>
+<text class="mut" x="323.0" y="386" text-anchor="middle">2</text>
+<line class="grid" x1="404.3" x2="404.3" y1="30" y2="370"/>
+<text class="mut" x="404.3" y="386" text-anchor="middle">5</text>
+<line class="grid" x1="465.7" x2="465.7" y1="30" y2="370"/>
+<text class="mut" x="465.7" y="386" text-anchor="middle">10</text>
+<line class="grid" x1="527.2" x2="527.2" y1="30" y2="370"/>
+<text class="mut" x="527.2" y="386" text-anchor="middle">20</text>
+<line class="grid" x1="608.5" x2="608.5" y1="30" y2="370"/>
+<text class="mut" x="608.5" y="386" text-anchor="middle">50</text>
+<line class="grid" x1="670.0" x2="670.0" y1="30" y2="370"/>
+<text class="mut" x="670.0" y="386" text-anchor="middle">100</text>
+<line class="axis" x1="200" x2="200" y1="30" y2="370"/>
+<text class="sec mono" x="192" y="49" text-anchor="end">a17_rs_handrolled</text>
+<path class="s1" d="M200,38H249.5a4,4 0 0 1 4,4v6a4,4 0 0 1 -4,4H200Z"/>
+<text class="ink" x="259.5" y="49">0.91 s · 56.0 J</text>
+<text class="sec mono" x="192" y="73" text-anchor="end">a16_rs_arrow_rayon</text>
+<path class="s1" d="M200,62H345.3a4,4 0 0 1 4,4v6a4,4 0 0 1 -4,4H200Z"/>
+<text class="ink" x="355.3" y="73">2.69 s · 96.9 J</text>
+<text class="sec mono" x="192" y="97" text-anchor="end">a10_polars_lazy</text>
+<path class="s1" d="M200,86H371.7a4,4 0 0 1 4,4v6a4,4 0 0 1 -4,4H200Z"/>
+<text class="ink" x="381.7" y="97">3.62 s · 252 J</text>
+<text class="sec mono" x="192" y="121" text-anchor="end">a11_polars_streaming</text>
+<path class="s1" d="M200,110H371.8a4,4 0 0 1 4,4v6a4,4 0 0 1 -4,4H200Z"/>
+<text class="ink" x="381.8" y="121">3.63 s · 254 J</text>
+<text class="sec mono" x="192" y="145" text-anchor="end">a15_rs_polars</text>
+<path class="s1" d="M200,134H390.4a4,4 0 0 1 4,4v6a4,4 0 0 1 -4,4H200Z"/>
+<text class="ink" x="400.4" y="145">4.47 s · 268 J</text>
+<text class="sec mono" x="192" y="169" text-anchor="end">a13_duckdb_py</text>
+<path class="s1" d="M200,158H410.2a4,4 0 0 1 4,4v6a4,4 0 0 1 -4,4H200Z"/>
+<text class="ink" x="420.2" y="169">5.59 s · 280 J</text>
+<text class="sec mono" x="192" y="193" text-anchor="end">a23_polars_gpu_hybrid</text>
+<path class="s1" d="M200,182H414.7a4,4 0 0 1 4,4v6a4,4 0 0 1 -4,4H200Z"/>
+<text class="ink" x="424.7" y="193">5.89 s · 336 J</text>
+<text class="sec mono" x="192" y="217" text-anchor="end">a09_polars_eager</text>
+<path class="s1" d="M200,206H475.3a4,4 0 0 1 4,4v6a4,4 0 0 1 -4,4H200Z"/>
+<text class="ink" x="485.3" y="217">11.66 s · 414 J</text>
+<text class="sec mono" x="192" y="241" text-anchor="end">a07_cudf_pandas</text>
+<path class="s1" d="M200,230H554.2a4,4 0 0 1 4,4v6a4,4 0 0 1 -4,4H200Z"/>
+<text class="ink" x="564.2" y="241">28.35 s · 1 125 J</text>
+<text class="sec mono" x="192" y="265" text-anchor="end">a01_py_csv_loop</text>
+<path class="s1" d="M200,254H561.8a4,4 0 0 1 4,4v6a4,4 0 0 1 -4,4H200Z"/>
+<text class="ink" x="571.8" y="265">30.91 s · 837 J</text>
+<text class="sec mono" x="192" y="289" text-anchor="end">a06_pandas_arrow</text>
+<path class="s1" d="M200,278H570.9a4,4 0 0 1 4,4v6a4,4 0 0 1 -4,4H200Z"/>
+<text class="ink" x="580.9" y="289">34.25 s · 866 J</text>
+<text class="sec mono" x="192" y="313" text-anchor="end">a05_pandas_vectorized</text>
+<path class="s1" d="M200,302H574.2a4,4 0 0 1 4,4v6a4,4 0 0 1 -4,4H200Z"/>
+<text class="ink" x="584.2" y="313">35.52 s · 911 J</text>
+<text class="sec mono" x="192" y="337" text-anchor="end">a03_pandas_itertuples</text>
+<path class="s1" d="M200,326H575.0a4,4 0 0 1 4,4v6a4,4 0 0 1 -4,4H200Z"/>
+<text class="ink" x="585.0" y="337">35.87 s · 984 J</text>
+<text class="sec mono" x="192" y="361" text-anchor="end">a04_pandas_apply</text>
+<path class="s1" d="M200,350H649.0a4,4 0 0 1 4,4v6a4,4 0 0 1 -4,4H200Z"/>
+<text class="ink" x="659.0" y="361">82.51 s · 2 307 J</text>
+</svg>

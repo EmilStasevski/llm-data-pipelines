@@ -201,3 +201,22 @@ def test_track_c_sections_per_task(tmp_path: Path) -> None:
         in hybrid
     )
     assert "lexikalische Suche" not in (repo / "reports" / "REPORT.de.md").read_text(encoding="utf-8")
+
+
+def test_readme_results_block_is_generated_and_idempotent(tmp_path: Path) -> None:
+    recs = [_rec("a09_polars_eager", i, 1.0, 10.0, 90.0, scale="L", rows=1_000_000) for i in (1, 2, 3)]
+    recs += [_rec("a04_pandas_apply", i, 20.0, 10.0, 900.0, scale="L", rows=1_000_000) for i in (1, 2, 3)]
+    repo = _repo(tmp_path, recs)
+    (repo / "README.md").write_text("# X\n\n## Status\nok\n\n## Quick start\nrun\n", encoding="utf-8")
+    (repo / "README.de.md").write_text("# X\n\n## Schnellstart\nlos\n", encoding="utf-8")
+    report.main(["--repo", str(repo)])
+    first = (repo / "README.md").read_text(encoding="utf-8")
+    assert first.index("<!-- zj:results:begin -->") < first.index("## Quick start")
+    assert "| 1 | `a09_polars_eager` | 1.00 | 1.00 | 100.0 |" in first
+    assert "| 2 | `a04_pandas_apply` | 20.00 | 20 | 910.0 |" in first
+    svg = (repo / "reports" / "figures" / "track_a_L.en.svg").read_text(encoding="utf-8")
+    assert svg.startswith("<svg")
+    assert "a04_pandas_apply" in svg
+    assert "20,00" in (repo / "README.de.md").read_text(encoding="utf-8")
+    report.main(["--repo", str(repo)])
+    assert (repo / "README.md").read_text(encoding="utf-8") == first  # rewritten in place, not appended

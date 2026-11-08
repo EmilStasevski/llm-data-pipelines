@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 820 184" width="820" height="184" role="img" aria-label="Wall-Zeit s (log) · Energie J brutto"><style>
+.bg{fill:#fcfcfb}.ink{fill:#0b0b0b}.sec{fill:#52514e}.mut{fill:#898781}.grid{stroke:#e1e0d9}
+.axis{stroke:#c3c2b7}.s1{fill:#2a78d6}.s2{fill:#eb6834}.anti{fill:#c3c2b7}
+@media (prefers-color-scheme:dark){.bg{fill:#1a1a19}.ink{fill:#f0efec}.sec{fill:#c3c2b7}
+.grid{stroke:#2c2c2a}.axis{stroke:#383835}.s1{fill:#3987e5}.s2{fill:#d95926}.anti{fill:#52514e}}
+text{font-family:ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;font-size:12px}
+.mono{font-family:ui-monospace,SFMono-Regular,Menlo,monospace}
+</style>
+<rect class="bg" width="820" height="184" rx="6"/>
+<text class="ink" x="16" y="20" font-weight="600">Wall-Zeit s (log) · Energie J brutto</text>
+<line class="grid" x1="200.0" x2="200.0" y1="30" y2="154"/>
+<text class="mut" x="200.0" y="170" text-anchor="middle">50</text>
+<line class="grid" x1="435.0" x2="435.0" y1="30" y2="154"/>
+<text class="mut" x="435.0" y="170" text-anchor="middle">100</text>
+<line class="grid" x1="670.0" x2="670.0" y1="30" y2="154"/>
+<text class="mut" x="670.0" y="170" text-anchor="middle">200</text>
+<line class="axis" x1="200" x2="200" y1="30" y2="154"/>
+<text class="sec mono" x="192" y="49" text-anchor="end">c08_qdrant_hybrid</text>
+<path class="s1" d="M200,38H293.3a4,4 0 0 1 4,4v6a4,4 0 0 1 -4,4H200Z"/>
+<text class="ink" x="303.3" y="49">66,62 s · 1 072 J</text>
+<text class="sec mono" x="192" y="73" text-anchor="end">c07_lancedb_hybrid</text>
+<path class="s1" d="M200,62H437.2a4,4 0 0 1 4,4v6a4,4 0 0 1 -4,4H200Z"/>
+<text class="ink" x="447.2" y="73">102 s · 1 436 J</text>
+<text class="sec mono" x="192" y="97" text-anchor="end">c03_pgvector_hybrid</text>
+<path class="s1" d="M200,86H507.0a4,4 0 0 1 4,4v6a4,4 0 0 1 -4,4H200Z"/>
+<text class="ink" x="517.0" y="97">125 s · 4 188 J</text>
+<text class="sec mono" x="192" y="121" text-anchor="end">c05_duckdb_hybrid</text>
+<path class="s1" d="M200,110H531.6a4,4 0 0 1 4,4v6a4,4 0 0 1 -4,4H200Z"/>
+<text class="ink" x="541.6" y="121">135 s · 4 171 J</text>
+<text class="sec mono" x="192" y="145" text-anchor="end">c06_sqlite_hybrid</text>
+<path class="s1" d="M200,134H638.2a4,4 0 0 1 4,4v6a4,4 0 0 1 -4,4H200Z"/>
+<text class="ink" x="648.2" y="145">184 s · 4 700 J</text>
+</svg>

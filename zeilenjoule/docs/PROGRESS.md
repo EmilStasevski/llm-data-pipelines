@@ -375,3 +375,11 @@ Open questions:
   auf den synthetischen Daten schadet die lexikalische Fusion; auf real hit@10 1,000 vs. dense 0,999 (Decke).
   Kompositum-Teilmenge überall 1,0. Fusion-Übereinstimmung Qdrant 0,972 (M), sonst ≥ 0,9997.
 - Nächstes: Phase 7 (Track D, LLM-Extraktion); optional Track-B-Wiederholung mit Retrieval-Gate.
+
+## 2026-11-09 — README-Ergebnisblock + Abbildungen (generiert)
+- Neues Modul `zj_analysis.readme`: `task report` schreibt jetzt zusätzlich einen Block zwischen
+  `<!-- zj:results:begin/end -->` in README.md/README.de.md (je Track die größte vollständig gelaufene Skala:
+  A L, B M, C dense/hybrid/lexical M; Rang, Wall s, × schnellster, Energie J brutto) und SVG-Abbildungen in
+  `reports/figures/` (Wall-Zeit log mit Energie-Label; QPS c1 vs. c16). Keine Zahl von Hand (Regel 3).
+- Report-Helfer öffentlich benannt (`fmt_num`, `summaries`, `accumulate`, `median_of`); Test für Block +
+  Idempotenz. analysis: ruff, pyright, pytest grün.

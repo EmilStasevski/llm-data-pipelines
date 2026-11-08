@@ -284,7 +284,7 @@ tasks:
 
   # ---------- later phases: fail loudly until implemented ----------
   report:
-    desc: Regenerate reports/REPORT.de.md + REPORT.md from results/ (rebuilds results/zj.duckdb first)
+    desc: Regenerate reports/REPORT.de.md + REPORT.md, the README results block and reports/figures/*.svg from results/ (rebuilds results/zj.duckdb first)
     cmds:
       - uv run --locked python -m zj_analysis.report
   up:
