@@ -1,0 +1,4 @@
+# Same CPU baseline as the Python Polars/DuckDB wheels (x86-64-v3: AVX2, FMA, BMI2) for all Rust
+# contestants (ADR 0010). The i5-14400F supports it; `zj doctor` records the CPU flags.
+[build]
+rustflags = ["-C", "target-cpu=x86-64-v3"]

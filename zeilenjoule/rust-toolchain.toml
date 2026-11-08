@@ -1,0 +1,4 @@
+[toolchain]
+channel = "1.99.1"   # pinned (rule 9); bump deliberately, record in docs/ENVIRONMENT.md
+components = ["clippy", "rustfmt"]
+profile = "minimal"

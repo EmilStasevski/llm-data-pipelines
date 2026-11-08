@@ -1,0 +1,22 @@
+{
+ "window_s": 23.46,
+ "polls": 457,
+ "counter_J": 2973.389,
+ "integral_GetPowerUsage_J": 3657.123497479815,
+ "integral_FI_POWER_INSTANT_J": 3686.791120789127,
+ "integral_FI_POWER_AVERAGE_J": 3657.123497479815,
+ "counter_distinct_values": 236,
+ "power_distinct_values": 40,
+ "max_W": {
+  "GetPowerUsage": 184.004,
+  "instant": 180.842,
+  "average": 184.004
+ },
+ "power_limit_W": 180.0,
+ "steady_mean_W": {
+  "counter": 146.32996817734627,
+  "GetPowerUsage": 179.99965789473686,
+  "instant": 180.05425,
+  "average": 179.99965789473686
+ }
+}

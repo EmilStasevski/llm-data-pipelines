@@ -1,0 +1,47 @@
+# Qualitätsmeldungen (8D/Reklamationen). Merkmale: nenn = Nennmaß, tol = ± symmetrisch, oder
+# max/min = einseitige Grenze. Einheiten cp1252-tauglich (µ ja, ≤ nein → „max."/„min.").
+merkmale:
+  - {name: Durchmesser,       einheit: mm,  nenn: 12.5,  tol: 0.2,  dezimal: 2}
+  - {name: Länge,             einheit: mm,  nenn: 250.0, tol: 0.5,  dezimal: 1}
+  - {name: Wandstärke,        einheit: mm,  nenn: 2.0,   tol: 0.1,  dezimal: 2}
+  - {name: Bohrungsabstand,   einheit: mm,  nenn: 40.0,  tol: 0.05, dezimal: 3}
+  - {name: Ebenheit,          einheit: mm,  max: 0.05,              dezimal: 3}
+  - {name: Härte,             einheit: HRC, nenn: 58.0,  tol: 2.0,  dezimal: 1}
+  - {name: Rauheit Ra,        einheit: µm,  max: 0.8,               dezimal: 2}
+  - {name: Zugfestigkeit,     einheit: MPa, min: 500.0,             dezimal: 0}
+  - {name: Gewicht,           einheit: g,   nenn: 120.0, tol: 2.0,  dezimal: 1}
+  - {name: Schichtdicke,      einheit: µm,  nenn: 80.0,  tol: 10.0, dezimal: 0}
+  - {name: Anzugsdrehmoment,  einheit: Nm,  nenn: 25.0,  tol: 1.5,  dezimal: 1}
+
+# Messwert außerhalb Toleranz: erster Satz nennt immer Merkmal + Wert ({M}, {W}).
+messfehler: ["{M} außerhalb Toleranz ({W})", "{M} n.i.O., gemessen {W}", "Maßabweichung, {M}: {W}", "{M} {W}, Grenzwert verletzt"]
+
+# Fehlerklassen (Gold-Enum) mit Freitext-Phrasen; {M} = Merkmal, {W} = Messwert.
+fehlerklassen:
+  Maßabweichung:      ["Teile nicht montierbar", "Passung nicht gegeben", "Maßprüfung n.i.O."]
+  Oberflächenfehler:  ["Kratzer und Riefen auf der Oberfläche", "Oberfläche fleckig, Rauheit {W}", "Lackfehler/Einschlüsse"]
+  Materialfehler:     ["Lunker im Material", "Materialzeugnis passt nicht zur Charge", "Gefüge auffällig, {M} {W}"]
+  Verpackungsschaden: ["Verpackung beschädigt, Teile verkratzt", "Palette eingedrückt", "Feuchtigkeit in der Verpackung"]
+  Kennzeichnungsfehler: ["Etikett fehlt", "falsche Materialnummer auf dem Lieferschein", "Chargennummer unleserlich"]
+  Funktionsfehler:    ["Teil klemmt bei der Montage", "Gewinde schwergängig", "Funktionsprüfung n.i.O."]
+  kein Fehler:        ["Nachprüfung i.O., {M} {W}", "Reklamation unbegründet, Messung i.O.", "Wiederholmessung i.O. ({W})"]
+
+# Ursachenkategorien nach 6M (Ishikawa); Gold-Wert = Schlüssel, null wenn unbekannt.
+ursachenkategorien:
+  Mensch:    ["Bedienfehler beim Lieferanten", "Einarbeitung neuer MA unzureichend", "Prüfanweisung nicht beachtet"]
+  Maschine:  ["Werkzeugverschleiß an der Maschine", "Spindel mit Spiel", "Vorrichtung verschlissen"]
+  Material:  ["Rohmaterial einer neuen Schmelze", "Vormaterial außerhalb Spezifikation", "Wechsel des Unterlieferanten"]
+  Methode:   ["Prüfplan veraltet", "Prozessparameter geändert ohne Freigabe", "falsche Arbeitsfolge"]
+  Messung:   ["Messmittel nicht kalibriert", "falsches Messverfahren", "Messunsicherheit zu hoch"]
+  Mitwelt:   ["Temperaturschwankung in der Halle", "Feuchtigkeit beim Transport", "Verschmutzung durch Umgebung"]
+ursache_unbekannt: ["Ursache wird mit Lieferant geklärt", "8D-Report ausstehend", "Ursache offen"]
+
+massnahmen:
+  Sortierprüfung:       ["Sortierprüfung eingeleitet", "100%-Prüfung der Charge", "Bestand gesperrt und sortiert"]
+  Nacharbeit:           ["Nacharbeit durchgeführt", "Teile nachbearbeitet", "Nacharbeit beim Lieferanten"]
+  Verschrottung:        ["Charge verschrottet", "Teile verschrottet", "Ausschuss gebucht"]
+  Rücksendung:          ["Rücksendung an Lieferant", "Charge retourniert", "Rücklieferung veranlasst"]
+  8D-Report:            ["8D-Report angefordert", "Lieferant zu 8D aufgefordert", "8D eröffnet"]
+  Sonderfreigabe:       ["Sonderfreigabe erteilt", "Abweichungsgenehmigung erteilt", "mit Sonderfreigabe verwendet"]
+  Prüfplan angepasst:   ["Prüfplan angepasst", "Prüfumfang erhöht", "Prüfmerkmal ergänzt"]
+massnahme_offen: ["Maßnahme offen", "Entscheidung durch QS ausstehend"]

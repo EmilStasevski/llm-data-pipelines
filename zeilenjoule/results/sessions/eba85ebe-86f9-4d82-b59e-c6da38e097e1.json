@@ -1,0 +1,96 @@
+{
+  "session_id": "eba85ebe-86f9-4d82-b59e-c6da38e097e1",
+  "created": "2026-11-08T09:35:18Z",
+  "seed": 20261106,
+  "reps": 5,
+  "warmup": 1,
+  "interleave": true,
+  "threads": 0,
+  "scales": [
+    "S",
+    "real"
+  ],
+  "contestants": [
+    "b01_st_fp32"
+  ],
+  "items": [
+    {
+      "contestant": "b01_st_fp32",
+      "scale": "S",
+      "rep": 1,
+      "warmup": true
+    },
+    {
+      "contestant": "b01_st_fp32",
+      "scale": "S",
+      "rep": 1,
+      "warmup": false
+    },
+    {
+      "contestant": "b01_st_fp32",
+      "scale": "S",
+      "rep": 2,
+      "warmup": false
+    },
+    {
+      "contestant": "b01_st_fp32",
+      "scale": "S",
+      "rep": 3,
+      "warmup": false
+    },
+    {
+      "contestant": "b01_st_fp32",
+      "scale": "S",
+      "rep": 4,
+      "warmup": false
+    },
+    {
+      "contestant": "b01_st_fp32",
+      "scale": "S",
+      "rep": 5,
+      "warmup": false
+    },
+    {
+      "contestant": "b01_st_fp32",
+      "scale": "real",
+      "rep": 1,
+      "warmup": true
+    },
+    {
+      "contestant": "b01_st_fp32",
+      "scale": "real",
+      "rep": 1,
+      "warmup": false
+    },
+    {
+      "contestant": "b01_st_fp32",
+      "scale": "real",
+      "rep": 2,
+      "warmup": false
+    },
+    {
+      "contestant": "b01_st_fp32",
+      "scale": "real",
+      "rep": 3,
+      "warmup": false
+    },
+    {
+      "contestant": "b01_st_fp32",
+      "scale": "real",
+      "rep": 4,
+      "warmup": false
+    },
+    {
+      "contestant": "b01_st_fp32",
+      "scale": "real",
+      "rep": 5,
+      "warmup": false
+    }
+  ],
+  "args": [
+    "--id",
+    "b01_st_fp32",
+    "--scale",
+    "S,real"
+  ]
+}

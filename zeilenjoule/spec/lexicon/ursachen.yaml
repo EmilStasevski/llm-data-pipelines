@@ -1,0 +1,18 @@
+# Ursachen. name = Gold-Wert; phrasen = Oberflächenformen. unbekannt = Formulierungen ohne Ursache (Gold null).
+ursachen:
+  - {name: Materialermüdung,      phrasen: ["Ursache: Materialermüdung", "vmtl. Materialermüdung", "Ermüdungsbruch des Materials"]}
+  - {name: fehlende Schmierung,   phrasen: ["Ursache: fehlende Schmierung", "Schmierung fehlte", "Mangelschmierung"]}
+  - {name: Fremdkörper,           phrasen: ["Fremdkörper im System", "wg. Fremdkörper", "Fremdkörper eingetragen"]}
+  - {name: Fehlbedienung,         phrasen: ["lt. MA Fehlbedienung", "Bedienfehler", "Ursache: Fehlbedienung"]}
+  - {name: Spannungsspitze,       phrasen: ["Spannungsspitze im Netz", "nach Spannungsspitze", "Überspannung"]}
+  - {name: Alterung,              phrasen: ["altersbedingt", "Alterung des Bauteils", "Ende der Lebensdauer"]}
+  - {name: Verschmutzung,         phrasen: ["starke Verschmutzung", "verschmutzt", "Ablagerungen"]}
+  - {name: Montagefehler,         phrasen: ["Montagefehler", "falsch montiert", "nach Montage nicht nachgezogen"]}
+  - {name: Überlastung,           phrasen: ["Überlastung", "Betrieb über Nennlast", "überlastet"]}
+  - {name: Kondensat,             phrasen: ["Kondensat in der Leitung", "Feuchtigkeit/Kondensat", "Kondenswasser"]}
+  - {name: Kabelbruch,            phrasen: ["Kabelbruch", "Leitung beschädigt (Kabelbruch)", "Aderbruch"]}
+  - {name: Softwarefehler,        phrasen: ["Softwarefehler", "nach Firmware-Update", "Programmfehler in der SPS"]}
+  - {name: falsche Parametrierung, phrasen: ["falsche Parametrierung", "Parameter falsch eingestellt", "Sollwert falsch"]}
+  - {name: Unwucht,               phrasen: ["Unwucht", "Unwucht am Laufrad", "unwuchtig"]}
+  - {name: Lufteinschluss,        phrasen: ["Luft im System", "Lufteinschluss", "Trockenlauf durch Lufteinschluss"]}
+unbekannt: ["Ursache noch unklar", "Ursache in Klärung", "Ursache unbekannt", "Ursache wird geprüft"]

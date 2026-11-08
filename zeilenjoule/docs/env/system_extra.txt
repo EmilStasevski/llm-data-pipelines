@@ -1,0 +1,21 @@
+## k3s
+k3s version v1.36.5+k3s1 (3dd98cc5)
+-rw------- 1 root root 2941 Nov  6 09:37 /etc/rancher/k3s/k3s.yaml
+## RAPL limits
+constraint_0_name=long_term
+constraint_0_power_limit_uw=125000000
+constraint_1_name=short_term
+constraint_1_power_limit_uw=150000000
+max_energy_range_uj=262143328850
+## microcode/bios
+microcode	: 0x38
+Gigabyte Technology Co., Ltd.
+B760 DS3H AX
+F12
+## disk model
+NAME    MODEL                 SIZE ROTA
+nvme0n1 Lexar SSD NM790 1TB 953.9G    0
+## THP
+always [madvise] never
+## swappiness
+60

@@ -1,0 +1,33 @@
+                                                      version                                                       
+--------------------------------------------------------------------------------------------------------------------
+ PostgreSQL 18.6 (Debian 18.6-1.pgdg13+2) on x86_64-pc-linux-gnu, compiled by gcc (Debian 14.2.0-19) 14.2.0, 64-bit
+(1 row)
+
+CREATE EXTENSION
+ extversion 
+------------
+ 0.8.7
+(1 row)
+
+CREATE TABLE
+INSERT 0 3
+CREATE INDEX
+CREATE INDEX
+SET
+ hnsw.iterative_scan 
+---------------------
+ relaxed_order
+(1 row)
+
+ id 
+----
+  1
+  3
+(2 rows)
+
+ id |  ts_rank   
+----+------------
+  1 | 0.06079271
+(1 row)
+
+pgvector/pgvector@sha256:5895949dfcdf308eb0cd31c950c93c14895c77f33fbedfecf1fa511ab1d4bcd2

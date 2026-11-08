@@ -1,0 +1,208 @@
+{"id": "a001", "fn": "norm", "input": "Ãœberhitzung am Getriebe", "expected": "Überhitzung am Getriebe"}
+{"id": "a002", "fn": "norm", "input": "WÃ¤lzlager", "expected": "Wälzlager"}
+{"id": "a003", "fn": "norm", "input": "GerÃ¶ll", "expected": "Geröll"}
+{"id": "a004", "fn": "norm", "input": "StrÃ¶mung GrÃ¼n MaÃŸnahme", "expected": "Strömung Grün Maßnahme"}
+{"id": "a005", "fn": "norm", "input": "Ã„nderung Ã–l", "expected": "Änderung Öl"}
+{"id": "a006", "fn": "norm", "input": "Kosten 1.200 â‚¬", "expected": "Kosten 1.200 €"}
+{"id": "a007", "fn": "norm", "input": "â‚¬â‚¬", "expected": "€€"}
+{"id": "a008", "fn": "norm", "input": "Pumpe  undicht", "expected": "Pumpe undicht"}
+{"id": "a009", "fn": "norm", "input": "  Pumpe undicht  ", "expected": "Pumpe undicht"}
+{"id": "a010", "fn": "norm", "input": "Pumpe\tundicht", "expected": "Pumpe undicht"}
+{"id": "a011", "fn": "norm", "input": "Pumpe\r\nundicht", "expected": "Pumpe undicht"}
+{"id": "a012", "fn": "norm", "input": "1 234", "expected": "1 234"}
+{"id": "a013", "fn": "norm", "input": "a   \t b", "expected": "a b"}
+{"id": "a014", "fn": "norm", "input": "Überhitzung", "expected": "Überhitzung"}
+{"id": "a015", "fn": "norm", "input": "", "expected": ""}
+{"id": "a016", "fn": "norm", "input": "   ", "expected": ""}
+{"id": "a017", "fn": "norm", "input": "ohne Änderung", "expected": "ohne Änderung"}
+{"id": "a018", "fn": "norm", "input": "Ã", "expected": "Ã"}
+{"id": "a019", "fn": "equipment", "input": "P-4711", "expected": "P-4711"}
+{"id": "a020", "fn": "equipment", "input": "M 0815-A", "expected": "M-0815-A"}
+{"id": "a021", "fn": "equipment", "input": "V0815", "expected": "V-0815"}
+{"id": "a022", "fn": "equipment", "input": "S-1234-B", "expected": "S-1234-B"}
+{"id": "a023", "fn": "equipment", "input": " P-4711 ", "expected": "P-4711"}
+{"id": "a024", "fn": "equipment", "input": "p-4711", "expected": null}
+{"id": "a025", "fn": "equipment", "input": "P-471", "expected": null}
+{"id": "a026", "fn": "equipment", "input": "PP-4711", "expected": null}
+{"id": "a027", "fn": "equipment", "input": "P 47111", "expected": null}
+{"id": "a028", "fn": "equipment", "input": "", "expected": null}
+{"id": "a029", "fn": "date", "input": "12.03.2026", "expected": "2026-03-12"}
+{"id": "a030", "fn": "date", "input": "2.3.2026", "expected": "2026-03-02"}
+{"id": "a031", "fn": "date", "input": "02.03.26", "expected": "2026-03-02"}
+{"id": "a032", "fn": "date", "input": "2.3.26", "expected": "2026-03-02"}
+{"id": "a033", "fn": "date", "input": "2026-03-02", "expected": "2026-03-02"}
+{"id": "a034", "fn": "date", "input": "29.02.2024", "expected": "2024-02-29"}
+{"id": "a035", "fn": "date", "input": "29.02.2025", "expected": null}
+{"id": "a036", "fn": "date", "input": "31.02.2026", "expected": null}
+{"id": "a037", "fn": "date", "input": "30.02.25", "expected": null}
+{"id": "a038", "fn": "date", "input": "31.04.2025", "expected": null}
+{"id": "a039", "fn": "date", "input": "00.05.2026", "expected": null}
+{"id": "a040", "fn": "date", "input": "2026-13-01", "expected": null}
+{"id": "a041", "fn": "date", "input": "2026-3-2", "expected": null}
+{"id": "a042", "fn": "date", "input": "12.03.026", "expected": null}
+{"id": "a043", "fn": "date", "input": "12/03/2026", "expected": null}
+{"id": "a044", "fn": "date", "input": "", "expected": null}
+{"id": "a045", "fn": "date", "input": " 12.03.2026 ", "expected": "2026-03-12"}
+{"id": "a046", "fn": "date", "input": "31.12.99", "expected": "2099-12-31"}
+{"id": "a047", "fn": "date", "input": "1.1.00", "expected": "2000-01-01"}
+{"id": "a048", "fn": "date", "input": "123.03.2026", "expected": null}
+{"id": "a049", "fn": "prio", "input": "1", "expected": 1}
+{"id": "a050", "fn": "prio", "input": "4", "expected": 4}
+{"id": "a051", "fn": "prio", "input": "0", "expected": null}
+{"id": "a052", "fn": "prio", "input": "5", "expected": null}
+{"id": "a053", "fn": "prio", "input": "", "expected": null}
+{"id": "a054", "fn": "prio", "input": " 2 ", "expected": 2}
+{"id": "a055", "fn": "prio", "input": "2a", "expected": null}
+{"id": "a056", "fn": "prio", "input": "²", "expected": null}
+{"id": "a057", "fn": "eur", "input": "1.234,56 €", "expected": 1234.56}
+{"id": "a058", "fn": "eur", "input": "1234,56 EUR", "expected": 1234.56}
+{"id": "a059", "fn": "eur", "input": "1 234,56 €", "expected": 1234.56}
+{"id": "a060", "fn": "eur", "input": "1 234,56 €", "expected": 1234.56}
+{"id": "a061", "fn": "eur", "input": "1.234 €", "expected": 1234.0}
+{"id": "a062", "fn": "eur", "input": "850,00", "expected": 850.0}
+{"id": "a063", "fn": "eur", "input": "850 EUR", "expected": 850.0}
+{"id": "a064", "fn": "eur", "input": "-12,50 €", "expected": -12.5}
+{"id": "a065", "fn": "eur", "input": "1.234.567,89 €", "expected": 1234567.89}
+{"id": "a066", "fn": "eur", "input": "0,99", "expected": 0.99}
+{"id": "a067", "fn": "eur", "input": "12,5", "expected": 12.5}
+{"id": "a068", "fn": "eur", "input": "850€", "expected": 850.0}
+{"id": "a069", "fn": "eur", "input": "k.A.", "expected": null}
+{"id": "a070", "fn": "eur", "input": "", "expected": null}
+{"id": "a071", "fn": "eur", "input": "12.34", "expected": null}
+{"id": "a072", "fn": "eur", "input": "1.2345,00", "expected": null}
+{"id": "a073", "fn": "eur", "input": "12,", "expected": null}
+{"id": "a074", "fn": "eur", "input": "€ 12,00", "expected": null}
+{"id": "a075", "fn": "eur", "input": "1,234.56", "expected": null}
+{"id": "a076", "fn": "eur", "input": "1 234 567", "expected": 1234567.0}
+{"id": "a077", "fn": "eur", "input": "--5", "expected": null}
+{"id": "a078", "fn": "eur", "input": " 7,10 € ", "expected": 7.1}
+{"id": "a079", "fn": "minutes", "input": "1,5 h", "expected": 90}
+{"id": "a080", "fn": "minutes", "input": "0,25 h", "expected": 15}
+{"id": "a081", "fn": "minutes", "input": "2 h", "expected": 120}
+{"id": "a082", "fn": "minutes", "input": "6,75 h", "expected": 405}
+{"id": "a083", "fn": "minutes", "input": "90 min", "expected": 90}
+{"id": "a084", "fn": "minutes", "input": "ca. 2 Std.", "expected": 120}
+{"id": "a085", "fn": "minutes", "input": "ca.2 Std.", "expected": 120}
+{"id": "a086", "fn": "minutes", "input": "1-2h", "expected": 120}
+{"id": "a087", "fn": "minutes", "input": "1 - 2 h", "expected": 120}
+{"id": "a088", "fn": "minutes", "input": "3-4h", "expected": 240}
+{"id": "a089", "fn": "minutes", "input": "1 Stunde", "expected": 60}
+{"id": "a090", "fn": "minutes", "input": "3 Stunden", "expected": 180}
+{"id": "a091", "fn": "minutes", "input": "45 Minuten", "expected": 45}
+{"id": "a092", "fn": "minutes", "input": "7 min", "expected": 7}
+{"id": "a093", "fn": "minutes", "input": "2H", "expected": 120}
+{"id": "a094", "fn": "minutes", "input": "90 MIN", "expected": 90}
+{"id": "a095", "fn": "minutes", "input": "1,51 h", "expected": 91}
+{"id": "a096", "fn": "minutes", "input": "0,125 h", "expected": 8}
+{"id": "a097", "fn": "minutes", "input": "", "expected": null}
+{"id": "a098", "fn": "minutes", "input": "ca.", "expected": null}
+{"id": "a099", "fn": "minutes", "input": "2 Std", "expected": null}
+{"id": "a100", "fn": "minutes", "input": "zwei Stunden", "expected": null}
+{"id": "a101", "fn": "minutes", "input": "1,5", "expected": null}
+{"id": "a102", "fn": "minutes", "input": "1-2", "expected": null}
+{"id": "a103", "fn": "minutes", "input": "120 sek", "expected": null}
+{"id": "a104", "fn": "minutes", "input": "0,025 h", "expected": 2}
+{"id": "a105", "fn": "minutes", "input": "2,5 min", "expected": 3}
+{"id": "a106", "fn": "minutes", "input": "0,5 min", "expected": 1}
+{"id": "a107", "fn": "minutes", "input": "1,25 min", "expected": 1}
+{"id": "a108", "fn": "minutes", "input": "0,0125 h", "expected": 1}
+{"id": "a109", "fn": "expand", "input": "ca. 2 Stunden", "expected": "circa 2 Stunden"}
+{"id": "a110", "fn": "expand", "input": "lt. MA Fehlbedienung", "expected": "laut Mitarbeiter Fehlbedienung"}
+{"id": "a111", "fn": "expand", "input": "Prüfung i.O.", "expected": "Prüfung in Ordnung"}
+{"id": "a112", "fn": "expand", "input": "Prüfung n.i.O.", "expected": "Prüfung nicht in Ordnung"}
+{"id": "a113", "fn": "expand", "input": "Funktionsprüfung n.i.O., Teil gesperrt", "expected": "Funktionsprüfung nicht in Ordnung, Teil gesperrt"}
+{"id": "a114", "fn": "expand", "input": "(ET) bestellt", "expected": "(Ersatzteil) bestellt"}
+{"id": "a115", "fn": "expand", "input": "ET Mat.-Nr. 10810812 verbaut.", "expected": "Ersatzteil Mat.-Nr. 10810812 verbaut."}
+{"id": "a116", "fn": "expand", "input": "KW-Pumpe undicht", "expected": "KW-Pumpe undicht"}
+{"id": "a117", "fn": "expand", "input": "GLRD erneuert", "expected": "Gleitringdichtung erneuert"}
+{"id": "a118", "fn": "expand", "input": "Störung am FU", "expected": "Störung am Frequenzumrichter"}
+{"id": "a119", "fn": "expand", "input": "Reset der SPS durchgeführt", "expected": "Reset der speicherprogrammierbare Steuerung durchgeführt"}
+{"id": "a120", "fn": "expand", "input": "SPS-Baugruppe defekt", "expected": "SPS-Baugruppe defekt"}
+{"id": "a121", "fn": "expand", "input": "wg. Fremdkörper", "expected": "wegen Fremdkörper"}
+{"id": "a122", "fn": "expand", "input": "WG. FREMDKÖRPER", "expected": "wegen FREMDKÖRPER"}
+{"id": "a123", "fn": "expand", "input": "vmtl. Materialermüdung", "expected": "vermutlich Materialermüdung"}
+{"id": "a124", "fn": "expand", "input": "IH informiert", "expected": "Instandhaltung informiert"}
+{"id": "a125", "fn": "expand", "input": "wird an AV übergeben", "expected": "wird an Arbeitsvorbereitung übergeben"}
+{"id": "a126", "fn": "expand", "input": "Maßnahme offen", "expected": "Maßnahme offen"}
+{"id": "a127", "fn": "expand", "input": "MAßNAHME", "expected": "MAßNAHME"}
+{"id": "a128", "fn": "expand", "input": "ca.", "expected": "circa"}
+{"id": "a129", "fn": "expand", "input": "\"ca.\"", "expected": "\"circa\""}
+{"id": "a130", "fn": "expand", "input": "ca.,", "expected": "circa,"}
+{"id": "a131", "fn": "expand", "input": "ca..", "expected": "ca.."}
+{"id": "a132", "fn": "expand", "input": "z.B. Lager", "expected": "zum Beispiel Lager"}
+{"id": "a133", "fn": "expand", "input": "u.a. Lager", "expected": "unter anderem Lager"}
+{"id": "a134", "fn": "expand", "input": "Fa. beauftragt", "expected": "Firma beauftragt"}
+{"id": "a135", "fn": "expand", "input": "FA 4711", "expected": "Fertigungsauftrag 4711"}
+{"id": "a136", "fn": "expand", "input": "Pos. 3", "expected": "Position 3"}
+{"id": "a137", "fn": "expand", "input": "Nr. 7", "expected": "Nummer 7"}
+{"id": "a138", "fn": "expand", "input": "HD-Leitung", "expected": "HD-Leitung"}
+{"id": "a139", "fn": "expand", "input": "HD Leitung", "expected": "Hochdruck Leitung"}
+{"id": "a140", "fn": "expand", "input": "QS prüft", "expected": "Qualitätssicherung prüft"}
+{"id": "a141", "fn": "expand", "input": "ma", "expected": "Mitarbeiter"}
+{"id": "a142", "fn": "expand", "input": "Ma.", "expected": "Ma."}
+{"id": "a143", "fn": "expand", "input": "inkl. Dichtung", "expected": "inklusive Dichtung"}
+{"id": "a144", "fn": "expand", "input": "bzgl. Auftrag", "expected": "bezüglich Auftrag"}
+{"id": "a145", "fn": "expand", "input": "ggf. tauschen", "expected": "gegebenenfalls tauschen"}
+{"id": "a146", "fn": "expand", "input": "[Std.]", "expected": "[Stunden]"}
+{"id": "a147", "fn": "expand", "input": "10 Min.", "expected": "10 Minuten"}
+{"id": "a148", "fn": "expand", "input": "", "expected": ""}
+{"id": "a149", "fn": "fold", "input": "Überhitzung am Getriebe", "expected": "ueberhitzung am getriebe"}
+{"id": "a150", "fn": "fold", "input": "MASSNAHME", "expected": "massnahme"}
+{"id": "a151", "fn": "fold", "input": "Maßnahme", "expected": "massnahme"}
+{"id": "a152", "fn": "fold", "input": "ÄÖÜ äöü ß", "expected": "aeoeue aeoeue ss"}
+{"id": "a153", "fn": "fold", "input": "Wärmetauscher", "expected": "waermetauscher"}
+{"id": "a154", "fn": "lower", "input": "Maßnahme", "expected": "maßnahme"}
+{"id": "a155", "fn": "lower", "input": "ÜBER", "expected": "über"}
+{"id": "a156", "fn": "lower", "input": "GmbH", "expected": "gmbh"}
+{"id": "a157", "fn": "materialnr", "input": "Ersatzteil Mat.-Nr. 10810812 verbaut.", "expected": "10810812"}
+{"id": "a158", "fn": "materialnr", "input": "Material-Nr.: 10234567", "expected": "10234567"}
+{"id": "a159", "fn": "materialnr", "input": "10234567", "expected": "10234567"}
+{"id": "a160", "fn": "materialnr", "input": "Mat.Nr. 10000000 getauscht", "expected": "10000000"}
+{"id": "a161", "fn": "materialnr", "input": "Nummer 102345678", "expected": null}
+{"id": "a162", "fn": "materialnr", "input": "Nummer 1023456", "expected": null}
+{"id": "a163", "fn": "materialnr", "input": "Nummer 20234567", "expected": null}
+{"id": "a164", "fn": "materialnr", "input": "a10234567b", "expected": "10234567"}
+{"id": "a165", "fn": "materialnr", "input": "x 110234567", "expected": null}
+{"id": "a166", "fn": "materialnr", "input": "erst 10111111 dann 10222222", "expected": "10111111"}
+{"id": "a167", "fn": "materialnr", "input": "ohne Nummer", "expected": null}
+{"id": "a168", "fn": "safety", "input": "mitarbeiter leicht verletzt", "expected": true}
+{"id": "a169", "fn": "safety", "input": "beinahe-unfall, bereich abgesperrt", "expected": true}
+{"id": "a170", "fn": "safety", "input": "verbruehung durch heisses medium (beinaheunfall)", "expected": true}
+{"id": "a171", "fn": "safety", "input": "kleiner brand, sofort geloescht", "expected": true}
+{"id": "a172", "fn": "safety", "input": "rauchentwicklung festgestellt", "expected": true}
+{"id": "a173", "fn": "safety", "input": "lager ersetzt", "expected": false}
+{"id": "a174", "fn": "safety", "input": "verletzungsgefahr", "expected": true}
+{"id": "a175", "fn": "safety", "input": "", "expected": false}
+{"id": "a176", "fn": "komponente", "input": "leckage an der kreiselpumpe", "expected": "Kreiselpumpe"}
+{"id": "a177", "fn": "komponente", "input": "die pumpe tropft", "expected": "Kreiselpumpe"}
+{"id": "a178", "fn": "komponente", "input": "leckage an der kuehlwasserpumpe", "expected": "Kühlwasserpumpe"}
+{"id": "a179", "fn": "komponente", "input": "pumpenleckage in kesselhaus 3", "expected": "Kreiselpumpe"}
+{"id": "a180", "fn": "komponente", "input": "druckluftleitungsleckage", "expected": "Druckluftleitung"}
+{"id": "a181", "fn": "komponente", "input": "kw-pumpe undicht", "expected": "Kühlwasserpumpe"}
+{"id": "a182", "fn": "komponente", "input": "verschleiss am waelzlager", "expected": "Wälzlager"}
+{"id": "a183", "fn": "komponente", "input": "lager ersetzt", "expected": "Wälzlager"}
+{"id": "a184", "fn": "komponente", "input": "getriebe laeuft heiss. lager ersetzt.", "expected": "Getriebe"}
+{"id": "a185", "fn": "komponente", "input": "lager und getriebe", "expected": "Getriebe"}
+{"id": "a186", "fn": "komponente", "input": "motorschutzschalter ausgeloest", "expected": "Motorschutzschalter"}
+{"id": "a187", "fn": "komponente", "input": "motor vibriert", "expected": "Elektromotor"}
+{"id": "a188", "fn": "komponente", "input": "bruch am kran in hochregallager 2", "expected": "Wälzlager"}
+{"id": "a189", "fn": "komponente", "input": "pt100-temperaturfuehler defekt", "expected": "PT100-Temperaturfühler"}
+{"id": "a190", "fn": "komponente", "input": "temperaturfuehler defekt", "expected": "PT100-Temperaturfühler"}
+{"id": "a191", "fn": "komponente", "input": "reset der speicherprogrammierbare steuerung durchgefuehrt", "expected": "SPS-Baugruppe"}
+{"id": "a192", "fn": "komponente", "input": "sps-baugruppe defekt", "expected": "SPS-Baugruppe"}
+{"id": "a193", "fn": "komponente", "input": "stoerung am frequenzumrichter", "expected": "Frequenzumrichter"}
+{"id": "a194", "fn": "komponente", "input": "fehlalarm an der lichtschranke", "expected": "Lichtschranke"}
+{"id": "a195", "fn": "komponente", "input": "ventil undicht, regelventil getauscht", "expected": "Regelventil"}
+{"id": "a196", "fn": "komponente", "input": "filter gereinigt", "expected": "Filter"}
+{"id": "a197", "fn": "komponente", "input": "oelfilter zugesetzt", "expected": "Filter"}
+{"id": "a198", "fn": "komponente", "input": "dichtungsleckage", "expected": null}
+{"id": "a199", "fn": "komponente", "input": "ohne bauteil", "expected": null}
+{"id": "a200", "fn": "komponente", "input": "", "expected": null}
+{"id": "a201", "fn": "komponente", "input": "walze und arbeitswalze", "expected": "Walze"}
+{"id": "a202", "fn": "komponente", "input": "zylinder klemmt", "expected": "Hydraulikzylinder"}
+{"id": "a203", "fn": "komponente", "input": "hubzylinder undicht", "expected": "Hydraulikzylinder"}
+{"id": "a204", "fn": "doc_text", "input": {"werk": "Duisburg", "anlage": "Beizlinie 2", "equipment_nr": "P-4711", "datum": "2026-03-12", "prioritaet": 1, "text_norm": "Pumpe undicht."}, "expected": "Werk: Duisburg | Anlage: Beizlinie 2 | Equipment: P-4711 | Datum: 2026-03-12 | Priorität: 1 | Meldung: Pumpe undicht."}
+{"id": "a205", "fn": "doc_text", "input": {"werk": "Essen", "anlage": "", "equipment_nr": null, "datum": null, "prioritaet": null, "text_norm": "Kurzschluss."}, "expected": "Werk: Essen | Meldung: Kurzschluss."}
+{"id": "a206", "fn": "doc_text", "input": {"werk": "Hamm", "anlage": "Kühlturm 1", "equipment_nr": null, "datum": "2025-01-31", "prioritaet": 3, "text_norm": ""}, "expected": "Werk: Hamm | Anlage: Kühlturm 1 | Datum: 2025-01-31 | Priorität: 3"}
+{"id": "a207", "fn": "row", "input": {"meldung_id": "2000000007", "werk": "Duisburg", "anlage": "Beizlinie 2", "equipment_nr": "M 0815-A", "meldungsdatum": "2.3.26", "schicht": "Früh", "prioritaet": "2", "meldungstext": "Ãœberhitzung  am Getriebe. Lt. MA Fehlbedienung. ET Mat.-Nr. 10810812 verbaut.", "stillstand": "ca. 2 Std.", "kosten": "1 234,56 €", "status": "abgeschlossen"}, "expected": {"equipment_nr": "M-0815-A", "datum": "2026-03-02", "prioritaet": 2, "stillstand_min": 120, "kosten_eur": 1234.56, "text_norm": "Überhitzung am Getriebe. laut Mitarbeiter Fehlbedienung. Ersatzteil Mat.-Nr. 10810812 verbaut.", "text_fold": "ueberhitzung am getriebe. laut mitarbeiter fehlbedienung. ersatzteil mat.-nr. 10810812 verbaut.", "materialnr": "10810812", "sicherheitsrelevant_rule": false, "komponente_rule": "Getriebe", "regierungsbezirk": "Düsseldorf", "nuts2": "DEA1", "doc_text": "Werk: Duisburg | Anlage: Beizlinie 2 | Equipment: M-0815-A | Datum: 2026-03-02 | Priorität: 2 | Meldung: Überhitzung am Getriebe. laut Mitarbeiter Fehlbedienung. Ersatzteil Mat.-Nr. 10810812 verbaut."}}
+{"id": "a208", "fn": "row", "input": {"meldung_id": "2000000008", "werk": "Unbekannt", "anlage": "X 1", "equipment_nr": "kaputt", "meldungsdatum": "31.02.2026", "schicht": "Nacht", "prioritaet": "9", "meldungstext": "MA LEICHT VERLETZT", "stillstand": "", "kosten": "k.A.", "status": "offen"}, "expected": {"equipment_nr": null, "datum": null, "prioritaet": null, "stillstand_min": null, "kosten_eur": null, "text_norm": "Mitarbeiter LEICHT VERLETZT", "text_fold": "mitarbeiter leicht verletzt", "materialnr": null, "sicherheitsrelevant_rule": true, "komponente_rule": null, "regierungsbezirk": null, "nuts2": null, "doc_text": "Werk: Unbekannt | Anlage: X 1 | Meldung: Mitarbeiter LEICHT VERLETZT"}}

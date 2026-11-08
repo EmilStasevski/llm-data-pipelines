@@ -1,0 +1,18 @@
+# large / machine-local (CLAUDE.md layout)
+data/*
+# dataset cards are documentation and stay versioned
+!data/cards/
+models/
+logs/
+bin/
+
+# secrets (rule 10) — keep .env.example in sync
+.env
+
+# build + tool caches
+.venv/
+target/
+__pycache__/
+.pytest_cache/
+.ruff_cache/
+*.egg-info/

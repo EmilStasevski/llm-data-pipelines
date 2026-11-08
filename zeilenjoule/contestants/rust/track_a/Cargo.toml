@@ -1,0 +1,20 @@
+[package]
+name = "zj-track-a"
+description = "Shared Track A logic for the Rust contestants (spec/track_a.md): lexicon, text rules, output"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+publish.workspace = true
+
+[dependencies]
+aho-corasick.workspace = true
+arrow-array.workspace = true
+arrow-schema.workspace = true
+parquet.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+unicode-normalization.workspace = true
+regex.workspace = true
+
+[lints]
+workspace = true

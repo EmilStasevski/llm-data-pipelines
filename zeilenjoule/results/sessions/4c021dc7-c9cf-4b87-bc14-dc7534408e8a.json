@@ -1,0 +1,860 @@
+{
+  "session_id": "4c021dc7-c9cf-4b87-bc14-dc7534408e8a",
+  "created": "2026-11-07T13:30:10Z",
+  "seed": 20261106,
+  "reps": 5,
+  "warmup": 1,
+  "interleave": true,
+  "threads": 0,
+  "scales": [
+    "S",
+    "M",
+    "L"
+  ],
+  "contestants": [
+    "a01_py_csv_loop",
+    "a02_pandas_iterrows",
+    "a03_pandas_itertuples",
+    "a04_pandas_apply",
+    "a09_polars_eager",
+    "a10_polars_lazy",
+    "a11_polars_streaming",
+    "a13_duckdb_py"
+  ],
+  "items": [
+    {
+      "contestant": "a09_polars_eager",
+      "scale": "S",
+      "rep": 1,
+      "warmup": true
+    },
+    {
+      "contestant": "a02_pandas_iterrows",
+      "scale": "S",
+      "rep": 1,
+      "warmup": true
+    },
+    {
+      "contestant": "a10_polars_lazy",
+      "scale": "S",
+      "rep": 1,
+      "warmup": true
+    },
+    {
+      "contestant": "a13_duckdb_py",
+      "scale": "S",
+      "rep": 1,
+      "warmup": true
+    },
+    {
+      "contestant": "a03_pandas_itertuples",
+      "scale": "S",
+      "rep": 1,
+      "warmup": true
+    },
+    {
+      "contestant": "a01_py_csv_loop",
+      "scale": "S",
+      "rep": 1,
+      "warmup": true
+    },
+    {
+      "contestant": "a11_polars_streaming",
+      "scale": "S",
+      "rep": 1,
+      "warmup": true
+    },
+    {
+      "contestant": "a04_pandas_apply",
+      "scale": "S",
+      "rep": 1,
+      "warmup": true
+    },
+    {
+      "contestant": "a02_pandas_iterrows",
+      "scale": "S",
+      "rep": 1,
+      "warmup": false
+    },
+    {
+      "contestant": "a01_py_csv_loop",
+      "scale": "S",
+      "rep": 1,
+      "warmup": false
+    },
+    {
+      "contestant": "a04_pandas_apply",
+      "scale": "S",
+      "rep": 1,
+      "warmup": false
+    },
+    {
+      "contestant": "a09_polars_eager",
+      "scale": "S",
+      "rep": 1,
+      "warmup": false
+    },
+    {
+      "contestant": "a11_polars_streaming",
+      "scale": "S",
+      "rep": 1,
+      "warmup": false
+    },
+    {
+      "contestant": "a10_polars_lazy",
+      "scale": "S",
+      "rep": 1,
+      "warmup": false
+    },
+    {
+      "contestant": "a13_duckdb_py",
+      "scale": "S",
+      "rep": 1,
+      "warmup": false
+    },
+    {
+      "contestant": "a03_pandas_itertuples",
+      "scale": "S",
+      "rep": 1,
+      "warmup": false
+    },
+    {
+      "contestant": "a09_polars_eager",
+      "scale": "S",
+      "rep": 2,
+      "warmup": false
+    },
+    {
+      "contestant": "a02_pandas_iterrows",
+      "scale": "S",
+      "rep": 2,
+      "warmup": false
+    },
+    {
+      "contestant": "a10_polars_lazy",
+      "scale": "S",
+      "rep": 2,
+      "warmup": false
+    },
+    {
+      "contestant": "a11_polars_streaming",
+      "scale": "S",
+      "rep": 2,
+      "warmup": false
+    },
+    {
+      "contestant": "a13_duckdb_py",
+      "scale": "S",
+      "rep": 2,
+      "warmup": false
+    },
+    {
+      "contestant": "a01_py_csv_loop",
+      "scale": "S",
+      "rep": 2,
+      "warmup": false
+    },
+    {
+      "contestant": "a04_pandas_apply",
+      "scale": "S",
+      "rep": 2,
+      "warmup": false
+    },
+    {
+      "contestant": "a03_pandas_itertuples",
+      "scale": "S",
+      "rep": 2,
+      "warmup": false
+    },
+    {
+      "contestant": "a04_pandas_apply",
+      "scale": "S",
+      "rep": 3,
+      "warmup": false
+    },
+    {
+      "contestant": "a02_pandas_iterrows",
+      "scale": "S",
+      "rep": 3,
+      "warmup": false
+    },
+    {
+      "contestant": "a11_polars_streaming",
+      "scale": "S",
+      "rep": 3,
+      "warmup": false
+    },
+    {
+      "contestant": "a13_duckdb_py",
+      "scale": "S",
+      "rep": 3,
+      "warmup": false
+    },
+    {
+      "contestant": "a10_polars_lazy",
+      "scale": "S",
+      "rep": 3,
+      "warmup": false
+    },
+    {
+      "contestant": "a09_polars_eager",
+      "scale": "S",
+      "rep": 3,
+      "warmup": false
+    },
+    {
+      "contestant": "a03_pandas_itertuples",
+      "scale": "S",
+      "rep": 3,
+      "warmup": false
+    },
+    {
+      "contestant": "a01_py_csv_loop",
+      "scale": "S",
+      "rep": 3,
+      "warmup": false
+    },
+    {
+      "contestant": "a09_polars_eager",
+      "scale": "S",
+      "rep": 4,
+      "warmup": false
+    },
+    {
+      "contestant": "a04_pandas_apply",
+      "scale": "S",
+      "rep": 4,
+      "warmup": false
+    },
+    {
+      "contestant": "a13_duckdb_py",
+      "scale": "S",
+      "rep": 4,
+      "warmup": false
+    },
+    {
+      "contestant": "a11_polars_streaming",
+      "scale": "S",
+      "rep": 4,
+      "warmup": false
+    },
+    {
+      "contestant": "a02_pandas_iterrows",
+      "scale": "S",
+      "rep": 4,
+      "warmup": false
+    },
+    {
+      "contestant": "a10_polars_lazy",
+      "scale": "S",
+      "rep": 4,
+      "warmup": false
+    },
+    {
+      "contestant": "a01_py_csv_loop",
+      "scale": "S",
+      "rep": 4,
+      "warmup": false
+    },
+    {
+      "contestant": "a03_pandas_itertuples",
+      "scale": "S",
+      "rep": 4,
+      "warmup": false
+    },
+    {
+      "contestant": "a09_polars_eager",
+      "scale": "S",
+      "rep": 5,
+      "warmup": false
+    },
+    {
+      "contestant": "a03_pandas_itertuples",
+      "scale": "S",
+      "rep": 5,
+      "warmup": false
+    },
+    {
+      "contestant": "a02_pandas_iterrows",
+      "scale": "S",
+      "rep": 5,
+      "warmup": false
+    },
+    {
+      "contestant": "a10_polars_lazy",
+      "scale": "S",
+      "rep": 5,
+      "warmup": false
+    },
+    {
+      "contestant": "a01_py_csv_loop",
+      "scale": "S",
+      "rep": 5,
+      "warmup": false
+    },
+    {
+      "contestant": "a11_polars_streaming",
+      "scale": "S",
+      "rep": 5,
+      "warmup": false
+    },
+    {
+      "contestant": "a13_duckdb_py",
+      "scale": "S",
+      "rep": 5,
+      "warmup": false
+    },
+    {
+      "contestant": "a04_pandas_apply",
+      "scale": "S",
+      "rep": 5,
+      "warmup": false
+    },
+    {
+      "contestant": "a11_polars_streaming",
+      "scale": "M",
+      "rep": 1,
+      "warmup": true
+    },
+    {
+      "contestant": "a03_pandas_itertuples",
+      "scale": "M",
+      "rep": 1,
+      "warmup": true
+    },
+    {
+      "contestant": "a04_pandas_apply",
+      "scale": "M",
+      "rep": 1,
+      "warmup": true
+    },
+    {
+      "contestant": "a10_polars_lazy",
+      "scale": "M",
+      "rep": 1,
+      "warmup": true
+    },
+    {
+      "contestant": "a01_py_csv_loop",
+      "scale": "M",
+      "rep": 1,
+      "warmup": true
+    },
+    {
+      "contestant": "a02_pandas_iterrows",
+      "scale": "M",
+      "rep": 1,
+      "warmup": true
+    },
+    {
+      "contestant": "a13_duckdb_py",
+      "scale": "M",
+      "rep": 1,
+      "warmup": true
+    },
+    {
+      "contestant": "a09_polars_eager",
+      "scale": "M",
+      "rep": 1,
+      "warmup": true
+    },
+    {
+      "contestant": "a09_polars_eager",
+      "scale": "M",
+      "rep": 1,
+      "warmup": false
+    },
+    {
+      "contestant": "a01_py_csv_loop",
+      "scale": "M",
+      "rep": 1,
+      "warmup": false
+    },
+    {
+      "contestant": "a04_pandas_apply",
+      "scale": "M",
+      "rep": 1,
+      "warmup": false
+    },
+    {
+      "contestant": "a03_pandas_itertuples",
+      "scale": "M",
+      "rep": 1,
+      "warmup": false
+    },
+    {
+      "contestant": "a02_pandas_iterrows",
+      "scale": "M",
+      "rep": 1,
+      "warmup": false
+    },
+    {
+      "contestant": "a11_polars_streaming",
+      "scale": "M",
+      "rep": 1,
+      "warmup": false
+    },
+    {
+      "contestant": "a13_duckdb_py",
+      "scale": "M",
+      "rep": 1,
+      "warmup": false
+    },
+    {
+      "contestant": "a10_polars_lazy",
+      "scale": "M",
+      "rep": 1,
+      "warmup": false
+    },
+    {
+      "contestant": "a13_duckdb_py",
+      "scale": "M",
+      "rep": 2,
+      "warmup": false
+    },
+    {
+      "contestant": "a04_pandas_apply",
+      "scale": "M",
+      "rep": 2,
+      "warmup": false
+    },
+    {
+      "contestant": "a09_polars_eager",
+      "scale": "M",
+      "rep": 2,
+      "warmup": false
+    },
+    {
+      "contestant": "a03_pandas_itertuples",
+      "scale": "M",
+      "rep": 2,
+      "warmup": false
+    },
+    {
+      "contestant": "a10_polars_lazy",
+      "scale": "M",
+      "rep": 2,
+      "warmup": false
+    },
+    {
+      "contestant": "a02_pandas_iterrows",
+      "scale": "M",
+      "rep": 2,
+      "warmup": false
+    },
+    {
+      "contestant": "a11_polars_streaming",
+      "scale": "M",
+      "rep": 2,
+      "warmup": false
+    },
+    {
+      "contestant": "a01_py_csv_loop",
+      "scale": "M",
+      "rep": 2,
+      "warmup": false
+    },
+    {
+      "contestant": "a13_duckdb_py",
+      "scale": "M",
+      "rep": 3,
+      "warmup": false
+    },
+    {
+      "contestant": "a01_py_csv_loop",
+      "scale": "M",
+      "rep": 3,
+      "warmup": false
+    },
+    {
+      "contestant": "a10_polars_lazy",
+      "scale": "M",
+      "rep": 3,
+      "warmup": false
+    },
+    {
+      "contestant": "a04_pandas_apply",
+      "scale": "M",
+      "rep": 3,
+      "warmup": false
+    },
+    {
+      "contestant": "a09_polars_eager",
+      "scale": "M",
+      "rep": 3,
+      "warmup": false
+    },
+    {
+      "contestant": "a02_pandas_iterrows",
+      "scale": "M",
+      "rep": 3,
+      "warmup": false
+    },
+    {
+      "contestant": "a03_pandas_itertuples",
+      "scale": "M",
+      "rep": 3,
+      "warmup": false
+    },
+    {
+      "contestant": "a11_polars_streaming",
+      "scale": "M",
+      "rep": 3,
+      "warmup": false
+    },
+    {
+      "contestant": "a09_polars_eager",
+      "scale": "M",
+      "rep": 4,
+      "warmup": false
+    },
+    {
+      "contestant": "a04_pandas_apply",
+      "scale": "M",
+      "rep": 4,
+      "warmup": false
+    },
+    {
+      "contestant": "a10_polars_lazy",
+      "scale": "M",
+      "rep": 4,
+      "warmup": false
+    },
+    {
+      "contestant": "a13_duckdb_py",
+      "scale": "M",
+      "rep": 4,
+      "warmup": false
+    },
+    {
+      "contestant": "a03_pandas_itertuples",
+      "scale": "M",
+      "rep": 4,
+      "warmup": false
+    },
+    {
+      "contestant": "a02_pandas_iterrows",
+      "scale": "M",
+      "rep": 4,
+      "warmup": false
+    },
+    {
+      "contestant": "a01_py_csv_loop",
+      "scale": "M",
+      "rep": 4,
+      "warmup": false
+    },
+    {
+      "contestant": "a11_polars_streaming",
+      "scale": "M",
+      "rep": 4,
+      "warmup": false
+    },
+    {
+      "contestant": "a10_polars_lazy",
+      "scale": "M",
+      "rep": 5,
+      "warmup": false
+    },
+    {
+      "contestant": "a03_pandas_itertuples",
+      "scale": "M",
+      "rep": 5,
+      "warmup": false
+    },
+    {
+      "contestant": "a01_py_csv_loop",
+      "scale": "M",
+      "rep": 5,
+      "warmup": false
+    },
+    {
+      "contestant": "a11_polars_streaming",
+      "scale": "M",
+      "rep": 5,
+      "warmup": false
+    },
+    {
+      "contestant": "a13_duckdb_py",
+      "scale": "M",
+      "rep": 5,
+      "warmup": false
+    },
+    {
+      "contestant": "a04_pandas_apply",
+      "scale": "M",
+      "rep": 5,
+      "warmup": false
+    },
+    {
+      "contestant": "a09_polars_eager",
+      "scale": "M",
+      "rep": 5,
+      "warmup": false
+    },
+    {
+      "contestant": "a02_pandas_iterrows",
+      "scale": "M",
+      "rep": 5,
+      "warmup": false
+    },
+    {
+      "contestant": "a11_polars_streaming",
+      "scale": "L",
+      "rep": 1,
+      "warmup": true
+    },
+    {
+      "contestant": "a13_duckdb_py",
+      "scale": "L",
+      "rep": 1,
+      "warmup": true
+    },
+    {
+      "contestant": "a09_polars_eager",
+      "scale": "L",
+      "rep": 1,
+      "warmup": true
+    },
+    {
+      "contestant": "a10_polars_lazy",
+      "scale": "L",
+      "rep": 1,
+      "warmup": true
+    },
+    {
+      "contestant": "a03_pandas_itertuples",
+      "scale": "L",
+      "rep": 1,
+      "warmup": true
+    },
+    {
+      "contestant": "a01_py_csv_loop",
+      "scale": "L",
+      "rep": 1,
+      "warmup": true
+    },
+    {
+      "contestant": "a04_pandas_apply",
+      "scale": "L",
+      "rep": 1,
+      "warmup": true
+    },
+    {
+      "contestant": "a13_duckdb_py",
+      "scale": "L",
+      "rep": 1,
+      "warmup": false
+    },
+    {
+      "contestant": "a03_pandas_itertuples",
+      "scale": "L",
+      "rep": 1,
+      "warmup": false
+    },
+    {
+      "contestant": "a11_polars_streaming",
+      "scale": "L",
+      "rep": 1,
+      "warmup": false
+    },
+    {
+      "contestant": "a09_polars_eager",
+      "scale": "L",
+      "rep": 1,
+      "warmup": false
+    },
+    {
+      "contestant": "a01_py_csv_loop",
+      "scale": "L",
+      "rep": 1,
+      "warmup": false
+    },
+    {
+      "contestant": "a04_pandas_apply",
+      "scale": "L",
+      "rep": 1,
+      "warmup": false
+    },
+    {
+      "contestant": "a10_polars_lazy",
+      "scale": "L",
+      "rep": 1,
+      "warmup": false
+    },
+    {
+      "contestant": "a13_duckdb_py",
+      "scale": "L",
+      "rep": 2,
+      "warmup": false
+    },
+    {
+      "contestant": "a11_polars_streaming",
+      "scale": "L",
+      "rep": 2,
+      "warmup": false
+    },
+    {
+      "contestant": "a04_pandas_apply",
+      "scale": "L",
+      "rep": 2,
+      "warmup": false
+    },
+    {
+      "contestant": "a03_pandas_itertuples",
+      "scale": "L",
+      "rep": 2,
+      "warmup": false
+    },
+    {
+      "contestant": "a01_py_csv_loop",
+      "scale": "L",
+      "rep": 2,
+      "warmup": false
+    },
+    {
+      "contestant": "a09_polars_eager",
+      "scale": "L",
+      "rep": 2,
+      "warmup": false
+    },
+    {
+      "contestant": "a10_polars_lazy",
+      "scale": "L",
+      "rep": 2,
+      "warmup": false
+    },
+    {
+      "contestant": "a13_duckdb_py",
+      "scale": "L",
+      "rep": 3,
+      "warmup": false
+    },
+    {
+      "contestant": "a10_polars_lazy",
+      "scale": "L",
+      "rep": 3,
+      "warmup": false
+    },
+    {
+      "contestant": "a11_polars_streaming",
+      "scale": "L",
+      "rep": 3,
+      "warmup": false
+    },
+    {
+      "contestant": "a03_pandas_itertuples",
+      "scale": "L",
+      "rep": 3,
+      "warmup": false
+    },
+    {
+      "contestant": "a01_py_csv_loop",
+      "scale": "L",
+      "rep": 3,
+      "warmup": false
+    },
+    {
+      "contestant": "a04_pandas_apply",
+      "scale": "L",
+      "rep": 3,
+      "warmup": false
+    },
+    {
+      "contestant": "a09_polars_eager",
+      "scale": "L",
+      "rep": 3,
+      "warmup": false
+    },
+    {
+      "contestant": "a13_duckdb_py",
+      "scale": "L",
+      "rep": 4,
+      "warmup": false
+    },
+    {
+      "contestant": "a10_polars_lazy",
+      "scale": "L",
+      "rep": 4,
+      "warmup": false
+    },
+    {
+      "contestant": "a01_py_csv_loop",
+      "scale": "L",
+      "rep": 4,
+      "warmup": false
+    },
+    {
+      "contestant": "a11_polars_streaming",
+      "scale": "L",
+      "rep": 4,
+      "warmup": false
+    },
+    {
+      "contestant": "a03_pandas_itertuples",
+      "scale": "L",
+      "rep": 4,
+      "warmup": false
+    },
+    {
+      "contestant": "a09_polars_eager",
+      "scale": "L",
+      "rep": 4,
+      "warmup": false
+    },
+    {
+      "contestant": "a04_pandas_apply",
+      "scale": "L",
+      "rep": 4,
+      "warmup": false
+    },
+    {
+      "contestant": "a03_pandas_itertuples",
+      "scale": "L",
+      "rep": 5,
+      "warmup": false
+    },
+    {
+      "contestant": "a01_py_csv_loop",
+      "scale": "L",
+      "rep": 5,
+      "warmup": false
+    },
+    {
+      "contestant": "a10_polars_lazy",
+      "scale": "L",
+      "rep": 5,
+      "warmup": false
+    },
+    {
+      "contestant": "a11_polars_streaming",
+      "scale": "L",
+      "rep": 5,
+      "warmup": false
+    },
+    {
+      "contestant": "a13_duckdb_py",
+      "scale": "L",
+      "rep": 5,
+      "warmup": false
+    },
+    {
+      "contestant": "a09_polars_eager",
+      "scale": "L",
+      "rep": 5,
+      "warmup": false
+    },
+    {
+      "contestant": "a04_pandas_apply",
+      "scale": "L",
+      "rep": 5,
+      "warmup": false
+    }
+  ],
+  "args": [
+    "--track",
+    "A",
+    "--scale",
+    "S,M,L"
+  ]
+}

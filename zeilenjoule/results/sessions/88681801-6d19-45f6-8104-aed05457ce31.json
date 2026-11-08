@@ -1,0 +1,59 @@
+{
+  "session_id": "88681801-6d19-45f6-8104-aed05457ce31",
+  "created": "2026-11-08T10:03:28Z",
+  "seed": 20261106,
+  "reps": 5,
+  "warmup": 1,
+  "interleave": true,
+  "threads": 0,
+  "scales": [
+    "M"
+  ],
+  "contestants": [
+    "b01_st_fp32"
+  ],
+  "items": [
+    {
+      "contestant": "b01_st_fp32",
+      "scale": "M",
+      "rep": 1,
+      "warmup": true
+    },
+    {
+      "contestant": "b01_st_fp32",
+      "scale": "M",
+      "rep": 1,
+      "warmup": false
+    },
+    {
+      "contestant": "b01_st_fp32",
+      "scale": "M",
+      "rep": 2,
+      "warmup": false
+    },
+    {
+      "contestant": "b01_st_fp32",
+      "scale": "M",
+      "rep": 3,
+      "warmup": false
+    },
+    {
+      "contestant": "b01_st_fp32",
+      "scale": "M",
+      "rep": 4,
+      "warmup": false
+    },
+    {
+      "contestant": "b01_st_fp32",
+      "scale": "M",
+      "rep": 5,
+      "warmup": false
+    }
+  ],
+  "args": [
+    "--id",
+    "b01_st_fp32",
+    "--scale",
+    "M"
+  ]
+}

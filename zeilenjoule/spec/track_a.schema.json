@@ -1,0 +1,26 @@
+{
+  "$comment": "Track A a.full output schema (spec/track_a.md). Column order and types are binding.",
+  "sort_by": "meldung_id",
+  "compression": "zstd",
+  "columns": [
+    {"name": "meldung_id", "type": "string", "nullable": false},
+    {"name": "werk", "type": "string", "nullable": false},
+    {"name": "anlage", "type": "string", "nullable": false},
+    {"name": "equipment_nr", "type": "string", "nullable": true},
+    {"name": "datum", "type": "date32", "nullable": true},
+    {"name": "schicht", "type": "string", "nullable": false},
+    {"name": "prioritaet", "type": "int8", "nullable": true},
+    {"name": "stillstand_min", "type": "int32", "nullable": true},
+    {"name": "kosten_eur", "type": "float64", "nullable": true},
+    {"name": "status", "type": "string", "nullable": false},
+    {"name": "text_norm", "type": "string", "nullable": false},
+    {"name": "text_lower", "type": "string", "nullable": false},
+    {"name": "text_fold", "type": "string", "nullable": false},
+    {"name": "materialnr", "type": "string", "nullable": true},
+    {"name": "sicherheitsrelevant_rule", "type": "bool", "nullable": false},
+    {"name": "komponente_rule", "type": "string", "nullable": true},
+    {"name": "regierungsbezirk", "type": "string", "nullable": true},
+    {"name": "nuts2", "type": "string", "nullable": true},
+    {"name": "doc_text", "type": "string", "nullable": false}
+  ]
+}

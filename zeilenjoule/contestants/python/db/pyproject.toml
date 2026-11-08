@@ -1,0 +1,28 @@
+[project]
+name = "zj-db"
+version = "0.1.0"
+description = "Track C storage/index/retrieval contestants (FAISS, DuckDB vss, sqlite-vec, pgvector, Qdrant, LanceDB)"
+requires-python = ">=3.12,<3.13"
+dependencies = [
+    "faiss-cpu==1.15.1",
+    "duckdb==2.0.0",
+    "sqlite-vec==0.1.9",
+    "psycopg[binary]==3.3.8",
+    "pgvector==0.5.1",
+    "qdrant-client==1.20.0",
+    "lancedb==0.41.0",
+    "pyarrow==26.0.1",
+    "numpy==2.5.4",
+    "nvidia-ml-py==13.615.71",
+    "zjmark",
+]
+
+[dependency-groups]
+dev = ["pytest==9.*", "pyarrow-stubs==20.0.0.20260819"]
+
+[tool.uv.sources]
+zjmark = { path = "../../../libs/python/zjmark", editable = true }
+
+[build-system]
+requires = ["uv_build>=0.12,<0.14"]
+build-backend = "uv_build"

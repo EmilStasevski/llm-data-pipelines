@@ -1,0 +1,57 @@
+python3      /home/emil/miniforge3/bin/python3  Python 3.13.13
+python3.12   /usr/bin/python3.12  Python 3.12.3
+python3.13   /home/emil/miniforge3/bin/python3.13  Python 3.13.13
+uv           /home/emil/.local/bin/uv  uv 0.12.21 (x86_64-unknown-linux-gnu)
+rustc        /home/emil/.cargo/bin/rustc  rustc 1.99.1 (58cf8f9c3 2026-10-13)
+cargo        /home/emil/.cargo/bin/cargo  cargo 1.99.1 (5f94df478 2026-08-27)
+rustup       /home/emil/.cargo/bin/rustup  rustup 1.29.2 (d8c92c676 2026-10-21)
+go           /snap/bin/go  go version go1.27.3 linux/amd64
+gcc          /usr/bin/gcc  gcc (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0
+g++          /usr/bin/g++  g++ (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0
+clang        MISSING
+cmake        /usr/bin/cmake  cmake version 3.28.3
+ninja        MISSING
+task         MISSING
+make         /usr/bin/make  
+git          /usr/bin/git  git version 2.43.0
+docker       /usr/bin/docker  Docker version 29.9.3, build 5457199
+nvidia-ctk   /usr/bin/nvidia-ctk  NVIDIA Container Toolkit CLI version 1.20.1
+ollama       /usr/local/bin/ollama  ollama version is 0.13.5
+duckdb       MISSING
+psql         MISSING
+sqlite3      /usr/bin/sqlite3  3.45.1 2024-01-30 16:01:20 e876e51a0ed5c5b3126f52e532044363a014bc594cfefa87ffb5b82257ccalt1 (64-bit)
+stress-ng    MISSING
+cpupower     /usr/bin/cpupower  
+tmux         MISSING
+jq           /usr/bin/jq  jq-1.7
+curl         /usr/bin/curl  
+vulkaninfo   MISSING
+## groups
+uid=1000(emil) gid=1000(emil) groups=1000(emil),4(adm),24(cdrom),27(sudo),30(dip),46(plugdev),100(users),114(lpadmin),128(vboxusers),984(ollama),1001(docker)
+/home/emil/.cargo/bin:
+cargo
+cargo-clippy
+cargo-fmt
+cargo-miri
+clippy-driver
+just
+oha
+rls
+rust-analyzer
+rustc
+rustdoc
+rustfmt
+rust-gdb
+rust-gdbgui
+rust-lldb
+rustup
+
+/home/emil/go/bin:
+gopls
+
+/home/emil/.local/bin:
+claude
+jupyter-notebook
+pre-commit
+uv
+uvx

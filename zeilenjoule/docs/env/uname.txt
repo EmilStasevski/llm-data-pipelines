@@ -1,0 +1,1 @@
+Linux emil-HERO 6.17.0-1023-oem #23-Ubuntu SMP PREEMPT_DYNAMIC Fri May  8 06:02:38 UTC 2026 x86_64 x86_64 x86_64 GNU/Linux

@@ -1,0 +1,10 @@
+[project]
+name = "zj-analysis"
+version = "0.1.0"
+description = "Report and figure generation from results/zj.duckdb"
+requires-python = ">=3.12"
+dependencies = ["duckdb==2.0.0", "pyyaml==6.0.3"]  # more in Phase 4 (figures, report)
+
+[build-system]
+requires = ["uv_build>=0.12,<0.14"]
+build-backend = "uv_build"

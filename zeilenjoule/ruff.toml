@@ -1,0 +1,19 @@
+# Shared by every Python project in the repo (contestant envs inherit via directory lookup).
+target-version = "py312"
+line-length = 110
+extend-exclude = ["models", "data", "logs", "results", "docs/env"]  # docs/env = verbatim Phase-0 probe records
+
+[lint]
+select = ["E", "F", "W", "I", "B", "UP", "SIM", "RUF", "PL", "PT", "N"]
+ignore = ["PLR2004"]  # magic values are fine in benchmarks/tests
+# Mojibake and German typography consist of exactly these characters (datagen, Track A repair table).
+allowed-confusables = ["‚", "„", "–", " ", "œ", "Ÿ", "×", " "]
+
+[lint.per-file-ignores]
+"**/tests/**" = ["PLR0913"]
+"datagen/src/zj_datagen/cards.py" = ["E501"]  # dataset-card templates: long German prose strings
+"spec/build_track_a_cases.py" = ["E501"]  # golden-vector data literals (one case per line is easier to review)
+"contestants/python/df/src/zj_df/track_a/duckdb_impl.py" = ["E501"]  # SQL macro generator: unwrapped SQL reads better
+
+[lint.isort]
+known-first-party = ["zjmark", "zj_*"]

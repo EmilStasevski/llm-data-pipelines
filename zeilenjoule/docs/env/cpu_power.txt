@@ -1,0 +1,33 @@
+## RAPL zones
+/sys/class/powercap/intel-rapl name=cat: /sys/class/powercap/intel-rapl/name: No such file or directory ls:
+cat: /sys/class/powercap/intel-rapl/energy_uj: No such file or directory
+/sys/class/powercap/intel-rapl:0 name=package-0 -r--------
+cat: '/sys/class/powercap/intel-rapl:0/energy_uj': Permission denied
+/sys/class/powercap/intel-rapl:0:0 name=core -r--------
+cat: '/sys/class/powercap/intel-rapl:0:0/energy_uj': Permission denied
+## governor
+     16 powersave
+## driver
+intel_pstate
+## EPP
+power
+## available governors
+performance powersave
+## SMT
+1
+on
+## intel_pstate no_turbo
+0
+active
+## core types
+0-11
+12-15
+## perf_event_paranoid
+4
+## cgroup
+cgroup2fs
+## PCIe link
+pcie.link.gen.current, pcie.link.gen.max, pcie.link.gen.gpumax, pcie.link.width.current, pcie.link.width.max
+4, 4, 5, 8, 16
+## loadavg
+8.35 6.67 5.19 34/2249 307397

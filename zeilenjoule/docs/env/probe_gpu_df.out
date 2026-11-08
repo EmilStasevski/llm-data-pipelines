@@ -1,0 +1,38 @@
+/home/emil/llm-data-pipelines/zeilenjoule/docs/env/probes/probe_gpu_df.py:20: PolarsInefficientMapWarning: 
+Expr.map_elements is significantly slower than the native expressions API.
+Only use if you absolutely CANNOT implement your logic otherwise.
+Replace this expression...
+  - pl.col("txt").map_elements(lambda s: ...)
+with this one instead:
+  + pl.col("txt").str.to_uppercase()
+
+  lf.with_columns(pl.col("txt").map_elements(lambda s: s.upper(), return_dtype=pl.String)).collect(engine=pl.GPUEngine(raise_on_fail=True))
+{
+ "cudf": "26.10.02",
+ "cudf_groupby": {
+  "Duisburg": 5.0,
+  "Essen": 2.0
+ },
+ "cudf_str_contains": [
+  true,
+  false
+ ],
+ "polars": "1.44.2",
+ "polars_gpu_result": [
+  {
+   "werk": "Duisburg",
+   "kosten": 5.0
+  }
+ ],
+ "polars_gpu_udf_raised": "ComputeError"
+}
+cudf-cu13              26.10.2
+cudf-polars-cu13       26.10.2
+cudf-streaming-cu13    26.10.2
+libcudf-cu13           26.10.2
+libcudf-streaming-cu13 26.10.2
+pandas                 3.0.6
+polars                 1.44.2
+polars-runtime-32      1.44.2
+pylibcudf-cu13         26.10.2
+rmm-cu13               26.10.0

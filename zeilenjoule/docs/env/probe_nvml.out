@@ -1,0 +1,11 @@
+{
+ "nvml_driver": "580.178.04",
+ "nvml_version": "13.580.178.04",
+ "energy_counter_mJ_delta": 18180,
+ "counter_avg_W": 6.02,
+ "sampled_avg_W": 6.12,
+ "polls": 297,
+ "distinct_value_changes_in_3s": 6,
+ "field_power_instant_mW": 6057,
+ "field_power_avg_mW": 6063
+}

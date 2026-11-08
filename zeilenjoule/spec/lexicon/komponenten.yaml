@@ -1,0 +1,136 @@
+# Komponenten. name = kanonischer Gold-Wert. formen = Oberflächenformen → Genus (m/f/n) für Artikel
+# („am Getriebe", „an der Druckluftleitung"). stamm = Fugenform für Komposita („Druckluftleitungsleckage");
+# null = keine Komposita. schaeden = typische Schadensarten (Schlüssel aus schadensarten.yaml).
+# Abgekürzte Formen (SPS, FU, GLRD, KW-, DL-) stehen zusätzlich ausgeschrieben, damit das
+# Wörterbuch nach der Abkürzungsauflösung (Track A Schritt 6) weiter trifft.
+komponenten:
+  - name: Kreiselpumpe
+    eq: P
+    formen: {Kreiselpumpe: f, Zentrifugalpumpe: f, Pumpe: f}
+    stamm: Pumpen
+    schaeden: [Leckage, Kavitation, Verschleiß, Schwingung]
+  - name: Gleitringdichtung
+    eq: P
+    formen: {Gleitringdichtung: f, GLRD: f, Wellendichtung: f}
+    stamm: Dichtungs
+    schaeden: [Leckage, Verschleiß]
+  - name: Wälzlager
+    eq: M
+    formen: {Wälzlager: n, Kugellager: n, Rollenlager: n, Lager: n}
+    stamm: Lager
+    schaeden: [Verschleiß, Überhitzung, Schwingung]
+  - name: Getriebe
+    eq: M
+    formen: {Getriebe: n, Getriebemotor: m, Stirnradgetriebe: n}
+    stamm: Getriebe
+    schaeden: [Verschleiß, Leckage, Schwingung, Überhitzung]
+  - name: Frequenzumrichter
+    eq: E
+    formen: {Frequenzumrichter: m, Umrichter: m, FU: m}
+    stamm: Umrichter
+    schaeden: [Kurzschluss, Überhitzung, Kommunikationsfehler, Fehlalarm]
+  - name: Druckluftleitung
+    eq: H
+    formen: {Druckluftleitung: f, Druckluftschlauch: m, DL-Leitung: f, Druckluft-Leitung: f}
+    stamm: Druckluftleitungs
+    schaeden: [Leckage, Bruch, Korrosion]
+  - name: Hydraulikzylinder
+    eq: H
+    formen: {Hydraulikzylinder: m, Hubzylinder: m, Zylinder: m}
+    stamm: Zylinder
+    schaeden: [Leckage, Verschleiß]
+  - name: Förderband
+    eq: F
+    formen: {Förderband: n, Transportband: n, Gurtförderer: m}
+    stamm: Förderband
+    schaeden: [Verschleiß, Bruch, Verstopfung]
+  - name: Walze
+    eq: F
+    formen: {Walze: f, Arbeitswalze: f, Stützwalze: f}
+    stamm: Walzen
+    schaeden: [Verschleiß, Bruch, Überhitzung]
+  - name: Wärmetauscher
+    eq: W
+    formen: {Wärmetauscher: m, Wärmeübertrager: m, Plattenwärmetauscher: m}
+    stamm: Wärmetauscher
+    schaeden: [Leckage, Verstopfung, Korrosion]
+  - name: Absperrschieber
+    eq: V
+    formen: {Absperrschieber: m, Schieber: m}
+    stamm: Schieber
+    schaeden: [Leckage, Korrosion, Verschleiß]
+  - name: Regelventil
+    eq: V
+    formen: {Regelventil: n, Stellventil: n, Ventil: n}
+    stamm: Ventil
+    schaeden: [Leckage, Verschleiß, Kommunikationsfehler]
+  - name: Drucksensor
+    eq: S
+    formen: {Drucksensor: m, Druckmessumformer: m, Druckaufnehmer: m}
+    stamm: Sensor
+    schaeden: [Fehlalarm, Kommunikationsfehler, Kurzschluss]
+  - name: PT100-Temperaturfühler
+    eq: S
+    formen: {PT100-Temperaturfühler: m, PT100: m, Temperaturfühler: m}
+    stamm: null
+    schaeden: [Fehlalarm, Kurzschluss, Bruch]
+  - name: SPS-Baugruppe
+    eq: E
+    formen: {SPS-Baugruppe: f, SPS: f, E/A-Baugruppe: f, speicherprogrammierbare Steuerung: f}
+    stamm: null
+    schaeden: [Kommunikationsfehler, Kurzschluss, Fehlalarm]
+  - name: Schütz
+    eq: E
+    formen: {Schütz: n, Leistungsschütz: n}
+    stamm: Schütz
+    schaeden: [Kurzschluss, Verschleiß]
+  - name: Motorschutzschalter
+    eq: E
+    formen: {Motorschutzschalter: m, Motorschutz: m}
+    stamm: null
+    schaeden: [Fehlalarm, Kurzschluss]
+  - name: Brückenkran
+    eq: F
+    formen: {Brückenkran: m, Hallenkran: m, Kran: m}
+    stamm: Kran
+    schaeden: [Verschleiß, Bruch, Kommunikationsfehler]
+  - name: Rührwerk
+    eq: M
+    formen: {Rührwerk: n, Rührer: m}
+    stamm: Rührwerks
+    schaeden: [Schwingung, Verschleiß, Leckage]
+  - name: Extruder
+    eq: M
+    formen: {Extruder: m, Extruderschnecke: f}
+    stamm: Extruder
+    schaeden: [Verschleiß, Überhitzung, Verstopfung]
+  - name: Abfüllanlage
+    eq: A
+    formen: {Abfüllanlage: f, Abfüllmaschine: f, Füller: m}
+    stamm: null
+    schaeden: [Verstopfung, Fehlalarm, Leckage]
+  - name: Kühlwasserpumpe
+    eq: P
+    formen: {Kühlwasserpumpe: f, KW-Pumpe: f, Kühlwasser-Pumpe: f}
+    stamm: Kühlwasserpumpen
+    schaeden: [Leckage, Kavitation, Überhitzung]
+  - name: Elektromotor
+    eq: M
+    formen: {Elektromotor: m, Antriebsmotor: m, Motor: m}
+    stamm: Motor
+    schaeden: [Überhitzung, Schwingung, Kurzschluss]
+  - name: Kompressor
+    eq: M
+    formen: {Kompressor: m, Verdichter: m, Schraubenverdichter: m}
+    stamm: Kompressor
+    schaeden: [Überhitzung, Leckage, Schwingung]
+  - name: Filter
+    eq: W
+    formen: {Filter: m, Filterelement: n, Ölfilter: m}
+    stamm: Filter
+    schaeden: [Verstopfung]
+  - name: Lichtschranke
+    eq: S
+    formen: {Lichtschranke: f, Sicherheitslichtschranke: f}
+    stamm: null
+    schaeden: [Fehlalarm, Kommunikationsfehler]

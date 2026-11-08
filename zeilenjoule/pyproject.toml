@@ -1,0 +1,36 @@
+[project]
+name = "zeilenjoule"
+version = "0.1.0"
+description = "ZeilenJoule: row-wise RAG benchmark (time + energy) — workspace root"
+requires-python = ">=3.12,<3.13"
+dependencies = ["zjmark", "zj-datagen", "zj-reference", "zj-eval", "zj-analysis"]
+
+[tool.uv]
+package = false
+
+[tool.uv.workspace]
+members = ["libs/python/zjmark", "datagen", "reference", "eval", "analysis"]
+# Contestant envs have conflicting dependency stacks → separate uv projects with their own uv.lock (ADR 0005).
+exclude = ["contestants/python/*"]
+
+[tool.uv.sources]
+zjmark = { workspace = true }
+zj-datagen = { workspace = true }
+zj-reference = { workspace = true }
+zj-eval = { workspace = true }
+zj-analysis = { workspace = true }
+
+[dependency-groups]
+dev = ["ruff==0.17.*", "pyright[nodejs]==1.1.*", "pytest==9.*", "types-pyyaml==6.0.*", "pyarrow-stubs==20.0.0.20260819"]
+
+[tool.pytest.ini_options]
+testpaths = ["libs/python/zjmark/tests", "datagen/tests", "reference/tests", "eval/tests", "analysis/tests"]
+addopts = "-q --strict-markers"
+
+[tool.pyright]
+include = ["libs/python", "datagen", "reference", "eval", "analysis"]
+exclude = ["**/.venv", "contestants"]
+pythonVersion = "3.12"
+typeCheckingMode = "strict"
+venvPath = "."
+venv = ".venv"

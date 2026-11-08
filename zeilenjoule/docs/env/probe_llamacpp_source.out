@@ -1,0 +1,8 @@
+== CUDA ==
+CUDA Version 13.0.2
+ggml_cuda_init: found 1 CUDA devices (Total VRAM: 15839 MiB):
+| model                          |       size |     params | backend    | ngl |            test |                  t/s |
+| ------------------------------ | ---------: | ---------: | ---------- | --: | --------------: | -------------------: |
+| qwen3 0.6B Q8_0                | 604.15 MiB |   596.05 M | CUDA       |  99 |           pp128 |       9803.89 ± 0.00 |
+| qwen3 0.6B Q8_0                | 604.15 MiB |   596.05 M | CUDA       |  99 |            tg32 |        391.29 ± 0.00 |
+build: unknown (0)

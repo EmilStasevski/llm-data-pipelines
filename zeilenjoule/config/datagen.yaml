@@ -1,0 +1,50 @@
+# Synthetic data generator (datagen/). Recorded verbatim in every manifest and dataset card.
+seed: 20261106
+chunk_rows: 10000            # fixed → generation is prefix-stable (S ⊂ M ⊂ L ⊂ XL); never change casually
+date_range: ["2024-01-01", "2026-10-31"]
+d2k: {rows: 2000, dev_rows: 300, from_scale: M}
+
+stoermeldungen:
+  p:                         # probabilities per row
+    form_kanonisch: 0.6      # component surface form = canonical name (else a synonym/generic form)
+    schaden_typisch: 0.8     # damage type from the component's typical list
+    kompositum: 0.25         # compound ("Druckluftleitungsleckage") when the lexicon allows it
+    ort_anlage: 0.5          # "… in Beizlinie 2"
+    equipment_im_text: 0.3
+    ursache: 0.75
+    ursache_unbekannt: 0.25  # of rows with a cause sentence
+    massnahme: 0.7
+    massnahme_offen: 0.2     # of rows with an action sentence
+    sicherheit: 0.04
+    materialnr: 0.2
+    stillstand_leer: 0.15
+    stillstand_im_text: 0.4  # of rows with downtime
+    kosten_leer: 0.2
+    kosten_ka: 0.01          # "k.A." (gold null)
+    kosten_negativ: 0.005    # credit notes
+    datum_ungueltig: 0.003   # impossible dates (gold null)
+
+noise:                       # per row, shared by all tables (PLAN §6.1)
+  englisch: 0.05           # English loanword phrase variant
+  typo: 0.02
+  translit: 0.10           # ä→ae …
+  mojibake: 0.03           # "Ã¼" for "ü" (exactly the Track A repair table)
+  gross: 0.02              # UPPER CASE
+  klein: 0.03              # lower case
+  satzzeichen: 0.05        # missing punctuation
+  leerzeichen: 0.05        # duplicate / leading / trailing whitespace
+
+qualitaetsmeldungen:
+  rows_per_scale_row: 0.1    # Q notifications are rarer: S → 1 000 rows, M → 10 000, L → 100 000, XL → 1 000 000
+  p:
+    massfehler: 0.6          # measured value out of tolerance → fehlerklasse from the feature group
+    sonstiger_fehler: 0.25   # non-measurement defect (packaging, labelling, function …), value in tolerance
+                             # rest: kein Fehler (verdict i.O.)
+    ursache: 0.7             # 6M cause sentence present (else "unknown" phrase, gold null)
+    massnahme_offen: 0.2
+    messwert_ohne_leerzeichen: 0.3
+  lieferanten: 150           # fictional supplier pool (Faker de_DE, seeded)
+
+fetch:                       # real open data (PLAN §6.2); ≤ 1 req/s, raw responses cached under data/raw/
+  ted: {date_from: "20260101", date_to: "20261031", max_notices: 15000}  # 15k = TED page-number pagination cap (PLAN §6.2)
+  ba: {umkreis_km: 25, max_ads: 3000}  # cities = the plant cities of spec/lexicon/werke_nrw.yaml

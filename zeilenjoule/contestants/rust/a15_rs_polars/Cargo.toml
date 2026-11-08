@@ -1,0 +1,22 @@
+[package]
+name = "a15-rs-polars"
+description = "Track A contestant a15_rs_polars: Rust polars crate, lazy API (same plan as a10)"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+publish.workspace = true
+
+[dependencies]
+zj-track-a.workspace = true
+zjmark.workspace = true
+tikv-jemallocator.workspace = true
+serde_json.workspace = true
+encoding_rs.workspace = true
+polars = { version = "0.55.2", default-features = false, features = [
+    "lazy", "csv", "parquet", "strings", "regex", "extract_groups", "string_normalize", "find_many",
+    "replace", "list_eval", "concat_str", "is_in", "string_pad", "dtype-date", "dtype-struct", "dtype-i8",
+    "temporal", "zip_with", "is_between", "round_series",
+] }
+
+[lints]
+workspace = true

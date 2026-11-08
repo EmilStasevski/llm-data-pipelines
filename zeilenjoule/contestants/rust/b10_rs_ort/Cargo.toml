@@ -1,0 +1,21 @@
+[package]
+name = "b10-rs-ort"
+description = "Track B contestant b10_rs_ort: Rust `ort` (ONNX Runtime 1.31 CUDA EP, fp16) + HF `tokenizers`"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+publish.workspace = true
+
+[dependencies]
+zjmark.workspace = true
+serde_json.workspace = true
+arrow-array.workspace = true
+parquet.workspace = true
+# load-dynamic: the same libonnxruntime.so 1.31.1 as b04 (embed env's onnxruntime-gpu wheel), so only the host
+# language differs (ADR 0015). No download-binaries.
+ort = { version = "=2.0.0-rc.15", default-features = false, features = ["std", "load-dynamic", "cuda", "api-31"] }
+tokenizers = { version = "=0.22.2", default-features = false, features = ["onig", "esaxx_fast"] }
+half = "2.7"
+
+[lints]
+workspace = true

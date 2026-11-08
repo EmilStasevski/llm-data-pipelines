@@ -1,0 +1,8 @@
+2026-11-06T16:47:00.306781Z  INFO text_embeddings_backend: backends/src/lib.rs:672: Downloading `model.safetensors`
+2026-11-06T16:48:24.826981Z  INFO text_embeddings_backend: backends/src/lib.rs:507: Model weights downloaded in 84.520198067s
+2026-11-06T16:48:24.827035Z  INFO download_dense_modules: text_embeddings_backend: backends/src/lib.rs:843: Downloading `modules.json`
+2026-11-06T16:48:34.797807Z  INFO text_embeddings_backend: backends/src/lib.rs:519: Dense modules downloaded in 9.970779205s
+2026-11-06T16:48:34.798912Z  WARN text_embeddings_backend_candle: backends/candle/src/lib.rs:229: The `config.json` contains `hidden_act=gelu` and GeLU + tanh approximation will be used instead of exact GeLU (aka. GeLU erf), which might lead to subtle differences with Transformers or Sentence Transformers outputs which use exact GeLU when `hidden_act=gelu`, unless specified otherwise. GeLU + tanh is more efficient and more consistent across devices (e.g., cuBLASLt comes with fused GeLU + tanh), and will have negligible impact on the inference quality.
+2026-11-06T16:48:35.191402Z  INFO text_embeddings_backend_candle: backends/candle/src/lib.rs:395: Starting FlashBert model on Cuda(CudaDevice(DeviceId(1)))
+2026-11-06T16:48:44.990062Z  INFO text_embeddings_router: router/src/lib.rs:302: Warming up model
+2026-11-06T16:48:45.023588Z  INFO text_embeddings_router::http::server: router/src/http/server.rs:1879: Ready

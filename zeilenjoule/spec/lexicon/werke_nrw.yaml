@@ -1,0 +1,42 @@
+# Fiktive Werke in NRW (synthetische Daten, keine realen Unternehmen).
+# stadt → Regierungsbezirk → NUTS-2 (DEA1 Düsseldorf, DEA2 Köln, DEA3 Münster, DEA4 Detmold, DEA5 Arnsberg).
+# sektor wählt die Anlagenliste unten. kuerzel = Präfix der Equipment-Nummern.
+werke:
+  - {werk: Duisburg,             stadt: Duisburg,             regierungsbezirk: Düsseldorf, nuts2: DEA1, sektor: Stahl,                   kuerzel: DU}
+  - {werk: Düsseldorf,           stadt: Düsseldorf,           regierungsbezirk: Düsseldorf, nuts2: DEA1, sektor: Automotive-Zulieferer,   kuerzel: D}
+  - {werk: Essen,                stadt: Essen,                regierungsbezirk: Düsseldorf, nuts2: DEA1, sektor: Energie,                 kuerzel: E}
+  - {werk: Krefeld,              stadt: Krefeld,              regierungsbezirk: Düsseldorf, nuts2: DEA1, sektor: Chemie,                  kuerzel: KR}
+  - {werk: Oberhausen,           stadt: Oberhausen,           regierungsbezirk: Düsseldorf, nuts2: DEA1, sektor: Logistik,                kuerzel: OB}
+  - {werk: Mülheim an der Ruhr,  stadt: Mülheim an der Ruhr,  regierungsbezirk: Düsseldorf, nuts2: DEA1, sektor: Maschinenbau,            kuerzel: MH}
+  - {werk: Wuppertal,            stadt: Wuppertal,            regierungsbezirk: Düsseldorf, nuts2: DEA1, sektor: Automotive-Zulieferer,   kuerzel: W}
+  - {werk: Solingen,             stadt: Solingen,             regierungsbezirk: Düsseldorf, nuts2: DEA1, sektor: Maschinenbau,            kuerzel: SG}
+  - {werk: Neuss,                stadt: Neuss,                regierungsbezirk: Düsseldorf, nuts2: DEA1, sektor: Lebensmittel,            kuerzel: NE}
+  - {werk: Dormagen,             stadt: Dormagen,             regierungsbezirk: Düsseldorf, nuts2: DEA1, sektor: Chemie,                  kuerzel: DO}
+  - {werk: Wesel,                stadt: Wesel,                regierungsbezirk: Düsseldorf, nuts2: DEA1, sektor: Logistik,                kuerzel: WES}
+  - {werk: Köln,                 stadt: Köln,                 regierungsbezirk: Köln,       nuts2: DEA2, sektor: Chemie,                  kuerzel: K}
+  - {werk: Leverkusen,           stadt: Leverkusen,           regierungsbezirk: Köln,       nuts2: DEA2, sektor: Chemie,                  kuerzel: LEV}
+  - {werk: Aachen,               stadt: Aachen,               regierungsbezirk: Köln,       nuts2: DEA2, sektor: Maschinenbau,            kuerzel: AC}
+  - {werk: Bonn,                 stadt: Bonn,                 regierungsbezirk: Köln,       nuts2: DEA2, sektor: Lebensmittel,            kuerzel: BN}
+  - {werk: Münster,              stadt: Münster,              regierungsbezirk: Münster,    nuts2: DEA3, sektor: Lebensmittel,            kuerzel: MS}
+  - {werk: Gelsenkirchen,        stadt: Gelsenkirchen,        regierungsbezirk: Münster,    nuts2: DEA3, sektor: Energie,                 kuerzel: GE}
+  - {werk: Bottrop,              stadt: Bottrop,              regierungsbezirk: Münster,    nuts2: DEA3, sektor: Energie,                 kuerzel: BOT}
+  - {werk: Marl,                 stadt: Marl,                 regierungsbezirk: Münster,    nuts2: DEA3, sektor: Chemie,                  kuerzel: MA}
+  - {werk: Bielefeld,            stadt: Bielefeld,            regierungsbezirk: Detmold,    nuts2: DEA4, sektor: Lebensmittel,            kuerzel: BI}
+  - {werk: Paderborn,            stadt: Paderborn,            regierungsbezirk: Detmold,    nuts2: DEA4, sektor: Maschinenbau,            kuerzel: PB}
+  - {werk: Gütersloh,            stadt: Gütersloh,            regierungsbezirk: Detmold,    nuts2: DEA4, sektor: Maschinenbau,            kuerzel: GT}
+  - {werk: Dortmund,             stadt: Dortmund,             regierungsbezirk: Arnsberg,   nuts2: DEA5, sektor: Stahl,                   kuerzel: DOR}
+  - {werk: Bochum,               stadt: Bochum,               regierungsbezirk: Arnsberg,   nuts2: DEA5, sektor: Automotive-Zulieferer,   kuerzel: BO}
+  - {werk: Hagen,                stadt: Hagen,                regierungsbezirk: Arnsberg,   nuts2: DEA5, sektor: Stahl,                   kuerzel: HA}
+  - {werk: Hamm,                 stadt: Hamm,                 regierungsbezirk: Arnsberg,   nuts2: DEA5, sektor: Energie,                 kuerzel: HAM}
+  - {werk: Lünen,                stadt: Lünen,                regierungsbezirk: Arnsberg,   nuts2: DEA5, sektor: Logistik,                kuerzel: LÜN}
+  - {werk: Siegen,               stadt: Siegen,               regierungsbezirk: Arnsberg,   nuts2: DEA5, sektor: Stahl,                   kuerzel: SI}
+
+# Anlagen je Sektor; ein Werk nutzt alle Anlagen seines Sektors (mit Nummer 1–3, deterministisch).
+anlagen:
+  Stahl: [Warmbandstraße, Kaltwalzwerk, Beizlinie, Stranggießanlage, Hochofen, Sinteranlage, Glühlinie, Verzinkungsanlage]
+  Chemie: [Reaktorbereich, Destillationskolonne, Abfüllstation, Tanklager, Rohrbrücke, Kälteanlage, Granulieranlage]
+  Energie: [Kesselhaus, Turbinenhalle, Kühlturm, Rauchgasreinigung, Speisewasseranlage, Umspannwerk]
+  Logistik: [Hochregallager, Kommissionierung, Fördertechnik, Verladerampe, Sortieranlage, Kühllager]
+  Automotive-Zulieferer: [Presswerk, Spritzgießerei, Lackiererei, Montagelinie, Schweißstraße, Prüfstand]
+  Lebensmittel: [Abfülllinie, Verpackungslinie, Molkereianlage, Backstraße, CIP-Anlage, Kühlhaus]
+  Maschinenbau: [Bearbeitungszentrum, Härterei, Montagehalle, Lackieranlage, Drehzentrum, Schleiferei]

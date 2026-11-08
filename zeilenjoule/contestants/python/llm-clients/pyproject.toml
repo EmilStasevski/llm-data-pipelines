@@ -1,0 +1,24 @@
+[project]
+name = "zj-llm-clients"
+version = "0.1.0"
+description = "Track D/E HTTP clients for LLM/embedding servers (Ollama, llama.cpp, vLLM, TEI)"
+requires-python = ">=3.12,<3.13"
+dependencies = [
+    "httpx==0.28.1",
+    "pydantic==2.14.3",
+    "jsonschema==4.26.0",
+    "zjmark",
+]
+
+[dependency-groups]
+dev = ["pytest==9.*"]
+
+[tool.uv.sources]
+zjmark = { path = "../../../libs/python/zjmark", editable = true }
+
+[build-system]
+requires = ["uv_build>=0.12,<0.14"]
+build-backend = "uv_build"
+
+[tool.uv.build-backend]
+module-name = "zj_llm"

@@ -1,0 +1,6 @@
+{"response":"Eine mögliche Ursache für Leckage an einer Kreiselpumpe ist ein defekter oder undichtes Dichtungssystem.","eval_count":33,"eval_tps":78,"load_s":4.186996628}
+NAME        ID              SIZE      PROCESSOR    CONTEXT    UNTIL              
+qwen3:8b    500a1f067a9f    6.0 GB    100% GPU     4096       4 minutes from now    
+latest ollama: v0.40.15 2026-11-03T22:52:31Z
+ExecStart=/usr/local/bin/ollama serve
+Environment="PATH=/home/emil/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:/snap/bin"

@@ -1,0 +1,40 @@
+{
+  "session_id": "0230bf33-0186-4913-ace3-c241032e1f40",
+  "created": "2026-11-06T22:20:08Z",
+  "seed": 20261106,
+  "reps": 1,
+  "warmup": 0,
+  "interleave": false,
+  "threads": 0,
+  "scales": [
+    "S"
+  ],
+  "contestants": [
+    "x04_sleep30_rs",
+    "x02_stressng_cpu",
+    "x03_gpuburn_torch"
+  ],
+  "items": [
+    {
+      "contestant": "x04_sleep30_rs",
+      "scale": "S",
+      "rep": 1,
+      "warmup": false
+    },
+    {
+      "contestant": "x02_stressng_cpu",
+      "scale": "S",
+      "rep": 1,
+      "warmup": false
+    },
+    {
+      "contestant": "x03_gpuburn_torch",
+      "scale": "S",
+      "rep": 1,
+      "warmup": false
+    }
+  ],
+  "args": [
+    "calibrate"
+  ]
+}

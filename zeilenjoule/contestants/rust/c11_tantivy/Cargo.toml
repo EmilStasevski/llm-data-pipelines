@@ -1,0 +1,18 @@
+[package]
+name = "c11-tantivy"
+description = "Track C contestant c11_tantivy: Tantivy BM25 (German Snowball stemmer), filtered top-10 (c.lexical)"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+publish.workspace = true
+
+[dependencies]
+zjmark.workspace = true
+serde_json.workspace = true
+arrow-array.workspace = true
+parquet.workspace = true
+tikv-jemallocator.workspace = true
+tantivy = "=0.27.0"
+
+[lints]
+workspace = true

@@ -1,0 +1,20 @@
+Field "total_energy_consumption" is not a valid field to query.
+
+Field "total_energy_consumption" is not a valid field to query.
+
+Field "total_energy_consumption" is not a valid field to query.
+
+Field "total_energy_consumption" is not a valid field to query.
+
+        Average Power Draw                             : 5.98 W
+        Instantaneous Power Draw                       : 6.07 W
+        Current Power Limit                            : 180.00 W
+        Requested Power Limit                          : 180.00 W
+        Default Power Limit                            : 180.00 W
+        Min Power Limit                                : 150.00 W
+        Max Power Limit                                : 216.00 W
+    Power Samples
+        Number of Samples                              : 119
+        Average Power Draw                             : N/A
+        Instantaneous Power Draw                       : N/A
+        Average Power Draw                             : N/A

@@ -1,0 +1,26 @@
+# ZeilenJoule benchmark settings (PLAN §5.2, §15.1). Read by the Go harness (harness/internal/config).
+reps: 5
+warmup: 1
+timeout_s: 1800
+sample_hz: 20
+cooldown: {gpu_temp_c: 50, max_wait_s: 60}
+idle_baseline: {duration_s: 60, every_min: 30}
+load_guard: {max_busy_pct: 5, window_s: 2, max_wait_s: 900}   # CPU busy % (all CPUs, /proc/stat) over window_s before each run; ADR 0007
+interleave: true
+seed: 20261106
+scales: {S: 10000, M: 100000, L: 1000000, XL: 10000000, real: 15305}  # real = data/real/corpus (Tracks B/C/E, ADR 0012)
+energy:
+  price_eur_per_kwh: {household: 0.373, industry: 0.167}   # BDEW 10/2026; industry = SME new contracts 2026
+  co2_g_per_kwh: 344                                        # UBA estimate 2025
+  wall_meter: {enabled: false, kind: shelly, url: "http://192.168.x.y"}
+vram_budget_gb: 14.5
+gpu_index: 0
+runs:
+  output_dir: "~/.cache/zeilenjoule/runs"  # contestant outputs (GBs at XL) — outside data/ (rule 2)
+  keep_outputs: failed                       # failed | all | none  (failed = keep only non-ok runs for debugging)
+  tree_poll_hz: 5                            # process-tree RSS polling
+  settle_s: 0.5                              # sampler runs this long before start / after exit of a contestant
+doctor:
+  min_free_gb: 200
+  # pinned by digest (ENVIRONMENT.md §8); used by `zj doctor --gpu-test`
+  gpu_test_image: "nvidia/cuda:13.0.2-base-ubuntu24.04@sha256:2ab6381d970b211fb93853796dc6707eb8a72575a375c422b17cf4d8b2641701"

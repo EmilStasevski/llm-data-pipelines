@@ -1,0 +1,460 @@
+{
+  "session_id": "5227bccf-e670-4071-9299-9ec5538e9f2c",
+  "created": "2026-11-08T14:47:53Z",
+  "seed": 20261106,
+  "reps": 5,
+  "warmup": 1,
+  "interleave": true,
+  "threads": 0,
+  "scales": [
+    "S",
+    "M",
+    "real"
+  ],
+  "contestants": [
+    "b06_tei",
+    "b07_vllm_pooling",
+    "b08_llamacpp_embed",
+    "b10_rs_ort"
+  ],
+  "items": [
+    {
+      "contestant": "b07_vllm_pooling",
+      "scale": "S",
+      "rep": 1,
+      "warmup": true
+    },
+    {
+      "contestant": "b06_tei",
+      "scale": "S",
+      "rep": 1,
+      "warmup": true
+    },
+    {
+      "contestant": "b08_llamacpp_embed",
+      "scale": "S",
+      "rep": 1,
+      "warmup": true
+    },
+    {
+      "contestant": "b10_rs_ort",
+      "scale": "S",
+      "rep": 1,
+      "warmup": true
+    },
+    {
+      "contestant": "b07_vllm_pooling",
+      "scale": "S",
+      "rep": 1,
+      "warmup": false
+    },
+    {
+      "contestant": "b08_llamacpp_embed",
+      "scale": "S",
+      "rep": 1,
+      "warmup": false
+    },
+    {
+      "contestant": "b10_rs_ort",
+      "scale": "S",
+      "rep": 1,
+      "warmup": false
+    },
+    {
+      "contestant": "b06_tei",
+      "scale": "S",
+      "rep": 1,
+      "warmup": false
+    },
+    {
+      "contestant": "b06_tei",
+      "scale": "S",
+      "rep": 2,
+      "warmup": false
+    },
+    {
+      "contestant": "b08_llamacpp_embed",
+      "scale": "S",
+      "rep": 2,
+      "warmup": false
+    },
+    {
+      "contestant": "b10_rs_ort",
+      "scale": "S",
+      "rep": 2,
+      "warmup": false
+    },
+    {
+      "contestant": "b07_vllm_pooling",
+      "scale": "S",
+      "rep": 2,
+      "warmup": false
+    },
+    {
+      "contestant": "b08_llamacpp_embed",
+      "scale": "S",
+      "rep": 3,
+      "warmup": false
+    },
+    {
+      "contestant": "b06_tei",
+      "scale": "S",
+      "rep": 3,
+      "warmup": false
+    },
+    {
+      "contestant": "b10_rs_ort",
+      "scale": "S",
+      "rep": 3,
+      "warmup": false
+    },
+    {
+      "contestant": "b07_vllm_pooling",
+      "scale": "S",
+      "rep": 3,
+      "warmup": false
+    },
+    {
+      "contestant": "b07_vllm_pooling",
+      "scale": "S",
+      "rep": 4,
+      "warmup": false
+    },
+    {
+      "contestant": "b08_llamacpp_embed",
+      "scale": "S",
+      "rep": 4,
+      "warmup": false
+    },
+    {
+      "contestant": "b06_tei",
+      "scale": "S",
+      "rep": 4,
+      "warmup": false
+    },
+    {
+      "contestant": "b10_rs_ort",
+      "scale": "S",
+      "rep": 4,
+      "warmup": false
+    },
+    {
+      "contestant": "b08_llamacpp_embed",
+      "scale": "S",
+      "rep": 5,
+      "warmup": false
+    },
+    {
+      "contestant": "b07_vllm_pooling",
+      "scale": "S",
+      "rep": 5,
+      "warmup": false
+    },
+    {
+      "contestant": "b10_rs_ort",
+      "scale": "S",
+      "rep": 5,
+      "warmup": false
+    },
+    {
+      "contestant": "b06_tei",
+      "scale": "S",
+      "rep": 5,
+      "warmup": false
+    },
+    {
+      "contestant": "b10_rs_ort",
+      "scale": "real",
+      "rep": 1,
+      "warmup": true
+    },
+    {
+      "contestant": "b08_llamacpp_embed",
+      "scale": "real",
+      "rep": 1,
+      "warmup": true
+    },
+    {
+      "contestant": "b07_vllm_pooling",
+      "scale": "real",
+      "rep": 1,
+      "warmup": true
+    },
+    {
+      "contestant": "b06_tei",
+      "scale": "real",
+      "rep": 1,
+      "warmup": true
+    },
+    {
+      "contestant": "b06_tei",
+      "scale": "real",
+      "rep": 1,
+      "warmup": false
+    },
+    {
+      "contestant": "b10_rs_ort",
+      "scale": "real",
+      "rep": 1,
+      "warmup": false
+    },
+    {
+      "contestant": "b07_vllm_pooling",
+      "scale": "real",
+      "rep": 1,
+      "warmup": false
+    },
+    {
+      "contestant": "b08_llamacpp_embed",
+      "scale": "real",
+      "rep": 1,
+      "warmup": false
+    },
+    {
+      "contestant": "b06_tei",
+      "scale": "real",
+      "rep": 2,
+      "warmup": false
+    },
+    {
+      "contestant": "b08_llamacpp_embed",
+      "scale": "real",
+      "rep": 2,
+      "warmup": false
+    },
+    {
+      "contestant": "b07_vllm_pooling",
+      "scale": "real",
+      "rep": 2,
+      "warmup": false
+    },
+    {
+      "contestant": "b10_rs_ort",
+      "scale": "real",
+      "rep": 2,
+      "warmup": false
+    },
+    {
+      "contestant": "b10_rs_ort",
+      "scale": "real",
+      "rep": 3,
+      "warmup": false
+    },
+    {
+      "contestant": "b08_llamacpp_embed",
+      "scale": "real",
+      "rep": 3,
+      "warmup": false
+    },
+    {
+      "contestant": "b06_tei",
+      "scale": "real",
+      "rep": 3,
+      "warmup": false
+    },
+    {
+      "contestant": "b07_vllm_pooling",
+      "scale": "real",
+      "rep": 3,
+      "warmup": false
+    },
+    {
+      "contestant": "b07_vllm_pooling",
+      "scale": "real",
+      "rep": 4,
+      "warmup": false
+    },
+    {
+      "contestant": "b06_tei",
+      "scale": "real",
+      "rep": 4,
+      "warmup": false
+    },
+    {
+      "contestant": "b08_llamacpp_embed",
+      "scale": "real",
+      "rep": 4,
+      "warmup": false
+    },
+    {
+      "contestant": "b10_rs_ort",
+      "scale": "real",
+      "rep": 4,
+      "warmup": false
+    },
+    {
+      "contestant": "b07_vllm_pooling",
+      "scale": "real",
+      "rep": 5,
+      "warmup": false
+    },
+    {
+      "contestant": "b10_rs_ort",
+      "scale": "real",
+      "rep": 5,
+      "warmup": false
+    },
+    {
+      "contestant": "b06_tei",
+      "scale": "real",
+      "rep": 5,
+      "warmup": false
+    },
+    {
+      "contestant": "b08_llamacpp_embed",
+      "scale": "real",
+      "rep": 5,
+      "warmup": false
+    },
+    {
+      "contestant": "b07_vllm_pooling",
+      "scale": "M",
+      "rep": 1,
+      "warmup": true
+    },
+    {
+      "contestant": "b08_llamacpp_embed",
+      "scale": "M",
+      "rep": 1,
+      "warmup": true
+    },
+    {
+      "contestant": "b10_rs_ort",
+      "scale": "M",
+      "rep": 1,
+      "warmup": true
+    },
+    {
+      "contestant": "b06_tei",
+      "scale": "M",
+      "rep": 1,
+      "warmup": true
+    },
+    {
+      "contestant": "b06_tei",
+      "scale": "M",
+      "rep": 1,
+      "warmup": false
+    },
+    {
+      "contestant": "b08_llamacpp_embed",
+      "scale": "M",
+      "rep": 1,
+      "warmup": false
+    },
+    {
+      "contestant": "b10_rs_ort",
+      "scale": "M",
+      "rep": 1,
+      "warmup": false
+    },
+    {
+      "contestant": "b07_vllm_pooling",
+      "scale": "M",
+      "rep": 1,
+      "warmup": false
+    },
+    {
+      "contestant": "b06_tei",
+      "scale": "M",
+      "rep": 2,
+      "warmup": false
+    },
+    {
+      "contestant": "b08_llamacpp_embed",
+      "scale": "M",
+      "rep": 2,
+      "warmup": false
+    },
+    {
+      "contestant": "b10_rs_ort",
+      "scale": "M",
+      "rep": 2,
+      "warmup": false
+    },
+    {
+      "contestant": "b07_vllm_pooling",
+      "scale": "M",
+      "rep": 2,
+      "warmup": false
+    },
+    {
+      "contestant": "b06_tei",
+      "scale": "M",
+      "rep": 3,
+      "warmup": false
+    },
+    {
+      "contestant": "b07_vllm_pooling",
+      "scale": "M",
+      "rep": 3,
+      "warmup": false
+    },
+    {
+      "contestant": "b08_llamacpp_embed",
+      "scale": "M",
+      "rep": 3,
+      "warmup": false
+    },
+    {
+      "contestant": "b10_rs_ort",
+      "scale": "M",
+      "rep": 3,
+      "warmup": false
+    },
+    {
+      "contestant": "b06_tei",
+      "scale": "M",
+      "rep": 4,
+      "warmup": false
+    },
+    {
+      "contestant": "b10_rs_ort",
+      "scale": "M",
+      "rep": 4,
+      "warmup": false
+    },
+    {
+      "contestant": "b07_vllm_pooling",
+      "scale": "M",
+      "rep": 4,
+      "warmup": false
+    },
+    {
+      "contestant": "b08_llamacpp_embed",
+      "scale": "M",
+      "rep": 4,
+      "warmup": false
+    },
+    {
+      "contestant": "b06_tei",
+      "scale": "M",
+      "rep": 5,
+      "warmup": false
+    },
+    {
+      "contestant": "b10_rs_ort",
+      "scale": "M",
+      "rep": 5,
+      "warmup": false
+    },
+    {
+      "contestant": "b08_llamacpp_embed",
+      "scale": "M",
+      "rep": 5,
+      "warmup": false
+    },
+    {
+      "contestant": "b07_vllm_pooling",
+      "scale": "M",
+      "rep": 5,
+      "warmup": false
+    }
+  ],
+  "args": [
+    "--id",
+    "b06_tei,b07_vllm_pooling,b08_llamacpp_embed,b10_rs_ort",
+    "--scale",
+    "S,M,real"
+  ]
+}

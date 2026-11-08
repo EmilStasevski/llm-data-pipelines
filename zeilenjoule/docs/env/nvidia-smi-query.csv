@@ -1,0 +1,2 @@
+name, compute_cap, driver_version, power.limit [W], power.default_limit [W], power.max_limit [W], pstate, temperature.gpu, memory.total [MiB], pcie.link.gen.max, pcie.link.width.max, persistence_mode, clocks.max.sm [MHz], clocks.max.memory [MHz]
+NVIDIA GeForce RTX 5060 Ti, 12.0, 580.178.04, 180.00 W, 180.00 W, 216.00 W, P8, 32, 16311 MiB, 4, 16, Disabled, 3090 MHz, 14001 MHz

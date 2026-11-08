@@ -1,0 +1,7 @@
+== 13.0.2-base-ubuntu24.04
+Status: Downloaded newer image for nvidia/cuda:13.0.2-base-ubuntu24.04
+docker: Error response from daemon: failed to create task for container: failed to create shim task: OCI runtime create failed: runc create failed: unable to start container process: error during container init: failed to fulfil mount request: open /usr/bin/nvidia-cuda-mps-control: no such file or directory
+
+Run 'docker run --help' for more information
+# NOTE: the "OK" printed here was a script bug (it checked tail's exit code). --gpus all FAILED; see COMPAT.md §1. --runtime=nvidia works.
+nvidia/cuda:13.0.2-base-ubuntu24.04 sha256:2ab6381d970b211fb93853796dc6707eb8a72575a375c422b17cf4d8b2641701

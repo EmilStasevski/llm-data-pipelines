@@ -1,0 +1,14 @@
+# Sicherheitsrelevante Ereignisse. trigger = Begriffe für die Regel-Erkennung (Track A: Treffer in text_fold).
+# phrasen = Oberflächenformen, jede enthält mindestens einen trigger (wird im Generator-Test geprüft).
+trigger: [Verletzung, verletzt, Beinahe-Unfall, Beinaheunfall, Brand, Rauchentwicklung, Gefahrstoffaustritt, Absturzgefahr, Stromschlag, Quetschgefahr, Arbeitsunfall, Verbrühung]
+phrasen:
+  - "MA leicht verletzt"
+  - "Beinahe-Unfall, Bereich abgesperrt"
+  - "Rauchentwicklung festgestellt"
+  - "kleiner Brand, sofort gelöscht"
+  - "Gefahrstoffaustritt, Feuerwehr informiert"
+  - "Absturzgefahr an der Bühne"
+  - "Stromschlag-Gefahr, Anlage freigeschaltet"
+  - "Quetschgefahr, Schutzgitter fehlte"
+  - "Arbeitsunfall gemeldet"
+  - "Verbrühung durch heißes Medium (Beinaheunfall)"

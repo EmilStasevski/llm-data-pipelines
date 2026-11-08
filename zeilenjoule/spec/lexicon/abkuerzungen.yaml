@@ -1,0 +1,34 @@
+# Abkürzungen → Ausschreibung (Track A Schritt 6: token-begrenzt, ohne Groß/Kleinschreibung).
+# Token-Grenze = Anfang/Ende oder [\s.,;:!?()\[\]/"'-] (PLAN §7.2), daher kein \b neben Umlauten.
+abkuerzungen:
+  i.O.: in Ordnung
+  n.i.O.: nicht in Ordnung
+  ggf.: gegebenenfalls
+  lt.: laut
+  z.B.: zum Beispiel
+  u.a.: unter anderem
+  bzgl.: bezüglich
+  ca.: circa
+  inkl.: inklusive
+  Std.: Stunden
+  Min.: Minuten
+  wg.: wegen
+  vmtl.: vermutlich
+  Pos.: Position
+  Fa.: Firma
+  Nr.: Nummer
+  ET: Ersatzteil
+  IH: Instandhaltung
+  MA: Mitarbeiter
+  AV: Arbeitsvorbereitung
+  QS: Qualitätssicherung
+  WE: Wareneingang
+  FA: Fertigungsauftrag
+  BDE: Betriebsdatenerfassung
+  SPS: speicherprogrammierbare Steuerung
+  FU: Frequenzumrichter
+  GLRD: Gleitringdichtung
+  HD: Hochdruck
+  ND: Niederdruck
+  KW: Kühlwasser
+  DL: Druckluft

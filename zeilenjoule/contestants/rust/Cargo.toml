@@ -1,0 +1,39 @@
+[workspace]
+resolver = "3"
+members = ["smoke", "track_a", "a15_rs_polars", "a16_rs_arrow_rayon", "a17_rs_handrolled", "b10_rs_ort", "c11_tantivy"]
+
+[workspace.package]
+version = "0.1.0"
+edition = "2024"
+license = "MIT"
+publish = false
+
+[workspace.dependencies]
+zjmark = { path = "../../libs/rust/zjmark" }
+serde_json = "1"
+zj-track-a = { path = "track_a" }
+aho-corasick = "1.1.5"
+arrow-array = "60.1.0"
+arrow-schema = "60.1.0"
+arrow-csv = "60.1.0"
+arrow-select = "60.1.0"
+arrow-ord = "60.1.0"
+parquet = { version = "60.1.0", default-features = false, features = ["arrow", "zstd"] }
+serde = { version = "1", features = ["derive"] }
+unicode-normalization = "0.1.26"
+rayon = "1.12.0"
+memchr = "2.8.3"
+memmap2 = "0.9.12"
+encoding_rs = "0.8.44"
+regex = { version = "1.13.1" }
+# global allocator of all Rust contestants: the one the Python Polars runtime ships (ADR 0010)
+tikv-jemallocator = "0.7.0"
+
+[workspace.lints.clippy]
+pedantic = { level = "warn", priority = -1 }
+
+[profile.release]
+# Contestants are benchmarked in release mode; settings an expert would use (rule 5).
+lto = "fat"
+codegen-units = 1
+panic = "abort"

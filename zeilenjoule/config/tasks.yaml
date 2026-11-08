@@ -1,0 +1,53 @@
+# Task definitions: what a contestant reads/writes and how its output is verified (rule 4: fail-closed —
+# a task without a working verifier cannot produce an "ok" run).
+# input:    path template relative to the repo root ({scale} placeholder), "" = no input
+# output:   file name inside the per-run output dir
+# no_rows:  true = the task processes no rows (record rows=0, throughput null)
+# verifier: builtin:<name> (Go, harness/internal/verify) | cmd (external; verify_cmd gets {output} {reference} {scale};
+#           passes only if its last stdout line is JSON with passed=true AND it exits 0)
+# reference: reference output path template ({scale})
+tasks:
+  x.smoke:
+    input: ""
+    output: out.txt
+    verifier: builtin:x.smoke
+  x.calib:
+    input: ""
+    output: out.txt
+    verifier: builtin:x.calib
+    no_rows: true      # load generators: rows = 0, no throughput
+  a.full:                    # Track A complete S1–S3 pipeline (spec/track_a.md)
+    input: "data/synth/stoermeldungen/{scale}/stoermeldungen.cp1252.csv"
+    output: out.parquet
+    verifier: cmd
+    verify_cmd: ["uv", "run", "--frozen", "--project", ".", "python", "-m", "zj_eval.verify_track_a",
+                 "--output", "{output}", "--reference", "{reference}"]
+    reference: "data/reference/track_a/{scale}/a_full.parquet"
+  b.embed:                   # Track B: bge-m3 dense vectors for every doc_text (spec/track_b.md)
+    input: "data/track_b/{scale}/docs.parquet"
+    output: out.npy
+    verifier: cmd
+    verify_cmd: ["uv", "run", "--frozen", "--project", ".", "python", "-m", "zj_eval.verify_track_b",
+                 "--output", "{output}", "--reference", "{reference}"]
+    reference: "data/reference/track_b/{scale}/bge-m3.f32.npy"
+  c.dense:                   # Track C: load + index + 1 000 filtered top-10 queries (spec/track_c.md)
+    input: "data/track_c/{scale}/docs.parquet"
+    output: out.npy
+    verifier: cmd
+    verify_cmd: ["uv", "run", "--frozen", "--project", ".", "python", "-m", "zj_eval.verify_track_c",
+                 "--output", "{output}", "--reference", "{reference}"]
+    reference: "data/reference/track_c/{scale}/exact_top10.npy"
+  c.lexical:                 # Track C: lexical baseline, filtered BM25 top-10 (spec/track_c.md §c.lexical)
+    input: "data/track_c/{scale}/docs.parquet"
+    output: out.npy
+    verifier: cmd
+    verify_cmd: ["uv", "run", "--frozen", "--project", ".", "python", "-m", "zj_eval.verify_track_c_lex",
+                 "--mode", "bm25", "--output", "{output}", "--reference", "{reference}"]
+    reference: "data/reference/track_c/{scale}/bm25_top10.npy"
+  c.hybrid:                  # Track C: dense + lexical fused by RRF k=60 (spec/track_c.md §c.hybrid)
+    input: "data/track_c/{scale}/docs.parquet"
+    output: out.npy
+    verifier: cmd
+    verify_cmd: ["uv", "run", "--frozen", "--project", ".", "python", "-m", "zj_eval.verify_track_c_lex",
+                 "--mode", "hybrid", "--output", "{output}", "--reference", "{reference}"]
+    reference: "data/reference/track_c/{scale}/hybrid_top10.npy"

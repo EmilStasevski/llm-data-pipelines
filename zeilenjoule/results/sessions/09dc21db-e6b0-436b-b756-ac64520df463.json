@@ -1,0 +1,40 @@
+{
+  "session_id": "09dc21db-e6b0-436b-b756-ac64520df463",
+  "created": "2026-11-06T21:13:54Z",
+  "seed": 20261106,
+  "reps": 1,
+  "warmup": 0,
+  "interleave": true,
+  "threads": 0,
+  "scales": [
+    "S"
+  ],
+  "contestants": [
+    "x00_smoke_py",
+    "x01_smoke_rs"
+  ],
+  "items": [
+    {
+      "contestant": "x00_smoke_py",
+      "scale": "S",
+      "rep": 1,
+      "warmup": false
+    },
+    {
+      "contestant": "x01_smoke_rs",
+      "scale": "S",
+      "rep": 1,
+      "warmup": false
+    }
+  ],
+  "args": [
+    "--id",
+    "x00_smoke_py,x01_smoke_rs",
+    "--scale",
+    "S",
+    "--reps",
+    "1",
+    "--warmup",
+    "0"
+  ]
+}

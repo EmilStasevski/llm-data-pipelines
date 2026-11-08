@@ -1,0 +1,5 @@
+ZJMARK {"ev":"start","stage":"parse"}
+ZJMARK {"ev":"end","stage":"parse"}
+ZJMARK {"ev":"start","stage":"embed"}
+ZJMARK {"ev":"end","stage":"embed"}
+ZJRESULT {"extra":{"engine":"cpu","fallback_ops":["Series.apply"],"threads":16},"notes":"Prüfung <ok> & fertig","rows":3}

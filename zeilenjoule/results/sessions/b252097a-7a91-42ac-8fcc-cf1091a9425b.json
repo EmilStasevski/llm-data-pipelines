@@ -1,0 +1,52 @@
+{
+  "session_id": "b252097a-7a91-42ac-8fcc-cf1091a9425b",
+  "created": "2026-11-06T22:43:23Z",
+  "seed": 20261106,
+  "reps": 1,
+  "warmup": 0,
+  "interleave": false,
+  "threads": 0,
+  "scales": [
+    "S"
+  ],
+  "contestants": [
+    "x04_sleep30_rs",
+    "x02_stressng_cpu",
+    "x03_gpuburn_torch"
+  ],
+  "items": [
+    {
+      "contestant": "x04_sleep30_rs",
+      "scale": "S",
+      "rep": 1,
+      "warmup": false
+    },
+    {
+      "contestant": "x04_sleep30_rs",
+      "scale": "S",
+      "rep": 2,
+      "warmup": false
+    },
+    {
+      "contestant": "x04_sleep30_rs",
+      "scale": "S",
+      "rep": 3,
+      "warmup": false
+    },
+    {
+      "contestant": "x02_stressng_cpu",
+      "scale": "S",
+      "rep": 1,
+      "warmup": false
+    },
+    {
+      "contestant": "x03_gpuburn_torch",
+      "scale": "S",
+      "rep": 1,
+      "warmup": false
+    }
+  ],
+  "args": [
+    "calibrate"
+  ]
+}

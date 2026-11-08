@@ -1,0 +1,53 @@
+# Schadensart (Enum, Gold-Wert = Schlüssel). phrasen: {N} = Komponente mit Artikel im Nominativ
+# („die Pumpe"), {A} = Präposition „an" + Dativ („an der Pumpe", „am Getriebe"), {K} = Kompositum
+# aus stamm + Suffix (nur wenn kompositum gesetzt und die Komponente einen stamm hat).
+# en = englische Lehnwörter (Rauschen „English loanwords").
+schadensarten:
+  Leckage:
+    phrasen: ["Leckage {A}", "{N} ist undicht", "{N} tropft", "Leck {A}", "Undichtigkeit {A} festgestellt", "Austritt von Medium {A}"]
+    kompositum: leckage
+    en: ["Leak {A}"]
+  Verschleiß:
+    phrasen: ["Verschleiß {A}", "{N} stark verschlissen", "Abnutzung {A}", "{N} ausgeschlagen"]
+    kompositum: verschleiß
+    en: ["Wear {A}"]
+  Überhitzung:
+    phrasen: ["Überhitzung {A}", "{N} läuft heiß", "Übertemperatur {A}", "{N} zu warm"]
+    kompositum: überhitzung
+    en: ["Overheating {A}"]
+  Schwingung:
+    phrasen: ["Schwingungen {A}", "{N} vibriert stark", "Vibration {A}", "unruhiger Lauf {A}"]
+    kompositum: schwingung
+    en: ["Vibration alarm {A}"]
+  Kurzschluss:
+    phrasen: ["Kurzschluss {A}", "{N} hat ausgelöst (Kurzschluss)", "Erdschluss {A}", "Sicherung {A} geflogen"]
+    kompositum: null
+    en: ["Short circuit {A}"]
+  Bruch:
+    phrasen: ["Bruch {A}", "{N} gebrochen", "Riss {A}", "{N} abgerissen"]
+    kompositum: bruch
+    en: ["Breakage {A}"]
+  Korrosion:
+    phrasen: ["Korrosion {A}", "{N} korrodiert", "Rostbildung {A}", "Lochfraß {A}"]
+    kompositum: korrosion
+    en: ["Corrosion {A}"]
+  Verstopfung:
+    phrasen: ["Verstopfung {A}", "{N} verstopft", "{N} zugesetzt", "Durchfluss {A} blockiert"]
+    kompositum: verstopfung
+    en: ["Clogging {A}"]
+  Kavitation:
+    phrasen: ["Kavitation {A}", "Kavitationsgeräusche {A}", "{N} kavitiert"]
+    kompositum: kavitation
+    en: ["Cavitation {A}"]
+  Kommunikationsfehler:
+    phrasen: ["Kommunikationsfehler {A} (Profinet)", "Profibus-Störung {A}", "{N} ohne Verbindung", "Busfehler {A}"]
+    kompositum: null
+    en: ["Communication error {A}"]
+  Fehlalarm:
+    phrasen: ["Fehlalarm {A}", "{N} meldet Störung ohne Befund", "Falschmeldung {A}"]
+    kompositum: null
+    en: ["False alarm {A}"]
+  Sonstiges:
+    phrasen: ["Auffälligkeit {A}", "{N} ohne erkennbaren Grund ausgefallen", "Störung {A}, Ursache in Klärung"]
+    kompositum: null
+    en: ["Issue {A}"]

@@ -1,0 +1,295 @@
+# ZeilenJoule — single entry point (CLAUDE.md "Everyday commands"). Run `task --list`.
+version: "3"
+
+env:
+  # go-nvml's bundled nvml.h marks vGPU calls deprecated; harmless, silence the cgo noise
+  CGO_CFLAGS: "-O2 -g -Wno-deprecated-declarations"
+
+vars:
+  # go-installed tools live in $(go env GOPATH)/bin, which may not be on PATH; resolve absolute paths
+  # (go-task does not let `env:` override an existing PATH).
+  GOBIN:
+    sh: echo "$(go env GOPATH)/bin"
+  GOLANGCI_LINT:
+    sh: command -v golangci-lint || echo "$(go env GOPATH)/bin/golangci-lint"
+  GOVULNCHECK:
+    sh: command -v govulncheck || echo "$(go env GOPATH)/bin/govulncheck"
+  PY_ENVS: df gpu_df embed llm-clients db gpu_vs
+  RUST_DIRS: libs/rust/zjmark contestants/rust
+
+tasks:
+  default:
+    cmds: [task --list]
+    silent: true
+
+  # ---------- setup / build ----------
+  setup:
+    desc: Install all locked dependencies (uv workspace + contestant envs, cargo, go) and build zj
+    cmds:
+      - uv sync --locked
+      - for: { var: PY_ENVS, split: " " }
+        cmd: uv sync --locked --project contestants/python/{{.ITEM}}
+      - for: { var: RUST_DIRS, split: " " }
+        cmd: cargo fetch --locked --manifest-path {{.ITEM}}/Cargo.toml
+      - cd harness && go mod download
+      - task: build:harness
+
+  build:harness:
+    desc: Build the zj harness CLI into bin/zj
+    sources: ["harness/**/*.go", "harness/go.mod", "harness/go.sum"]
+    generates: [bin/zj]
+    cmds:
+      - mkdir -p bin
+      - cd harness && go build -trimpath -o ../bin/zj ./cmd/zj
+
+  build:rust:
+    desc: Release build of the Rust contestant workspace
+    cmds:
+      - cargo build --release --locked --manifest-path contestants/rust/Cargo.toml
+
+  # ---------- environment ----------
+  doctor:
+    desc: Environment + GPU + RAPL + versions check (fails on blocking problems)
+    deps: [build:harness]
+    cmds:
+      - PATH="{{.GOBIN}}:$PATH" ./bin/zj doctor {{.CLI_ARGS}}
+
+  doctor:gpu:
+    desc: doctor with a GPU container test + version/GPU fingerprint of every Python contestant env
+    deps: [build:harness]
+    cmds:
+      - PATH="{{.GOBIN}}:$PATH" ./bin/zj doctor --gpu-test
+      - for: { var: PY_ENVS, split: " " }
+        cmd: uv run --locked --project contestants/python/{{.ITEM}} python -m {{if eq .ITEM "llm-clients"}}zj_llm{{else}}zj_{{.ITEM}}{{end}}.envcheck --gpu
+
+  # ---------- measuring (zj harness) ----------
+  bench:
+    desc: Run a track matrix (resumable), TRACK=A SCALE=M[,L] — extra flags after --
+    deps: [build:harness]
+    requires: { vars: [TRACK] }
+    cmds:
+      - ./bin/zj run --track {{.TRACK}} --scale {{.SCALE | default "S"}} {{.CLI_ARGS}}
+
+  bench:one:
+    desc: One contestant, ID=a09_polars_eager SCALE=M REPS=5
+    deps: [build:harness]
+    requires: { vars: [ID] }
+    cmds:
+      - ./bin/zj run --id {{.ID}} --scale {{.SCALE | default "S"}} {{if .REPS}}--reps {{.REPS}}{{end}} {{.CLI_ARGS}}
+
+  bench:resume:
+    desc: Resume an interrupted session, SESSION=<id>
+    deps: [build:harness]
+    requires: { vars: [SESSION] }
+    cmds:
+      - ./bin/zj run --session {{.SESSION}}
+
+  verify:
+    desc: Run a contestant once (unmeasured, not stored) and verify its output, ID=… SCALE=S
+    deps: [build:harness]
+    requires: { vars: [ID] }
+    cmds:
+      - ./bin/zj verify --scale {{.SCALE | default "S"}} {{.ID}}
+
+  idle:
+    desc: Measure idle power (DURATION=60s) into results/idle.jsonl
+    deps: [build:harness]
+    cmds:
+      - ./bin/zj idle {{if .DURATION}}--duration {{.DURATION}}{{end}}
+
+  calibrate:
+    desc: Measurement calibration (≈ 7 min, needs a QUIET machine) → docs/CALIBRATION.md
+    deps: [build:harness]
+    cmds:
+      - ./bin/zj calibrate {{.CLI_ARGS}}
+
+  results:load:
+    desc: Rebuild results/zj.duckdb from results/runs.jsonl + idle.jsonl
+    cmds:
+      - uv run --locked python -m zj_analysis.load
+
+  exporter:
+    desc: Serve energy metrics for Prometheus on 127.0.0.1:9877
+    deps: [build:harness]
+    cmds:
+      - ./bin/zj exporter {{.CLI_ARGS}}
+
+  # ---------- data (Phase 3) ----------
+  data:gen:
+    desc: Synthetic NRW data (deterministic, prefix-stable), SCALE=S|M|L|XL → data/synth/
+    requires: { vars: [SCALE] }
+    cmds:
+      - uv run --locked python -m zj_datagen gen --scale {{.SCALE}}
+
+  data:derived:
+    desc: D2k sample (from M) + Track C queries + Track E questions, SCALE=M|L → spec/*.jsonl
+    requires: { vars: [SCALE] }
+    cmds:
+      - uv run --locked python -m zj_datagen derived --scale {{.SCALE}}
+
+  data:fetch:
+    desc: Real NRW open data (thru.de PRTR, TED tenders, BA Werkstudent ads), ≤ 1 req/s, cached in data/raw/
+    cmds:
+      - uv run --locked python -m zj_datagen fetch --source {{.SOURCE | default "all"}}
+
+  data:real-corpus:
+    desc: Track C/E real corpus data/real/corpus/ + known-item queries spec/queries_c.real.jsonl (needs data:fetch)
+    cmds:
+      - uv run --locked python -m zj_datagen real-corpus
+
+  data:cards:
+    desc: Regenerate dataset cards data/cards/*.md from manifests and the data
+    cmds:
+      - uv run --locked python -m zj_datagen cards
+
+  data:all:
+    desc: Everything reproducible offline - gen S/M/L, derived M/L, cards (data:fetch is separate)
+    cmds:
+      - task: data:gen
+        vars: { SCALE: S }
+      - task: data:gen
+        vars: { SCALE: M }
+      - task: data:gen
+        vars: { SCALE: L }
+      - task: data:derived
+        vars: { SCALE: M }
+      - task: data:derived
+        vars: { SCALE: L }
+      - task: data:cards
+
+  # ---------- Track B (Phase 5) ----------
+  trackB:inputs:
+    desc: Track B inputs data/track_b/<scale>/docs.parquet (id, doc_text) from the Track A reference / real corpus
+    requires: { vars: [SCALE] }
+    cmds:
+      - uv run --frozen --project contestants/python/embed python -m zj_embed.track_b.prepare inputs --scale {{.SCALE}}
+
+  trackB:reference:
+    desc: Track B fp32 reference vectors (sentence-transformers, = b01) → data/reference/track_b/<scale>/
+    requires: { vars: [SCALE] }
+    cmds:
+      - uv run --frozen --project contestants/python/embed python -m zj_embed.track_b.prepare reference --scale {{.SCALE}}
+
+  trackB:onnx:
+    desc: Derive the ORT models (fused fp16 for b04, mixed int8 for b00) → models/derived/bge-m3/
+    cmds:
+      - uv run --frozen --project contestants/python/embed python -m zj_embed.track_b.onnx_prep fp16
+      - uv run --frozen --project contestants/python/embed python -m zj_embed.track_b.onnx_prep int8
+
+  trackB:serverprep:
+    desc: Model files for the server contestants (hf512 safetensors for TEI/vLLM, GGUF f16 for llama.cpp)
+    cmds:
+      - uv run --frozen --project contestants/python/embed python -m zj_embed.track_b.server_prep hf512
+      - uv run --frozen --project contestants/python/embed python -m zj_embed.track_b.server_prep gguf
+
+  # ---------- Track C (Phase 6) ----------
+  trackC:inputs:
+    desc: Track C inputs data/track_c/<scale>/ (docs, fp16 reference vectors, queries + query vectors); needs trackB:reference
+    requires: { vars: [SCALE] }
+    cmds:
+      - uv run --frozen --project contestants/python/embed python -m zj_embed.track_c_prep --scale {{.SCALE}}
+
+  trackC:reference:
+    desc: Track C ground truth (exact fp32 top-10), labels and dense quality ceiling → data/reference/track_c/<scale>/
+    requires: { vars: [SCALE] }
+    cmds:
+      - uv run --frozen python -m zj_eval.track_c reference --scale {{.SCALE}}
+
+  trackC:lexref:
+    desc: Track C lexical/hybrid input (queries.text.jsonl) + BM25/RRF reference → data/reference/track_c/<scale>/; needs trackC:reference
+    requires: { vars: [SCALE] }
+    cmds:
+      - uv run --frozen python -m zj_eval.track_c_lex reference --scale {{.SCALE}}
+
+  # ---------- Track A (Phase 4) ----------
+  trackA:spec:
+    desc: Recompile spec/track_a_lexicon.json and spec/track_a_cases.jsonl from their sources
+    cmds:
+      - uv run --locked python -m zj_reference.track_a compile-lexicon
+      - uv run --locked python spec/build_track_a_cases.py
+
+  trackA:reference:
+    desc: Reference output for Track A verification, SCALE=S|M|L|XL (slow on purpose, streams in chunks, not measured)
+    requires: { vars: [SCALE] }
+    cmds:
+      - >-
+        uv run --locked python -m zj_reference.track_a run
+        --input data/synth/stoermeldungen/{{.SCALE}}/stoermeldungen.cp1252.csv
+        --output data/reference/track_a/{{.SCALE}}/a_full.parquet
+
+  # ---------- lint / test / ci ----------
+  fmt:
+    desc: Apply formatters (ruff, cargo fmt, gofmt)
+    cmds:
+      - uv run --locked ruff format .
+      - uv run --locked ruff check --fix .
+      - for: { var: RUST_DIRS, split: " " }
+        cmd: cargo fmt --all --manifest-path {{.ITEM}}/Cargo.toml
+      - cd harness && gofmt -w .
+
+  lint:py:
+    cmds:
+      - uv run --locked ruff check --output-format concise .
+      - uv run --locked ruff format --check .
+      - uv run --locked pyright
+      - for: { var: PY_ENVS, split: " " }
+        cmd: uv run --locked pyright -p contestants/python/{{.ITEM}}
+
+  lint:rs:
+    cmds:
+      - for: { var: RUST_DIRS, split: " " }
+        cmd: cargo fmt --all --check --manifest-path {{.ITEM}}/Cargo.toml
+      - for: { var: RUST_DIRS, split: " " }
+        cmd: cargo clippy --locked --all-targets --manifest-path {{.ITEM}}/Cargo.toml -- -D warnings
+
+  lint:go:
+    dir: harness
+    cmds:
+      - 'test -z "$(gofmt -l .)" || (gofmt -l . && echo "gofmt - files above need formatting" && exit 1)'
+      - go vet ./...
+      - '{{.GOLANGCI_LINT}} run ./...'
+      - '{{.GOVULNCHECK}} ./...'
+
+  test:py:
+    cmds:
+      - uv run --locked pytest
+      - for: { var: PY_ENVS, split: " " }
+        cmd: cd contestants/python/{{.ITEM}} && uv run --locked pytest -q
+
+  test:rs:
+    cmds:
+      - for: { var: RUST_DIRS, split: " " }
+        cmd: cargo test --locked --manifest-path {{.ITEM}}/Cargo.toml
+
+  test:go:
+    dir: harness
+    cmds:
+      - go test -race ./...
+
+  fuzz:go:
+    desc: Short fuzz run of the marker parser (FUZZTIME=30s)
+    dir: harness
+    cmds:
+      - go test -run '^$' -fuzz FuzzParseMarker -fuzztime {{.FUZZTIME | default "30s"}} ./pkg/zjmark
+
+  ci:
+    desc: Local CI (no GitHub) — lint + tests for Python, Rust, Go. Phase 9 adds docker/helm/scans.
+    cmds:
+      - task: lint:py
+      - task: lint:rs
+      - task: lint:go
+      - task: test:py
+      - task: test:rs
+      - task: test:go
+
+  # ---------- later phases: fail loudly until implemented ----------
+  report:
+    desc: Regenerate reports/REPORT.de.md + REPORT.md from results/ (rebuilds results/zj.duckdb first)
+    cmds:
+      - uv run --locked python -m zj_analysis.report
+  up:
+    desc: "[Phase 9] production stack up"
+    cmds: ['echo "up is implemented in Phase 9" >&2; exit 2']
+  down:
+    desc: "[Phase 9] production stack down"
+    cmds: ['echo "down is implemented in Phase 9" >&2; exit 2']

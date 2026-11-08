@@ -1,0 +1,161 @@
+{
+  "session_id": "0230bf33-0186-4913-ace3-c241032e1f40",
+  "ts": "2026-11-06T22:28:14Z",
+  "env": {
+    "fingerprint": "sha256:14291cb391b83565cbcc124b1a0dc5e85e206c005416f668a0d54e27f319bd5b",
+    "driver": "580.178.04",
+    "cuda": "13.0",
+    "governor": "powersave×16, EPP power",
+    "gpu": {
+      "max_mem_clock_mhz": 14001,
+      "max_sm_clock_mhz": 3090,
+      "mem_total_bytes": 17103323136,
+      "name": "NVIDIA GeForce RTX 5060 Ti",
+      "persistence": true,
+      "power_limit_w": 180,
+      "uuid": "GPU-1e06e0cd-173f-0049-660e-ed6b155bade9"
+    },
+    "host": {
+      "config_sha256": {
+        "bench.yaml": "0b5bd40e8af60f39317515c70e365c1463635d7d7fa8d7d047758fa06a2e1bdc",
+        "contestants.yaml": "b3d35576fbcffe0dd7bca73225d84fd92969563d2aee3c6f67c9d70ddc37b278",
+        "tasks.yaml": "a845b1f4866a5c178871decc9d7e813141a9e06d8d720bdecf5be09b8c4e032f"
+      },
+      "cpu": "Intel(R) Core(TM) i5-14400F",
+      "cpus": 16,
+      "go": "go1.27.3",
+      "kernel": "6.17.0-1023-oem",
+      "no_turbo": "0",
+      "os": "Ubuntu 24.04.5 LTS",
+      "rapl_zones": [
+        "package-0→cpu_pkg",
+        "core→cpu_core"
+      ],
+      "smt": "on"
+    },
+    "versions": {
+      "x04_sleep30_rs": "rustc 1.99.1 (58cf8f9c3 2026-10-13)"
+    },
+    "loadavg1_start": 0.54,
+    "gpu_temp_start_c": 28,
+    "harness": "zj 0.2.0"
+  },
+  "idle": [
+    {
+      "domain": "gpu",
+      "n": 3,
+      "mean_w": 5.821119108720485,
+      "sd_w": 0.06854329383139654,
+      "cv_pct": 1.1774934089342615,
+      "stable": true
+    },
+    {
+      "domain": "cpu_pkg",
+      "n": 3,
+      "mean_w": 2.445820578938729,
+      "sd_w": 0.028932920682795637,
+      "cv_pct": 1.1829535220997274,
+      "stable": true
+    },
+    {
+      "domain": "cpu_core",
+      "n": 3,
+      "mean_w": 0.7907549911056053,
+      "sd_w": 0.029009672981776185,
+      "cv_pct": 3.668604473961764,
+      "stable": true
+    }
+  ],
+  "idle_runs": 3,
+  "pl1_w": 125,
+  "pl2_w": 150,
+  "checks": [
+    {
+      "name": "idle stability gpu",
+      "pass": true,
+      "value": "5.82 ± 0.07 W (CV 1.2 %, n=3)",
+      "expect": "CV ≤ 5 %"
+    },
+    {
+      "name": "idle stability cpu_pkg",
+      "pass": true,
+      "value": "2.45 ± 0.03 W (CV 1.2 %, n=3)",
+      "expect": "CV ≤ 5 %"
+    },
+    {
+      "name": "idle stability cpu_core",
+      "pass": true,
+      "value": "0.79 ± 0.03 W (CV 3.7 %, n=3)",
+      "expect": "CV ≤ 5 %"
+    },
+    {
+      "name": "CPU load: RAPL package power plausible",
+      "pass": true,
+      "value": "74.59 W",
+      "expect": "2.4 W \u003c P ≤ 157.5 W (PL2 150 W, PL1 125.00 W)"
+    },
+    {
+      "name": "GPU load: power approaches the limit",
+      "pass": true,
+      "value": "145.73 W",
+      "expect": "≥ 144 W (80 % of 180 W)"
+    },
+    {
+      "name": "GPU: NVML counter vs integrated power",
+      "pass": false,
+      "value": "22.18 %",
+      "expect": "|deviation| ≤ 5 %"
+    },
+    {
+      "name": "harness overhead: wall time of `sleep 30`",
+      "pass": true,
+      "value": "30.003 s",
+      "expect": "30 s + \u003c 0.5 s"
+    },
+    {
+      "name": "harness overhead: E_net of `sleep 30`",
+      "pass": true,
+      "value": "4.08 J",
+      "expect": "|E_net| ≤ 2 W × 30 s = 60 J"
+    }
+  ],
+  "runs": {
+    "x02_stressng_cpu": {
+      "status": "ok",
+      "wall_s": 60.215966254,
+      "stage_s": 60.073839717,
+      "gpu_mean_w": 5.780036728728352,
+      "cpu_pkg_mean_w": 74.5942501167742,
+      "net_total_j": 4331.648216066809,
+      "gpu_counter_vs_integrated_pct": -9.725190396266264,
+      "gpu_temp_start_c": 28
+    },
+    "x03_gpuburn_torch": {
+      "status": "ok",
+      "wall_s": 62.031100789,
+      "stage_s": 60.052966780000006,
+      "gpu_mean_w": 145.72841331523728,
+      "cpu_pkg_mean_w": 20.154937289774193,
+      "net_total_j": 9502.236866967774,
+      "gpu_counter_vs_integrated_pct": 22.17907804567841,
+      "gpu_temp_start_c": 28
+    },
+    "x04_sleep30_rs": {
+      "status": "ok",
+      "wall_s": 30.00298051,
+      "stage_s": 30.000110266,
+      "gpu_mean_w": 5.992479769629798,
+      "cpu_pkg_mean_w": 2.4109129772076954,
+      "net_total_j": 4.083283295409942,
+      "gpu_counter_vs_integrated_pct": -13.762443541668231,
+      "gpu_temp_start_c": 28
+    }
+  },
+  "baseline_w": {
+    "gpu": 5.821119108720485,
+    "cpu_pkg": 2.445820578938729,
+    "cpu_core": 0.7907549911056053,
+    "dram": null,
+    "wall": null
+  }
+}

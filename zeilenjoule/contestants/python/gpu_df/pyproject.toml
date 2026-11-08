@@ -1,0 +1,21 @@
+[project]
+name = "zj-gpu-df"
+version = "0.1.0"
+description = "Track A GPU contestants (cudf.pandas, Polars GPU engine; polars pinned by cudf-polars, ADR 0002)"
+requires-python = ">=3.12,<3.13"
+dependencies = [
+    "cudf-cu13==26.10.2",
+    "cudf-polars-cu13==26.10.2",
+    "polars==1.44.2",
+    "zjmark",
+]
+
+[dependency-groups]
+dev = ["pytest==9.*"]
+
+[tool.uv.sources]
+zjmark = { path = "../../../libs/python/zjmark", editable = true }
+
+[build-system]
+requires = ["uv_build>=0.12,<0.14"]
+build-backend = "uv_build"

@@ -1,0 +1,23 @@
+# ADR 0013: Track B thin slice (b00–b04): spec choices, ORT CPU placement and int8 mixed precision
+
+- Status: accepted (Phase 5, 2026-11-07).
+- Context: PLAN §8 defines `b.embed` with bge-m3, fp16 `.npy` output and a cosine gate (≥ 0.995 vs. sentence-transformers fp32). Build thin first: S/M + real corpus, five in-process contestants. Servers (TEI, vLLM, llama.cpp) come next.
+- Decisions:
+  - **Input and output** (`spec/track_b.md`):
+    - Input: `data/track_b/{scale}/docs.parquet` (`id`, `doc_text`), built from the Track A reference output (identical for every passing Track A contestant) or from the real corpus (scale `real`, 15,305 docs).
+    - Output rows are in input order, so the separate id-order file from PLAN is unnecessary. Output is CLS pooling, L2-normalised, max 512 tokens.
+  - **Reference** = the b01 code path, stored as float32. The recall@10 part of the gate is pending until Track C has its exact search (c00); the verifier says so in every result.
+  - **b03** ("sorted, tuned"):
+    - sentence-transformers already sorts by character length. b03 instead tokenises once, sorts by token length and packs batches by a padded-token budget (32k), with fp16 + SDPA and pinned async copies.
+    - Pure PyTorch/transformers, the same model weights.
+  - **ORT models** are derived offline (`task trackB:onnx`) from the repo's fp32 ONNX export: ORT transformers optimizer fusions, the unused `sentence_embedding` branch pruned.
+  - **b04, CUDA EP, rule 6:**
+    - `onnxruntime.preload_dlls()` is required, otherwise the CUDA EP fails to load and the session runs on the CPU (COMPAT).
+    - `disable_cpu_ep_fallback` is not usable: ORT always places 4 shape-arithmetic nodes of the position-id subgraph on the CPU.
+    - So the prep step parses ORT's own placement report and fails unless every CPU node depends only on `Shape`/`Constant` values, meaning no tensor data leaves the GPU.
+    - Each run then logs the node list and fails on an ORT version mismatch. This is not a compute fallback, so there is no "⚠CPU fallback" label.
+  - **b00, CPU int8:**
+    - The standard dynamic quantisation fails the quality gate (mean cos 0.985).
+    - The expert fix is mixed precision: int8 per-channel weights for all MatMuls except the 24 FFN down-projections (XLM-R activation outliers), giving 0.9966 at S.
+    - The cost: only about 1.3× faster than fp32 on the CPU (unmeasured probe: 44 vs. 57 s per 1,000 docs). b00 runs at S only (≈ 7.5 min).
+- Consequences: the CPU-vs-GPU energy comparison uses b00 at S against b02–b04 at S. M/real are GPU-only. L for the top 3 needs an L reference (fp32, ≈ 80 min unmeasured) and comes later.

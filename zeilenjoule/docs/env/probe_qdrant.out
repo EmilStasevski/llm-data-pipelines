@@ -1,0 +1,5 @@
+Version: 1.20.0, build: 222b2e44
+2026-11-06T16:37:58.858069Z  INFO gpu::instance: Found GPU device: NVIDIA GeForce RTX 5060 Ti
+2026-11-06T16:37:58.859385Z  INFO gpu::instance: Found GPU device: llvmpipe (LLVM 15.0.7, 256 bits)
+2026-11-06T16:37:58.859632Z  INFO gpu::device: Create GPU device NVIDIA GeForce RTX 5060 Ti
+2026-11-06T16:37:59.584742Z  INFO segment::index::hnsw_index::gpu::gpu_devices_manager: Initialized GPU device: "NVIDIA GeForce RTX 5060 Ti"

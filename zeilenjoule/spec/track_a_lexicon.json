@@ -1,0 +1,259 @@
+{
+ "spec": "spec/track_a.md v1.0",
+ "lexicon_sha256": "50794fe88ca046e58200480ca41ec55209e04e260e1acd230359cdd8ba26be8b",
+ "mojibake": {
+  "Ã¤": "ä",
+  "Ã¶": "ö",
+  "Ã¼": "ü",
+  "ÃŸ": "ß",
+  "Ã„": "Ä",
+  "Ã–": "Ö",
+  "Ãœ": "Ü",
+  "â‚¬": "€"
+ },
+ "whitespace": "\t\n\u000b\f\r  ",
+ "strip_leading": "([{\"'",
+ "strip_trailing": ",;:!?)]}\"'",
+ "fold": {
+  "ä": "ae",
+  "ö": "oe",
+  "ü": "ue",
+  "ß": "ss"
+ },
+ "abbreviations": {
+  "av": "Arbeitsvorbereitung",
+  "bde": "Betriebsdatenerfassung",
+  "bzgl.": "bezüglich",
+  "ca.": "circa",
+  "dl": "Druckluft",
+  "et": "Ersatzteil",
+  "fa": "Fertigungsauftrag",
+  "fa.": "Firma",
+  "fu": "Frequenzumrichter",
+  "ggf.": "gegebenenfalls",
+  "glrd": "Gleitringdichtung",
+  "hd": "Hochdruck",
+  "i.o.": "in Ordnung",
+  "ih": "Instandhaltung",
+  "inkl.": "inklusive",
+  "kw": "Kühlwasser",
+  "lt.": "laut",
+  "ma": "Mitarbeiter",
+  "min.": "Minuten",
+  "n.i.o.": "nicht in Ordnung",
+  "nd": "Niederdruck",
+  "nr.": "Nummer",
+  "pos.": "Position",
+  "qs": "Qualitätssicherung",
+  "sps": "speicherprogrammierbare Steuerung",
+  "std.": "Stunden",
+  "u.a.": "unter anderem",
+  "vmtl.": "vermutlich",
+  "we": "Wareneingang",
+  "wg.": "wegen",
+  "z.b.": "zum Beispiel"
+ },
+ "safety_triggers_fold": [
+  "absturzgefahr",
+  "arbeitsunfall",
+  "beinahe-unfall",
+  "beinaheunfall",
+  "brand",
+  "gefahrstoffaustritt",
+  "quetschgefahr",
+  "rauchentwicklung",
+  "stromschlag",
+  "verbruehung",
+  "verletzt",
+  "verletzung"
+ ],
+ "komponenten_fold": {
+  "abfuellanlage": "Abfüllanlage",
+  "abfuellmaschine": "Abfüllanlage",
+  "absperrschieber": "Absperrschieber",
+  "antriebsmotor": "Elektromotor",
+  "arbeitswalze": "Walze",
+  "brueckenkran": "Brückenkran",
+  "dl-leitung": "Druckluftleitung",
+  "druckaufnehmer": "Drucksensor",
+  "druckluft-leitung": "Druckluftleitung",
+  "druckluftleitung": "Druckluftleitung",
+  "druckluftschlauch": "Druckluftleitung",
+  "druckmessumformer": "Drucksensor",
+  "drucksensor": "Drucksensor",
+  "e/a-baugruppe": "SPS-Baugruppe",
+  "elektromotor": "Elektromotor",
+  "extruder": "Extruder",
+  "extruderschnecke": "Extruder",
+  "filter": "Filter",
+  "filterelement": "Filter",
+  "foerderband": "Förderband",
+  "frequenzumrichter": "Frequenzumrichter",
+  "fueller": "Abfüllanlage",
+  "getriebe": "Getriebe",
+  "getriebemotor": "Getriebe",
+  "gleitringdichtung": "Gleitringdichtung",
+  "glrd": "Gleitringdichtung",
+  "gurtfoerderer": "Förderband",
+  "hallenkran": "Brückenkran",
+  "hubzylinder": "Hydraulikzylinder",
+  "hydraulikzylinder": "Hydraulikzylinder",
+  "kompressor": "Kompressor",
+  "kran": "Brückenkran",
+  "kreiselpumpe": "Kreiselpumpe",
+  "kuehlwasser-pumpe": "Kühlwasserpumpe",
+  "kuehlwasserpumpe": "Kühlwasserpumpe",
+  "kugellager": "Wälzlager",
+  "kw-pumpe": "Kühlwasserpumpe",
+  "lager": "Wälzlager",
+  "leistungsschuetz": "Schütz",
+  "lichtschranke": "Lichtschranke",
+  "motor": "Elektromotor",
+  "motorschutz": "Motorschutzschalter",
+  "motorschutzschalter": "Motorschutzschalter",
+  "oelfilter": "Filter",
+  "plattenwaermetauscher": "Wärmetauscher",
+  "pt100": "PT100-Temperaturfühler",
+  "pt100-temperaturfuehler": "PT100-Temperaturfühler",
+  "pumpe": "Kreiselpumpe",
+  "regelventil": "Regelventil",
+  "rollenlager": "Wälzlager",
+  "ruehrer": "Rührwerk",
+  "ruehrwerk": "Rührwerk",
+  "schieber": "Absperrschieber",
+  "schraubenverdichter": "Kompressor",
+  "schuetz": "Schütz",
+  "sicherheitslichtschranke": "Lichtschranke",
+  "speicherprogrammierbare steuerung": "SPS-Baugruppe",
+  "sps-baugruppe": "SPS-Baugruppe",
+  "stellventil": "Regelventil",
+  "stirnradgetriebe": "Getriebe",
+  "stuetzwalze": "Walze",
+  "temperaturfuehler": "PT100-Temperaturfühler",
+  "transportband": "Förderband",
+  "umrichter": "Frequenzumrichter",
+  "ventil": "Regelventil",
+  "verdichter": "Kompressor",
+  "waelzlager": "Wälzlager",
+  "waermetauscher": "Wärmetauscher",
+  "waermeuebertrager": "Wärmetauscher",
+  "walze": "Walze",
+  "wellendichtung": "Gleitringdichtung",
+  "zentrifugalpumpe": "Kreiselpumpe",
+  "zylinder": "Hydraulikzylinder"
+ },
+ "werke": {
+  "Duisburg": {
+   "regierungsbezirk": "Düsseldorf",
+   "nuts2": "DEA1"
+  },
+  "Düsseldorf": {
+   "regierungsbezirk": "Düsseldorf",
+   "nuts2": "DEA1"
+  },
+  "Essen": {
+   "regierungsbezirk": "Düsseldorf",
+   "nuts2": "DEA1"
+  },
+  "Krefeld": {
+   "regierungsbezirk": "Düsseldorf",
+   "nuts2": "DEA1"
+  },
+  "Oberhausen": {
+   "regierungsbezirk": "Düsseldorf",
+   "nuts2": "DEA1"
+  },
+  "Mülheim an der Ruhr": {
+   "regierungsbezirk": "Düsseldorf",
+   "nuts2": "DEA1"
+  },
+  "Wuppertal": {
+   "regierungsbezirk": "Düsseldorf",
+   "nuts2": "DEA1"
+  },
+  "Solingen": {
+   "regierungsbezirk": "Düsseldorf",
+   "nuts2": "DEA1"
+  },
+  "Neuss": {
+   "regierungsbezirk": "Düsseldorf",
+   "nuts2": "DEA1"
+  },
+  "Dormagen": {
+   "regierungsbezirk": "Düsseldorf",
+   "nuts2": "DEA1"
+  },
+  "Wesel": {
+   "regierungsbezirk": "Düsseldorf",
+   "nuts2": "DEA1"
+  },
+  "Köln": {
+   "regierungsbezirk": "Köln",
+   "nuts2": "DEA2"
+  },
+  "Leverkusen": {
+   "regierungsbezirk": "Köln",
+   "nuts2": "DEA2"
+  },
+  "Aachen": {
+   "regierungsbezirk": "Köln",
+   "nuts2": "DEA2"
+  },
+  "Bonn": {
+   "regierungsbezirk": "Köln",
+   "nuts2": "DEA2"
+  },
+  "Münster": {
+   "regierungsbezirk": "Münster",
+   "nuts2": "DEA3"
+  },
+  "Gelsenkirchen": {
+   "regierungsbezirk": "Münster",
+   "nuts2": "DEA3"
+  },
+  "Bottrop": {
+   "regierungsbezirk": "Münster",
+   "nuts2": "DEA3"
+  },
+  "Marl": {
+   "regierungsbezirk": "Münster",
+   "nuts2": "DEA3"
+  },
+  "Bielefeld": {
+   "regierungsbezirk": "Detmold",
+   "nuts2": "DEA4"
+  },
+  "Paderborn": {
+   "regierungsbezirk": "Detmold",
+   "nuts2": "DEA4"
+  },
+  "Gütersloh": {
+   "regierungsbezirk": "Detmold",
+   "nuts2": "DEA4"
+  },
+  "Dortmund": {
+   "regierungsbezirk": "Arnsberg",
+   "nuts2": "DEA5"
+  },
+  "Bochum": {
+   "regierungsbezirk": "Arnsberg",
+   "nuts2": "DEA5"
+  },
+  "Hagen": {
+   "regierungsbezirk": "Arnsberg",
+   "nuts2": "DEA5"
+  },
+  "Hamm": {
+   "regierungsbezirk": "Arnsberg",
+   "nuts2": "DEA5"
+  },
+  "Lünen": {
+   "regierungsbezirk": "Arnsberg",
+   "nuts2": "DEA5"
+  },
+  "Siegen": {
+   "regierungsbezirk": "Arnsberg",
+   "nuts2": "DEA5"
+  }
+ }
+}

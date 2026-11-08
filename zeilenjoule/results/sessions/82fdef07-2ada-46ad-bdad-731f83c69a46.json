@@ -1,0 +1,1118 @@
+{
+  "session_id": "82fdef07-2ada-46ad-bdad-731f83c69a46",
+  "created": "2026-11-08T20:25:05Z",
+  "seed": 20261106,
+  "reps": 5,
+  "warmup": 1,
+  "interleave": true,
+  "threads": 0,
+  "scales": [
+    "M",
+    "real"
+  ],
+  "contestants": [
+    "c00_exact_gpu",
+    "c01_faiss_cpu",
+    "c02_cuvs_cagra",
+    "c03_pgvector",
+    "c03_pgvector_hybrid",
+    "c05_duckdb_hybrid",
+    "c05_duckdb_vss",
+    "c06_sqlite_hybrid",
+    "c06_sqlite_vec",
+    "c07_lancedb",
+    "c07_lancedb_hybrid",
+    "c08_qdrant_cpu",
+    "c08_qdrant_gpu",
+    "c08_qdrant_hybrid",
+    "c11_tantivy"
+  ],
+  "items": [
+    {
+      "contestant": "c08_qdrant_hybrid",
+      "scale": "real",
+      "rep": 1,
+      "warmup": true
+    },
+    {
+      "contestant": "c11_tantivy",
+      "scale": "real",
+      "rep": 1,
+      "warmup": true
+    },
+    {
+      "contestant": "c03_pgvector",
+      "scale": "real",
+      "rep": 1,
+      "warmup": true
+    },
+    {
+      "contestant": "c05_duckdb_vss",
+      "scale": "real",
+      "rep": 1,
+      "warmup": true
+    },
+    {
+      "contestant": "c07_lancedb",
+      "scale": "real",
+      "rep": 1,
+      "warmup": true
+    },
+    {
+      "contestant": "c05_duckdb_hybrid",
+      "scale": "real",
+      "rep": 1,
+      "warmup": true
+    },
+    {
+      "contestant": "c08_qdrant_cpu",
+      "scale": "real",
+      "rep": 1,
+      "warmup": true
+    },
+    {
+      "contestant": "c03_pgvector_hybrid",
+      "scale": "real",
+      "rep": 1,
+      "warmup": true
+    },
+    {
+      "contestant": "c08_qdrant_gpu",
+      "scale": "real",
+      "rep": 1,
+      "warmup": true
+    },
+    {
+      "contestant": "c07_lancedb_hybrid",
+      "scale": "real",
+      "rep": 1,
+      "warmup": true
+    },
+    {
+      "contestant": "c02_cuvs_cagra",
+      "scale": "real",
+      "rep": 1,
+      "warmup": true
+    },
+    {
+      "contestant": "c06_sqlite_vec",
+      "scale": "real",
+      "rep": 1,
+      "warmup": true
+    },
+    {
+      "contestant": "c00_exact_gpu",
+      "scale": "real",
+      "rep": 1,
+      "warmup": true
+    },
+    {
+      "contestant": "c06_sqlite_hybrid",
+      "scale": "real",
+      "rep": 1,
+      "warmup": true
+    },
+    {
+      "contestant": "c01_faiss_cpu",
+      "scale": "real",
+      "rep": 1,
+      "warmup": true
+    },
+    {
+      "contestant": "c03_pgvector",
+      "scale": "real",
+      "rep": 1,
+      "warmup": false
+    },
+    {
+      "contestant": "c06_sqlite_hybrid",
+      "scale": "real",
+      "rep": 1,
+      "warmup": false
+    },
+    {
+      "contestant": "c08_qdrant_hybrid",
+      "scale": "real",
+      "rep": 1,
+      "warmup": false
+    },
+    {
+      "contestant": "c07_lancedb_hybrid",
+      "scale": "real",
+      "rep": 1,
+      "warmup": false
+    },
+    {
+      "contestant": "c05_duckdb_hybrid",
+      "scale": "real",
+      "rep": 1,
+      "warmup": false
+    },
+    {
+      "contestant": "c05_duckdb_vss",
+      "scale": "real",
+      "rep": 1,
+      "warmup": false
+    },
+    {
+      "contestant": "c02_cuvs_cagra",
+      "scale": "real",
+      "rep": 1,
+      "warmup": false
+    },
+    {
+      "contestant": "c11_tantivy",
+      "scale": "real",
+      "rep": 1,
+      "warmup": false
+    },
+    {
+      "contestant": "c08_qdrant_gpu",
+      "scale": "real",
+      "rep": 1,
+      "warmup": false
+    },
+    {
+      "contestant": "c00_exact_gpu",
+      "scale": "real",
+      "rep": 1,
+      "warmup": false
+    },
+    {
+      "contestant": "c03_pgvector_hybrid",
+      "scale": "real",
+      "rep": 1,
+      "warmup": false
+    },
+    {
+      "contestant": "c06_sqlite_vec",
+      "scale": "real",
+      "rep": 1,
+      "warmup": false
+    },
+    {
+      "contestant": "c01_faiss_cpu",
+      "scale": "real",
+      "rep": 1,
+      "warmup": false
+    },
+    {
+      "contestant": "c08_qdrant_cpu",
+      "scale": "real",
+      "rep": 1,
+      "warmup": false
+    },
+    {
+      "contestant": "c07_lancedb",
+      "scale": "real",
+      "rep": 1,
+      "warmup": false
+    },
+    {
+      "contestant": "c05_duckdb_vss",
+      "scale": "real",
+      "rep": 2,
+      "warmup": false
+    },
+    {
+      "contestant": "c02_cuvs_cagra",
+      "scale": "real",
+      "rep": 2,
+      "warmup": false
+    },
+    {
+      "contestant": "c07_lancedb_hybrid",
+      "scale": "real",
+      "rep": 2,
+      "warmup": false
+    },
+    {
+      "contestant": "c08_qdrant_gpu",
+      "scale": "real",
+      "rep": 2,
+      "warmup": false
+    },
+    {
+      "contestant": "c00_exact_gpu",
+      "scale": "real",
+      "rep": 2,
+      "warmup": false
+    },
+    {
+      "contestant": "c07_lancedb",
+      "scale": "real",
+      "rep": 2,
+      "warmup": false
+    },
+    {
+      "contestant": "c08_qdrant_cpu",
+      "scale": "real",
+      "rep": 2,
+      "warmup": false
+    },
+    {
+      "contestant": "c05_duckdb_hybrid",
+      "scale": "real",
+      "rep": 2,
+      "warmup": false
+    },
+    {
+      "contestant": "c03_pgvector_hybrid",
+      "scale": "real",
+      "rep": 2,
+      "warmup": false
+    },
+    {
+      "contestant": "c11_tantivy",
+      "scale": "real",
+      "rep": 2,
+      "warmup": false
+    },
+    {
+      "contestant": "c06_sqlite_vec",
+      "scale": "real",
+      "rep": 2,
+      "warmup": false
+    },
+    {
+      "contestant": "c03_pgvector",
+      "scale": "real",
+      "rep": 2,
+      "warmup": false
+    },
+    {
+      "contestant": "c06_sqlite_hybrid",
+      "scale": "real",
+      "rep": 2,
+      "warmup": false
+    },
+    {
+      "contestant": "c01_faiss_cpu",
+      "scale": "real",
+      "rep": 2,
+      "warmup": false
+    },
+    {
+      "contestant": "c08_qdrant_hybrid",
+      "scale": "real",
+      "rep": 2,
+      "warmup": false
+    },
+    {
+      "contestant": "c03_pgvector",
+      "scale": "real",
+      "rep": 3,
+      "warmup": false
+    },
+    {
+      "contestant": "c07_lancedb_hybrid",
+      "scale": "real",
+      "rep": 3,
+      "warmup": false
+    },
+    {
+      "contestant": "c08_qdrant_cpu",
+      "scale": "real",
+      "rep": 3,
+      "warmup": false
+    },
+    {
+      "contestant": "c03_pgvector_hybrid",
+      "scale": "real",
+      "rep": 3,
+      "warmup": false
+    },
+    {
+      "contestant": "c00_exact_gpu",
+      "scale": "real",
+      "rep": 3,
+      "warmup": false
+    },
+    {
+      "contestant": "c06_sqlite_hybrid",
+      "scale": "real",
+      "rep": 3,
+      "warmup": false
+    },
+    {
+      "contestant": "c08_qdrant_hybrid",
+      "scale": "real",
+      "rep": 3,
+      "warmup": false
+    },
+    {
+      "contestant": "c01_faiss_cpu",
+      "scale": "real",
+      "rep": 3,
+      "warmup": false
+    },
+    {
+      "contestant": "c05_duckdb_hybrid",
+      "scale": "real",
+      "rep": 3,
+      "warmup": false
+    },
+    {
+      "contestant": "c06_sqlite_vec",
+      "scale": "real",
+      "rep": 3,
+      "warmup": false
+    },
+    {
+      "contestant": "c07_lancedb",
+      "scale": "real",
+      "rep": 3,
+      "warmup": false
+    },
+    {
+      "contestant": "c02_cuvs_cagra",
+      "scale": "real",
+      "rep": 3,
+      "warmup": false
+    },
+    {
+      "contestant": "c11_tantivy",
+      "scale": "real",
+      "rep": 3,
+      "warmup": false
+    },
+    {
+      "contestant": "c08_qdrant_gpu",
+      "scale": "real",
+      "rep": 3,
+      "warmup": false
+    },
+    {
+      "contestant": "c05_duckdb_vss",
+      "scale": "real",
+      "rep": 3,
+      "warmup": false
+    },
+    {
+      "contestant": "c11_tantivy",
+      "scale": "real",
+      "rep": 4,
+      "warmup": false
+    },
+    {
+      "contestant": "c05_duckdb_vss",
+      "scale": "real",
+      "rep": 4,
+      "warmup": false
+    },
+    {
+      "contestant": "c05_duckdb_hybrid",
+      "scale": "real",
+      "rep": 4,
+      "warmup": false
+    },
+    {
+      "contestant": "c07_lancedb",
+      "scale": "real",
+      "rep": 4,
+      "warmup": false
+    },
+    {
+      "contestant": "c06_sqlite_hybrid",
+      "scale": "real",
+      "rep": 4,
+      "warmup": false
+    },
+    {
+      "contestant": "c00_exact_gpu",
+      "scale": "real",
+      "rep": 4,
+      "warmup": false
+    },
+    {
+      "contestant": "c08_qdrant_cpu",
+      "scale": "real",
+      "rep": 4,
+      "warmup": false
+    },
+    {
+      "contestant": "c06_sqlite_vec",
+      "scale": "real",
+      "rep": 4,
+      "warmup": false
+    },
+    {
+      "contestant": "c03_pgvector",
+      "scale": "real",
+      "rep": 4,
+      "warmup": false
+    },
+    {
+      "contestant": "c02_cuvs_cagra",
+      "scale": "real",
+      "rep": 4,
+      "warmup": false
+    },
+    {
+      "contestant": "c08_qdrant_hybrid",
+      "scale": "real",
+      "rep": 4,
+      "warmup": false
+    },
+    {
+      "contestant": "c07_lancedb_hybrid",
+      "scale": "real",
+      "rep": 4,
+      "warmup": false
+    },
+    {
+      "contestant": "c08_qdrant_gpu",
+      "scale": "real",
+      "rep": 4,
+      "warmup": false
+    },
+    {
+      "contestant": "c03_pgvector_hybrid",
+      "scale": "real",
+      "rep": 4,
+      "warmup": false
+    },
+    {
+      "contestant": "c01_faiss_cpu",
+      "scale": "real",
+      "rep": 4,
+      "warmup": false
+    },
+    {
+      "contestant": "c08_qdrant_hybrid",
+      "scale": "real",
+      "rep": 5,
+      "warmup": false
+    },
+    {
+      "contestant": "c08_qdrant_gpu",
+      "scale": "real",
+      "rep": 5,
+      "warmup": false
+    },
+    {
+      "contestant": "c03_pgvector",
+      "scale": "real",
+      "rep": 5,
+      "warmup": false
+    },
+    {
+      "contestant": "c05_duckdb_hybrid",
+      "scale": "real",
+      "rep": 5,
+      "warmup": false
+    },
+    {
+      "contestant": "c08_qdrant_cpu",
+      "scale": "real",
+      "rep": 5,
+      "warmup": false
+    },
+    {
+      "contestant": "c03_pgvector_hybrid",
+      "scale": "real",
+      "rep": 5,
+      "warmup": false
+    },
+    {
+      "contestant": "c06_sqlite_hybrid",
+      "scale": "real",
+      "rep": 5,
+      "warmup": false
+    },
+    {
+      "contestant": "c07_lancedb_hybrid",
+      "scale": "real",
+      "rep": 5,
+      "warmup": false
+    },
+    {
+      "contestant": "c07_lancedb",
+      "scale": "real",
+      "rep": 5,
+      "warmup": false
+    },
+    {
+      "contestant": "c00_exact_gpu",
+      "scale": "real",
+      "rep": 5,
+      "warmup": false
+    },
+    {
+      "contestant": "c02_cuvs_cagra",
+      "scale": "real",
+      "rep": 5,
+      "warmup": false
+    },
+    {
+      "contestant": "c11_tantivy",
+      "scale": "real",
+      "rep": 5,
+      "warmup": false
+    },
+    {
+      "contestant": "c01_faiss_cpu",
+      "scale": "real",
+      "rep": 5,
+      "warmup": false
+    },
+    {
+      "contestant": "c06_sqlite_vec",
+      "scale": "real",
+      "rep": 5,
+      "warmup": false
+    },
+    {
+      "contestant": "c05_duckdb_vss",
+      "scale": "real",
+      "rep": 5,
+      "warmup": false
+    },
+    {
+      "contestant": "c06_sqlite_hybrid",
+      "scale": "M",
+      "rep": 1,
+      "warmup": true
+    },
+    {
+      "contestant": "c08_qdrant_hybrid",
+      "scale": "M",
+      "rep": 1,
+      "warmup": true
+    },
+    {
+      "contestant": "c11_tantivy",
+      "scale": "M",
+      "rep": 1,
+      "warmup": true
+    },
+    {
+      "contestant": "c02_cuvs_cagra",
+      "scale": "M",
+      "rep": 1,
+      "warmup": true
+    },
+    {
+      "contestant": "c07_lancedb_hybrid",
+      "scale": "M",
+      "rep": 1,
+      "warmup": true
+    },
+    {
+      "contestant": "c07_lancedb",
+      "scale": "M",
+      "rep": 1,
+      "warmup": true
+    },
+    {
+      "contestant": "c03_pgvector_hybrid",
+      "scale": "M",
+      "rep": 1,
+      "warmup": true
+    },
+    {
+      "contestant": "c06_sqlite_vec",
+      "scale": "M",
+      "rep": 1,
+      "warmup": true
+    },
+    {
+      "contestant": "c01_faiss_cpu",
+      "scale": "M",
+      "rep": 1,
+      "warmup": true
+    },
+    {
+      "contestant": "c03_pgvector",
+      "scale": "M",
+      "rep": 1,
+      "warmup": true
+    },
+    {
+      "contestant": "c08_qdrant_cpu",
+      "scale": "M",
+      "rep": 1,
+      "warmup": true
+    },
+    {
+      "contestant": "c00_exact_gpu",
+      "scale": "M",
+      "rep": 1,
+      "warmup": true
+    },
+    {
+      "contestant": "c05_duckdb_vss",
+      "scale": "M",
+      "rep": 1,
+      "warmup": true
+    },
+    {
+      "contestant": "c08_qdrant_gpu",
+      "scale": "M",
+      "rep": 1,
+      "warmup": true
+    },
+    {
+      "contestant": "c05_duckdb_hybrid",
+      "scale": "M",
+      "rep": 1,
+      "warmup": true
+    },
+    {
+      "contestant": "c08_qdrant_cpu",
+      "scale": "M",
+      "rep": 1,
+      "warmup": false
+    },
+    {
+      "contestant": "c00_exact_gpu",
+      "scale": "M",
+      "rep": 1,
+      "warmup": false
+    },
+    {
+      "contestant": "c06_sqlite_vec",
+      "scale": "M",
+      "rep": 1,
+      "warmup": false
+    },
+    {
+      "contestant": "c11_tantivy",
+      "scale": "M",
+      "rep": 1,
+      "warmup": false
+    },
+    {
+      "contestant": "c05_duckdb_vss",
+      "scale": "M",
+      "rep": 1,
+      "warmup": false
+    },
+    {
+      "contestant": "c01_faiss_cpu",
+      "scale": "M",
+      "rep": 1,
+      "warmup": false
+    },
+    {
+      "contestant": "c06_sqlite_hybrid",
+      "scale": "M",
+      "rep": 1,
+      "warmup": false
+    },
+    {
+      "contestant": "c08_qdrant_hybrid",
+      "scale": "M",
+      "rep": 1,
+      "warmup": false
+    },
+    {
+      "contestant": "c03_pgvector_hybrid",
+      "scale": "M",
+      "rep": 1,
+      "warmup": false
+    },
+    {
+      "contestant": "c05_duckdb_hybrid",
+      "scale": "M",
+      "rep": 1,
+      "warmup": false
+    },
+    {
+      "contestant": "c08_qdrant_gpu",
+      "scale": "M",
+      "rep": 1,
+      "warmup": false
+    },
+    {
+      "contestant": "c03_pgvector",
+      "scale": "M",
+      "rep": 1,
+      "warmup": false
+    },
+    {
+      "contestant": "c02_cuvs_cagra",
+      "scale": "M",
+      "rep": 1,
+      "warmup": false
+    },
+    {
+      "contestant": "c07_lancedb_hybrid",
+      "scale": "M",
+      "rep": 1,
+      "warmup": false
+    },
+    {
+      "contestant": "c07_lancedb",
+      "scale": "M",
+      "rep": 1,
+      "warmup": false
+    },
+    {
+      "contestant": "c08_qdrant_hybrid",
+      "scale": "M",
+      "rep": 2,
+      "warmup": false
+    },
+    {
+      "contestant": "c06_sqlite_hybrid",
+      "scale": "M",
+      "rep": 2,
+      "warmup": false
+    },
+    {
+      "contestant": "c00_exact_gpu",
+      "scale": "M",
+      "rep": 2,
+      "warmup": false
+    },
+    {
+      "contestant": "c07_lancedb",
+      "scale": "M",
+      "rep": 2,
+      "warmup": false
+    },
+    {
+      "contestant": "c08_qdrant_cpu",
+      "scale": "M",
+      "rep": 2,
+      "warmup": false
+    },
+    {
+      "contestant": "c11_tantivy",
+      "scale": "M",
+      "rep": 2,
+      "warmup": false
+    },
+    {
+      "contestant": "c08_qdrant_gpu",
+      "scale": "M",
+      "rep": 2,
+      "warmup": false
+    },
+    {
+      "contestant": "c07_lancedb_hybrid",
+      "scale": "M",
+      "rep": 2,
+      "warmup": false
+    },
+    {
+      "contestant": "c05_duckdb_vss",
+      "scale": "M",
+      "rep": 2,
+      "warmup": false
+    },
+    {
+      "contestant": "c03_pgvector_hybrid",
+      "scale": "M",
+      "rep": 2,
+      "warmup": false
+    },
+    {
+      "contestant": "c03_pgvector",
+      "scale": "M",
+      "rep": 2,
+      "warmup": false
+    },
+    {
+      "contestant": "c06_sqlite_vec",
+      "scale": "M",
+      "rep": 2,
+      "warmup": false
+    },
+    {
+      "contestant": "c02_cuvs_cagra",
+      "scale": "M",
+      "rep": 2,
+      "warmup": false
+    },
+    {
+      "contestant": "c01_faiss_cpu",
+      "scale": "M",
+      "rep": 2,
+      "warmup": false
+    },
+    {
+      "contestant": "c05_duckdb_hybrid",
+      "scale": "M",
+      "rep": 2,
+      "warmup": false
+    },
+    {
+      "contestant": "c06_sqlite_hybrid",
+      "scale": "M",
+      "rep": 3,
+      "warmup": false
+    },
+    {
+      "contestant": "c06_sqlite_vec",
+      "scale": "M",
+      "rep": 3,
+      "warmup": false
+    },
+    {
+      "contestant": "c03_pgvector_hybrid",
+      "scale": "M",
+      "rep": 3,
+      "warmup": false
+    },
+    {
+      "contestant": "c07_lancedb",
+      "scale": "M",
+      "rep": 3,
+      "warmup": false
+    },
+    {
+      "contestant": "c02_cuvs_cagra",
+      "scale": "M",
+      "rep": 3,
+      "warmup": false
+    },
+    {
+      "contestant": "c08_qdrant_cpu",
+      "scale": "M",
+      "rep": 3,
+      "warmup": false
+    },
+    {
+      "contestant": "c03_pgvector",
+      "scale": "M",
+      "rep": 3,
+      "warmup": false
+    },
+    {
+      "contestant": "c05_duckdb_hybrid",
+      "scale": "M",
+      "rep": 3,
+      "warmup": false
+    },
+    {
+      "contestant": "c11_tantivy",
+      "scale": "M",
+      "rep": 3,
+      "warmup": false
+    },
+    {
+      "contestant": "c00_exact_gpu",
+      "scale": "M",
+      "rep": 3,
+      "warmup": false
+    },
+    {
+      "contestant": "c08_qdrant_hybrid",
+      "scale": "M",
+      "rep": 3,
+      "warmup": false
+    },
+    {
+      "contestant": "c08_qdrant_gpu",
+      "scale": "M",
+      "rep": 3,
+      "warmup": false
+    },
+    {
+      "contestant": "c01_faiss_cpu",
+      "scale": "M",
+      "rep": 3,
+      "warmup": false
+    },
+    {
+      "contestant": "c05_duckdb_vss",
+      "scale": "M",
+      "rep": 3,
+      "warmup": false
+    },
+    {
+      "contestant": "c07_lancedb_hybrid",
+      "scale": "M",
+      "rep": 3,
+      "warmup": false
+    },
+    {
+      "contestant": "c08_qdrant_hybrid",
+      "scale": "M",
+      "rep": 4,
+      "warmup": false
+    },
+    {
+      "contestant": "c07_lancedb_hybrid",
+      "scale": "M",
+      "rep": 4,
+      "warmup": false
+    },
+    {
+      "contestant": "c05_duckdb_vss",
+      "scale": "M",
+      "rep": 4,
+      "warmup": false
+    },
+    {
+      "contestant": "c03_pgvector_hybrid",
+      "scale": "M",
+      "rep": 4,
+      "warmup": false
+    },
+    {
+      "contestant": "c06_sqlite_hybrid",
+      "scale": "M",
+      "rep": 4,
+      "warmup": false
+    },
+    {
+      "contestant": "c02_cuvs_cagra",
+      "scale": "M",
+      "rep": 4,
+      "warmup": false
+    },
+    {
+      "contestant": "c08_qdrant_cpu",
+      "scale": "M",
+      "rep": 4,
+      "warmup": false
+    },
+    {
+      "contestant": "c00_exact_gpu",
+      "scale": "M",
+      "rep": 4,
+      "warmup": false
+    },
+    {
+      "contestant": "c05_duckdb_hybrid",
+      "scale": "M",
+      "rep": 4,
+      "warmup": false
+    },
+    {
+      "contestant": "c03_pgvector",
+      "scale": "M",
+      "rep": 4,
+      "warmup": false
+    },
+    {
+      "contestant": "c11_tantivy",
+      "scale": "M",
+      "rep": 4,
+      "warmup": false
+    },
+    {
+      "contestant": "c06_sqlite_vec",
+      "scale": "M",
+      "rep": 4,
+      "warmup": false
+    },
+    {
+      "contestant": "c08_qdrant_gpu",
+      "scale": "M",
+      "rep": 4,
+      "warmup": false
+    },
+    {
+      "contestant": "c01_faiss_cpu",
+      "scale": "M",
+      "rep": 4,
+      "warmup": false
+    },
+    {
+      "contestant": "c07_lancedb",
+      "scale": "M",
+      "rep": 4,
+      "warmup": false
+    },
+    {
+      "contestant": "c05_duckdb_hybrid",
+      "scale": "M",
+      "rep": 5,
+      "warmup": false
+    },
+    {
+      "contestant": "c07_lancedb_hybrid",
+      "scale": "M",
+      "rep": 5,
+      "warmup": false
+    },
+    {
+      "contestant": "c06_sqlite_vec",
+      "scale": "M",
+      "rep": 5,
+      "warmup": false
+    },
+    {
+      "contestant": "c01_faiss_cpu",
+      "scale": "M",
+      "rep": 5,
+      "warmup": false
+    },
+    {
+      "contestant": "c02_cuvs_cagra",
+      "scale": "M",
+      "rep": 5,
+      "warmup": false
+    },
+    {
+      "contestant": "c03_pgvector_hybrid",
+      "scale": "M",
+      "rep": 5,
+      "warmup": false
+    },
+    {
+      "contestant": "c00_exact_gpu",
+      "scale": "M",
+      "rep": 5,
+      "warmup": false
+    },
+    {
+      "contestant": "c08_qdrant_cpu",
+      "scale": "M",
+      "rep": 5,
+      "warmup": false
+    },
+    {
+      "contestant": "c07_lancedb",
+      "scale": "M",
+      "rep": 5,
+      "warmup": false
+    },
+    {
+      "contestant": "c11_tantivy",
+      "scale": "M",
+      "rep": 5,
+      "warmup": false
+    },
+    {
+      "contestant": "c06_sqlite_hybrid",
+      "scale": "M",
+      "rep": 5,
+      "warmup": false
+    },
+    {
+      "contestant": "c08_qdrant_hybrid",
+      "scale": "M",
+      "rep": 5,
+      "warmup": false
+    },
+    {
+      "contestant": "c05_duckdb_vss",
+      "scale": "M",
+      "rep": 5,
+      "warmup": false
+    },
+    {
+      "contestant": "c03_pgvector",
+      "scale": "M",
+      "rep": 5,
+      "warmup": false
+    },
+    {
+      "contestant": "c08_qdrant_gpu",
+      "scale": "M",
+      "rep": 5,
+      "warmup": false
+    }
+  ],
+  "args": [
+    "--id",
+    "c00_exact_gpu,c01_faiss_cpu,c02_cuvs_cagra,c03_pgvector,c05_duckdb_vss,c06_sqlite_vec,c07_lancedb,c08_qdrant_cpu,c08_qdrant_gpu,c11_tantivy,c03_pgvector_hybrid,c05_duckdb_hybrid,c06_sqlite_hybrid,c07_lancedb_hybrid,c08_qdrant_hybrid",
+    "--scale",
+    "M,real"
+  ]
+}

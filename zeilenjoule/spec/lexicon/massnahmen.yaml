@@ -1,0 +1,18 @@
+# Maßnahmen. name = Gold-Wert; phrasen = Oberflächenformen. offen = noch keine Maßnahme (Gold null).
+massnahmen:
+  - {name: Dichtung getauscht,        phrasen: ["Dichtung getauscht", "Dichtung erneuert", "neue Dichtung eingebaut"]}
+  - {name: Lager ersetzt,             phrasen: ["Lager ersetzt", "Lager gewechselt", "neues Lager eingesetzt"]}
+  - {name: nachgeschmiert,            phrasen: ["nachgeschmiert", "abgeschmiert", "Schmierung durchgeführt"]}
+  - {name: Filter gereinigt,          phrasen: ["Filter gereinigt", "Filter gespült", "Filtereinsatz gereinigt"]}
+  - {name: Parameter angepasst,       phrasen: ["Parameter angepasst", "Sollwert korrigiert", "Parametrierung angepasst"]}
+  - {name: SPS neu gestartet,         phrasen: ["SPS neu gestartet", "Steuerung neu gestartet", "Reset der SPS durchgeführt"]}
+  - {name: Fremdfirma beauftragt,     phrasen: ["Fremdfirma beauftragt", "Fa. für Reparatur bestellt", "Servicetechniker angefordert"]}
+  - {name: Bauteil getauscht,         phrasen: ["Bauteil getauscht", "Komponente ersetzt", "Austausch durchgeführt"]}
+  - {name: Verschraubung nachgezogen, phrasen: ["Verschraubung nachgezogen", "Schrauben nachgezogen", "nachgezogen"]}
+  - {name: Leitung abgedichtet,       phrasen: ["Leitung abgedichtet", "Leck abgedichtet", "provisorisch abgedichtet"]}
+  - {name: Sensor kalibriert,         phrasen: ["Sensor kalibriert", "neu kalibriert", "Kalibrierung durchgeführt"]}
+  - {name: Riemen nachgespannt,       phrasen: ["Riemen nachgespannt", "Keilriemen gespannt", "Band nachgespannt"]}
+  - {name: gereinigt,                 phrasen: ["gereinigt", "Reinigung durchgeführt", "gesäubert"]}
+  - {name: Ersatzteil bestellt,       phrasen: ["Ersatzteil bestellt", "ET bestellt, Lieferung offen", "Teil angefordert"]}
+  - {name: provisorisch repariert,    phrasen: ["provisorisch repariert", "behelfsmäßig instand gesetzt", "Notreparatur"]}
+offen: ["Maßnahme offen", "noch keine Maßnahme", "IH informiert", "wird an AV übergeben"]

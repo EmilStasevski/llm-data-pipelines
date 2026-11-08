@@ -1,0 +1,25 @@
+                                                                                
+                           Total time elapsed: 2.076 seconds                    
+                         5 GPU function calls in 0.903 seconds                  
+                         1 CPU function calls in 0.695 seconds                  
+                                                                                
+                                         Stats                                  
+                                                                                
+┏━━━━━━━━━━┳━━━━━━━━━━┳━━━━━━━━━━┳━━━━━━━━━━┳━━━━━━━━━━━┳━━━━━━━━━━┳━━━━━━━━━━━┓
+┃          ┃ GPU      ┃ GPU      ┃ GPU      ┃ CPU       ┃ CPU      ┃ CPU       ┃
+┃ Function ┃ ncalls   ┃ cumtime  ┃ percall  ┃ ncalls    ┃ cumtime  ┃ percall   ┃
+┡━━━━━━━━━━╇━━━━━━━━━━╇━━━━━━━━━━╇━━━━━━━━━━╇━━━━━━━━━━━╇━━━━━━━━━━╇━━━━━━━━━━━┩
+│ DataFra… │ 1        │ 0.554    │ 0.554    │ 0         │ 0.000    │ 0.000     │
+│ DataFra… │ 1        │ 0.001    │ 0.001    │ 0         │ 0.000    │ 0.000     │
+│ GroupBy… │ 1        │ 0.339    │ 0.339    │ 0         │ 0.000    │ 0.000     │
+│ Series.… │ 1        │ 0.007    │ 0.007    │ 0         │ 0.000    │ 0.000     │
+│ Series.… │ 0        │ 0.000    │ 0.000    │ 1         │ 0.695    │ 0.695     │
+│ DataFra… │ 1        │ 0.003    │ 0.003    │ 0         │ 0.000    │ 0.000     │
+└──────────┴──────────┴──────────┴──────────┴───────────┴──────────┴───────────┘
+Not all pandas operations ran on the GPU. The following functions required CPU 
+fallback:
+
+- Series.apply
+
+To request GPU support for any of these functions, please file a Github issue 
+here: https://github.com/NVIDIA/cudf/issues/new/choose.

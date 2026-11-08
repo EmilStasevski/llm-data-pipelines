@@ -1,0 +1,591 @@
+# Contestant registry (PLAN §5.3). Validated by harness/internal/config (`zj doctor`, `go test`).
+# id:     <track letter><2 digits>_<tool>_<variant>; track letter == lower(track)
+# track:  A–E = benchmark tracks; X = harness self-tests/calibration (never part of the report ranking)
+# build:  optional command run by the harness BEFORE any measured window (compile, image pull …)
+# versions_cmd: optional command printing a JSON version fingerprint (stored in env.versions; rule 9)
+# cmd/args placeholders: {input} {output} {threads} {rows} {scale}
+contestants:
+  - id: x00_smoke_py
+    track: X
+    task: x.smoke
+    versions_cmd: ["uv", "run", "--frozen", "--project", ".", "python", "-m", "zjmark.envinfo", "zjmark"]
+    cmd: ["uv", "run", "--frozen", "--project", ".", "python", "-m", "zjmark.smoke"]
+    args: ["--output", "{output}", "--rows", "{rows}", "--sleep", "1", "--threads", "{threads}"]
+    needs_gpu: false
+    servers: []
+    scales: [S]
+    anti_pattern: false
+
+  - id: x01_smoke_rs
+    track: X
+    task: x.smoke
+    build: ["cargo", "build", "--release", "--locked", "--manifest-path", "contestants/rust/Cargo.toml", "-p", "zj-smoke"]
+    versions_cmd: ["rustc", "--version"]
+    cmd: ["contestants/rust/target/release/zj-smoke"]
+    args: ["--output", "{output}", "--rows", "{rows}", "--sleep", "1", "--threads", "{threads}"]
+    needs_gpu: false
+    servers: []
+    scales: [S]
+    anti_pattern: false
+
+  # ---- calibration (PLAN §5.7), run by `zj calibrate`; track X, never ranked ----
+  - id: x02_stressng_cpu
+    track: X
+    task: x.calib
+    versions_cmd: ["stress-ng", "--version"]
+    cmd: ["uv", "run", "--frozen", "--project", ".", "python", "-m", "zjmark.wrap"]
+    args: ["--output", "{output}", "--", "stress-ng", "--cpu", "{threads}", "--timeout", "60s", "--quiet"]
+    needs_gpu: false
+    servers: []
+    scales: [S]
+    anti_pattern: false
+
+  - id: x03_gpuburn_torch
+    track: X
+    task: x.calib
+    versions_cmd: ["uv", "run", "--frozen", "--project", "contestants/python/embed", "python", "-m", "zj_embed.envcheck"]
+    cmd: ["uv", "run", "--frozen", "--project", "contestants/python/embed", "python", "-m", "zj_embed.gpuburn"]
+    args: ["--output", "{output}", "--seconds", "60"]
+    needs_gpu: true
+    servers: []
+    scales: [S]
+    anti_pattern: false
+
+  - id: x04_sleep30_rs
+    track: X
+    task: x.smoke
+    build: ["cargo", "build", "--release", "--locked", "--manifest-path", "contestants/rust/Cargo.toml", "-p", "zj-smoke"]
+    versions_cmd: ["rustc", "--version"]
+    cmd: ["contestants/rust/target/release/zj-smoke"]
+    args: ["--output", "{output}", "--rows", "{rows}", "--sleep", "30", "--threads", "{threads}"]
+    needs_gpu: false
+    servers: []
+    scales: [S]
+    anti_pattern: false
+
+  # ---- Track A: a.full (spec/track_a.md); Python env `df` (interpreter called directly, no `uv run` overhead) ----
+  - id: a01_py_csv_loop
+    track: A
+    task: a.full
+    build: ["uv", "sync", "--frozen", "--project", "contestants/python/df"]
+    versions_cmd: ["contestants/python/df/.venv/bin/python", "-m", "zj_df.envcheck"]
+    cmd: ["contestants/python/df/.venv/bin/python", "-m", "zj_df.a01_py_csv_loop"]
+    args: ["--input", "{input}", "--output", "{output}", "--threads", "{threads}", "--lexicon", "spec/track_a_lexicon.json"]
+    needs_gpu: false
+    servers: []
+    scales: [S, M, L]
+    anti_pattern: false
+
+  - id: a02_pandas_iterrows
+    track: A
+    task: a.full
+    build: ["uv", "sync", "--frozen", "--project", "contestants/python/df"]
+    versions_cmd: ["contestants/python/df/.venv/bin/python", "-m", "zj_df.envcheck"]
+    cmd: ["contestants/python/df/.venv/bin/python", "-m", "zj_df.a02_pandas_iterrows"]
+    args: ["--input", "{input}", "--output", "{output}", "--threads", "{threads}", "--lexicon", "spec/track_a_lexicon.json"]
+    needs_gpu: false
+    servers: []
+    scales: [S, M]
+    anti_pattern: true
+
+  - id: a03_pandas_itertuples
+    track: A
+    task: a.full
+    build: ["uv", "sync", "--frozen", "--project", "contestants/python/df"]
+    versions_cmd: ["contestants/python/df/.venv/bin/python", "-m", "zj_df.envcheck"]
+    cmd: ["contestants/python/df/.venv/bin/python", "-m", "zj_df.a03_pandas_itertuples"]
+    args: ["--input", "{input}", "--output", "{output}", "--threads", "{threads}", "--lexicon", "spec/track_a_lexicon.json"]
+    needs_gpu: false
+    servers: []
+    scales: [S, M, L]
+    anti_pattern: false
+
+  - id: a04_pandas_apply
+    track: A
+    task: a.full
+    build: ["uv", "sync", "--frozen", "--project", "contestants/python/df"]
+    versions_cmd: ["contestants/python/df/.venv/bin/python", "-m", "zj_df.envcheck"]
+    cmd: ["contestants/python/df/.venv/bin/python", "-m", "zj_df.a04_pandas_apply"]
+    args: ["--input", "{input}", "--output", "{output}", "--threads", "{threads}", "--lexicon", "spec/track_a_lexicon.json"]
+    needs_gpu: false
+    servers: []
+    scales: [S, M, L]
+    anti_pattern: false
+
+  - id: a09_polars_eager
+    track: A
+    task: a.full
+    build: ["uv", "sync", "--frozen", "--project", "contestants/python/df"]
+    versions_cmd: ["contestants/python/df/.venv/bin/python", "-m", "zj_df.envcheck"]
+    cmd: ["contestants/python/df/.venv/bin/python", "-m", "zj_df.a09_polars_eager"]
+    args: ["--input", "{input}", "--output", "{output}", "--threads", "{threads}", "--lexicon", "spec/track_a_lexicon.json"]
+    needs_gpu: false
+    servers: []
+    scales: [S, M, L]
+    anti_pattern: false
+
+  - id: a10_polars_lazy
+    track: A
+    task: a.full
+    build: ["uv", "sync", "--frozen", "--project", "contestants/python/df"]
+    versions_cmd: ["contestants/python/df/.venv/bin/python", "-m", "zj_df.envcheck"]
+    cmd: ["contestants/python/df/.venv/bin/python", "-m", "zj_df.a10_polars_lazy"]
+    args: ["--input", "{input}", "--output", "{output}", "--threads", "{threads}", "--lexicon", "spec/track_a_lexicon.json"]
+    needs_gpu: false
+    servers: []
+    scales: [S, M, L, XL]  # XL: L runs < 10 s → too short for confident energy (PLAN §14)
+    anti_pattern: false
+
+  - id: a11_polars_streaming
+    track: A
+    task: a.full
+    build: ["uv", "sync", "--frozen", "--project", "contestants/python/df"]
+    versions_cmd: ["contestants/python/df/.venv/bin/python", "-m", "zj_df.envcheck"]
+    cmd: ["contestants/python/df/.venv/bin/python", "-m", "zj_df.a11_polars_streaming"]
+    args: ["--input", "{input}", "--output", "{output}", "--threads", "{threads}", "--lexicon", "spec/track_a_lexicon.json"]
+    needs_gpu: false
+    servers: []
+    scales: [S, M, L, XL]  # XL: L runs < 10 s → too short for confident energy (PLAN §14)
+    anti_pattern: false
+
+  - id: a13_duckdb_py
+    track: A
+    task: a.full
+    # encodings extension installed here, never during the measured run
+    build: ["sh", "-c", "uv sync --frozen --project contestants/python/df && contestants/python/df/.venv/bin/python -c \"import duckdb; duckdb.sql('INSTALL encodings')\""]
+    versions_cmd: ["contestants/python/df/.venv/bin/python", "-m", "zj_df.envcheck"]
+    cmd: ["contestants/python/df/.venv/bin/python", "-m", "zj_df.a13_duckdb_py"]
+    args: ["--input", "{input}", "--output", "{output}", "--threads", "{threads}", "--lexicon", "spec/track_a_lexicon.json"]
+    needs_gpu: false
+    servers: []
+    scales: [S, M, L, XL]  # XL: L runs < 10 s → too short for confident energy (PLAN §14)
+    anti_pattern: false
+
+  - id: a05_pandas_vectorized
+    track: A
+    task: a.full
+    build: ["uv", "sync", "--frozen", "--project", "contestants/python/df"]
+    versions_cmd: ["contestants/python/df/.venv/bin/python", "-m", "zj_df.envcheck"]
+    cmd: ["contestants/python/df/.venv/bin/python", "-m", "zj_df.a05_pandas_vectorized"]
+    args: ["--input", "{input}", "--output", "{output}", "--threads", "{threads}", "--lexicon", "spec/track_a_lexicon.json"]
+    needs_gpu: false
+    servers: []
+    scales: [S, M, L]
+    anti_pattern: false
+
+  - id: a06_pandas_arrow
+    track: A
+    task: a.full
+    build: ["uv", "sync", "--frozen", "--project", "contestants/python/df"]
+    versions_cmd: ["contestants/python/df/.venv/bin/python", "-m", "zj_df.envcheck"]
+    cmd: ["contestants/python/df/.venv/bin/python", "-m", "zj_df.a06_pandas_arrow"]
+    args: ["--input", "{input}", "--output", "{output}", "--threads", "{threads}", "--lexicon", "spec/track_a_lexicon.json"]
+    needs_gpu: false
+    servers: []
+    scales: [S, M, L]
+    anti_pattern: false
+
+  - id: a08_polars_map_elements
+    track: A
+    task: a.full
+    build: ["uv", "sync", "--frozen", "--project", "contestants/python/df"]
+    versions_cmd: ["contestants/python/df/.venv/bin/python", "-m", "zj_df.envcheck"]
+    cmd: ["contestants/python/df/.venv/bin/python", "-m", "zj_df.a08_polars_map_elements"]
+    args: ["--input", "{input}", "--output", "{output}", "--threads", "{threads}", "--lexicon", "spec/track_a_lexicon.json"]
+    needs_gpu: false
+    servers: []
+    scales: [S, M]  # anti-pattern shown at M like a02; L took 203 s unmeasured (superlinear), 6 reps ≈ 20 min
+    anti_pattern: true
+
+  # ---- Track A GPU contestants; Python env `gpu_df` (polars 1.44.2 pinned by cudf-polars, ADR 0002) ----
+  - id: a07_cudf_pandas
+    track: A
+    task: a.full
+    build: ["uv", "sync", "--frozen", "--project", "contestants/python/gpu_df"]
+    versions_cmd: ["contestants/python/gpu_df/.venv/bin/python", "-m", "zj_gpu_df.envcheck"]
+    # runs the unchanged a05 module under cudf.pandas; GPU/CPU-fallback call counts in result.extra
+    cmd: ["contestants/python/gpu_df/.venv/bin/python", "-m", "zj_gpu_df.a07_cudf_pandas"]
+    args: ["--input", "{input}", "--output", "{output}", "--threads", "{threads}", "--lexicon", "spec/track_a_lexicon.json"]
+    needs_gpu: true
+    servers: []
+    scales: [S, M, L]
+    anti_pattern: false
+
+  - id: a12_polars_gpu
+    track: A
+    task: a.full
+    build: ["uv", "sync", "--frozen", "--project", "contestants/python/gpu_df"]
+    versions_cmd: ["contestants/python/gpu_df/.venv/bin/python", "-m", "zj_gpu_df.envcheck"]
+    # a10's plan with GPUEngine(raise_on_fail=True). 2026-11-07: fails (7 ops unsupported, e.g. NFC
+    # normalize, extract_many); kept at S so the loud failure is recorded, not hidden (rules 4, 6)
+    cmd: ["contestants/python/gpu_df/.venv/bin/python", "-m", "zj_gpu_df.a12_polars_gpu"]
+    args: ["--input", "{input}", "--output", "{output}", "--threads", "{threads}", "--lexicon", "spec/track_a_lexicon.json"]
+    needs_gpu: true
+    servers: []
+    scales: [S]
+    anti_pattern: false
+
+  - id: a23_polars_gpu_hybrid
+    track: A
+    task: a.full
+    build: ["uv", "sync", "--frozen", "--project", "contestants/python/gpu_df"]
+    versions_cmd: ["contestants/python/gpu_df/.venv/bin/python", "-m", "zj_gpu_df.envcheck"]
+    # Extra: explicit hand split, CPU normalise+expand → GPU fields (raise_on_fail=True) → CPU
+    # komponente; GPU-supported rewrites of 4 expressions, golden-tested (ADR 0011)
+    cmd: ["contestants/python/gpu_df/.venv/bin/python", "-m", "zj_gpu_df.a23_polars_gpu_hybrid"]
+    args: ["--input", "{input}", "--output", "{output}", "--threads", "{threads}", "--lexicon", "spec/track_a_lexicon.json"]
+    needs_gpu: true
+    servers: []
+    scales: [S, M, L, XL]
+    anti_pattern: false
+
+  # ---- Track A Rust contestants (cargo workspace contestants/rust, release: fat LTO, codegen-units 1) ----
+  - id: a15_rs_polars
+    track: A
+    task: a.full
+    build: ["cargo", "build", "--release", "--locked", "--manifest-path", "contestants/rust/Cargo.toml", "-p", "a15-rs-polars"]
+    versions_cmd: ["rustc", "--version"]
+    cmd: ["contestants/rust/target/release/a15-rs-polars"]
+    args: ["--input", "{input}", "--output", "{output}", "--threads", "{threads}", "--lexicon", "spec/track_a_lexicon.json"]
+    needs_gpu: false
+    servers: []
+    scales: [S, M, L, XL]
+    anti_pattern: false
+
+  - id: a16_rs_arrow_rayon
+    track: A
+    task: a.full
+    build: ["cargo", "build", "--release", "--locked", "--manifest-path", "contestants/rust/Cargo.toml", "-p", "a16-rs-arrow-rayon"]
+    versions_cmd: ["rustc", "--version"]
+    cmd: ["contestants/rust/target/release/a16-rs-arrow-rayon"]
+    args: ["--input", "{input}", "--output", "{output}", "--threads", "{threads}", "--lexicon", "spec/track_a_lexicon.json"]
+    needs_gpu: false
+    servers: []
+    scales: [S, M, L, XL]
+    anti_pattern: false
+
+  - id: a17_rs_handrolled
+    track: A
+    task: a.full
+    build: ["cargo", "build", "--release", "--locked", "--manifest-path", "contestants/rust/Cargo.toml", "-p", "a17-rs-handrolled"]
+    versions_cmd: ["rustc", "--version"]
+    cmd: ["contestants/rust/target/release/a17-rs-handrolled"]
+    args: ["--input", "{input}", "--output", "{output}", "--threads", "{threads}", "--lexicon", "spec/track_a_lexicon.json"]
+    needs_gpu: false
+    servers: []
+    scales: [S, M, L, XL]
+    anti_pattern: false
+
+  # ---- Track B (Phase 5): bge-m3 embeddings, spec/track_b.md; ONNX models from `task trackB:onnx` ----
+  - id: b00_ort_cpu_int8
+    track: B
+    task: b.embed
+    build: ["uv", "sync", "--frozen", "--project", "contestants/python/embed"]
+    versions_cmd: ["contestants/python/embed/.venv/bin/python", "-m", "zj_embed.envcheck"]
+    # CPU baseline: ORT fused graph, int8 MatMuls except FFN down-proj (ADR 0013); ≈ 45 s/1k docs → S only
+    cmd: ["contestants/python/embed/.venv/bin/python", "-m", "zj_embed.b00_ort_cpu_int8"]
+    args: ["--input", "{input}", "--output", "{output}", "--threads", "{threads}"]
+    needs_gpu: false
+    servers: []
+    scales: [S]
+    anti_pattern: false
+
+  - id: b01_st_fp32
+    track: B
+    task: b.embed
+    build: ["uv", "sync", "--frozen", "--project", "contestants/python/embed"]
+    versions_cmd: ["contestants/python/embed/.venv/bin/python", "-m", "zj_embed.envcheck"]
+    # reference path (sentence-transformers fp32, batch 32)
+    cmd: ["contestants/python/embed/.venv/bin/python", "-m", "zj_embed.b01_st_fp32"]
+    args: ["--input", "{input}", "--output", "{output}", "--threads", "{threads}"]
+    needs_gpu: true
+    servers: []
+    scales: [S, M, real]
+    anti_pattern: false
+
+  - id: b02_st_fp16
+    track: B
+    task: b.embed
+    build: ["uv", "sync", "--frozen", "--project", "contestants/python/embed"]
+    versions_cmd: ["contestants/python/embed/.venv/bin/python", "-m", "zj_embed.envcheck"]
+    # sentence-transformers fp16, library defaults
+    cmd: ["contestants/python/embed/.venv/bin/python", "-m", "zj_embed.b02_st_fp16"]
+    args: ["--input", "{input}", "--output", "{output}", "--threads", "{threads}"]
+    needs_gpu: true
+    servers: []
+    scales: [S, M, real]
+    anti_pattern: false
+
+  - id: b03_st_fp16_sorted
+    track: B
+    task: b.embed
+    build: ["uv", "sync", "--frozen", "--project", "contestants/python/embed"]
+    versions_cmd: ["contestants/python/embed/.venv/bin/python", "-m", "zj_embed.envcheck"]
+    # token-length sorted, token-budget batches, fp16 SDPA
+    cmd: ["contestants/python/embed/.venv/bin/python", "-m", "zj_embed.b03_st_fp16_sorted"]
+    args: ["--input", "{input}", "--output", "{output}", "--threads", "{threads}"]
+    needs_gpu: true
+    servers: []
+    scales: [S, M, real]
+    anti_pattern: false
+
+  - id: b04_ort_cuda
+    track: B
+    task: b.embed
+    build: ["uv", "sync", "--frozen", "--project", "contestants/python/embed"]
+    versions_cmd: ["contestants/python/embed/.venv/bin/python", "-m", "zj_embed.envcheck"]
+    # ORT CUDA EP, fused fp16; 4 shape-only nodes on CPU, logged per run (ADR 0013)
+    cmd: ["contestants/python/embed/.venv/bin/python", "-m", "zj_embed.b04_ort_cuda"]
+    args: ["--input", "{input}", "--output", "{output}", "--threads", "{threads}"]
+    needs_gpu: true
+    servers: []
+    scales: [S, M, real]
+    anti_pattern: false
+
+  - id: b06_tei
+    track: B
+    task: b.embed
+    build: ["sh", "-c", "uv sync --frozen --project contestants/python/embed && docker pull -q ghcr.io/huggingface/text-embeddings-inference:120-1.9.4@sha256:bd8e5b1954146f7fe8590b64b959bc194433c6c38c036592a84d736841ca9400"]
+    versions_cmd: ["contestants/python/embed/.venv/bin/python", "-m", "zj_embed.envcheck"]
+    # TEI 1.9.4 server (Docker), fp16 FlashBert; the contestant starts/stops its container, start-up = stage load (ADR 0015)
+    cmd: ["contestants/python/embed/.venv/bin/python", "-m", "zj_embed.b06_tei"]
+    args: ["--input", "{input}", "--output", "{output}", "--threads", "{threads}"]
+    needs_gpu: true
+    servers: []
+    scales: [S, M, real]
+    anti_pattern: false
+
+  - id: b07_vllm_pooling
+    track: B
+    task: b.embed
+    build: ["sh", "-c", "uv sync --frozen --project contestants/python/embed && docker pull -q vllm/vllm-openai:v0.33.0@sha256:d825baf9ce4b1b6bfc5ecc7b79880c7e6748c65a72d697ce3d47607aafa84c6e"]
+    versions_cmd: ["contestants/python/embed/.venv/bin/python", "-m", "zj_embed.envcheck"]
+    # vLLM 0.33.0 pooling runner (Docker), fp16; compile caches in models/cache/vllm (ADR 0015)
+    cmd: ["contestants/python/embed/.venv/bin/python", "-m", "zj_embed.b07_vllm_pooling"]
+    args: ["--input", "{input}", "--output", "{output}", "--threads", "{threads}"]
+    needs_gpu: true
+    servers: []
+    scales: [S, M, real]
+    anti_pattern: false
+
+  - id: b08_llamacpp_embed
+    track: B
+    task: b.embed
+    build: ["sh", "-c", "uv sync --frozen --project contestants/python/embed && docker pull -q ghcr.io/ggml-org/llama.cpp:server-cuda-b12169@sha256:5bb779a449a18d8f4333e9814e887746342fe555c528f5eabc92b2093e32673a"]
+    versions_cmd: ["contestants/python/embed/.venv/bin/python", "-m", "zj_embed.envcheck"]
+    # llama.cpp b12169 llama-server --embedding (Docker), GGUF f16; client sends token ids (ADR 0015)
+    cmd: ["contestants/python/embed/.venv/bin/python", "-m", "zj_embed.b08_llamacpp_embed"]
+    args: ["--input", "{input}", "--output", "{output}", "--threads", "{threads}"]
+    needs_gpu: true
+    servers: []
+    scales: [S, M, real]
+    anti_pattern: false
+
+  - id: b10_rs_ort
+    track: B
+    task: b.embed
+    # needs the embed env (libonnxruntime.so 1.31.1 + CUDA/cuDNN wheels) and the b04 graph (task trackB:onnx)
+    build: ["sh", "-c", "uv sync --frozen --project contestants/python/embed && cargo build --release --locked --manifest-path contestants/rust/Cargo.toml -p b10-rs-ort"]
+    versions_cmd: ["rustc", "--version"]
+    # Rust `ort` 2.0.0-rc.15 + `tokenizers` 0.22.2; same ORT build, graph and batching as b04 (ADR 0015)
+    cmd: ["contestants/rust/target/release/b10-rs-ort"]
+    args: ["--input", "{input}", "--output", "{output}", "--threads", "{threads}"]
+    needs_gpu: true
+    servers: []
+    scales: [S, M, real]
+    anti_pattern: false
+
+  - id: c00_exact_gpu
+    track: C
+    task: c.dense
+    build: ["uv", "sync", "--frozen", "--project", "contestants/python/embed"]
+    versions_cmd: ["contestants/python/embed/.venv/bin/python", "-m", "zj_embed.envcheck"]
+    # torch fp32 exact filtered brute force on the GPU (the recall ground truth's GPU twin, spec/track_c.md)
+    cmd: ["contestants/python/embed/.venv/bin/python", "-m", "zj_embed.c00_exact_gpu"]
+    args: ["--input", "{input}", "--output", "{output}", "--threads", "{threads}"]
+    needs_gpu: true
+    servers: []
+    scales: [M, real]
+    anti_pattern: false
+
+  - id: c01_faiss_cpu
+    track: C
+    task: c.dense
+    build: ["uv", "sync", "--frozen", "--project", "contestants/python/db"]
+    versions_cmd: ["contestants/python/db/.venv/bin/python", "-m", "zjmark.envinfo", "faiss-cpu", "duckdb", "sqlite-vec", "psycopg", "pgvector", "qdrant-client", "lancedb", "pyarrow", "numpy", "zjmark"]
+    # FAISS IndexHNSWSQ fp16 (M=16, efC=200); selective filters → exact over the subset
+    cmd: ["contestants/python/db/.venv/bin/python", "-m", "zj_db.c01_faiss_cpu"]
+    args: ["--input", "{input}", "--output", "{output}", "--threads", "{threads}"]
+    needs_gpu: false
+    servers: []
+    scales: [M, real]
+    anti_pattern: false
+
+  - id: c02_cuvs_cagra
+    track: C
+    task: c.dense
+    build: ["uv", "sync", "--frozen", "--project", "contestants/python/gpu_vs"]
+    versions_cmd: ["contestants/python/gpu_vs/.venv/bin/python", "-m", "zjmark.envinfo", "cuvs-cu13", "cupy-cuda13x", "pyarrow", "numpy", "zjmark"]
+    # RAPIDS cuVS CAGRA on the GPU, filters as bitset (ADR 0016)
+    cmd: ["contestants/python/gpu_vs/.venv/bin/python", "-m", "zj_gpu_vs.c02_cuvs_cagra"]
+    args: ["--input", "{input}", "--output", "{output}", "--threads", "{threads}"]
+    needs_gpu: true
+    servers: []
+    scales: [M, real]
+    anti_pattern: false
+
+  - id: c03_pgvector
+    track: C
+    task: c.dense
+    build: ["sh", "-c", "uv sync --frozen --project contestants/python/db && docker pull -q pgvector/pgvector:0.8.7-pg18-trixie@sha256:5895949dfcdf308eb0cd31c950c93c14895c77f33fbedfecf1fa511ab1d4bcd2"]
+    versions_cmd: ["contestants/python/db/.venv/bin/python", "-m", "zjmark.envinfo", "faiss-cpu", "duckdb", "sqlite-vec", "psycopg", "pgvector", "qdrant-client", "lancedb", "pyarrow", "numpy", "zjmark"]
+    # PostgreSQL 18.6 + pgvector 0.8.7 (Docker), halfvec HNSW + B-tree filter indexes, iterative scan
+    cmd: ["contestants/python/db/.venv/bin/python", "-m", "zj_db.c03_pgvector"]
+    args: ["--input", "{input}", "--output", "{output}", "--threads", "{threads}"]
+    needs_gpu: false
+    servers: []
+    scales: [M, real]
+    anti_pattern: false
+
+  - id: c05_duckdb_vss
+    track: C
+    task: c.dense
+    build: ["sh", "-c", "uv sync --frozen --project contestants/python/db && contestants/python/db/.venv/bin/python -c \"import duckdb; duckdb.connect().execute('INSTALL vss')\""]
+    versions_cmd: ["contestants/python/db/.venv/bin/python", "-m", "zjmark.envinfo", "faiss-cpu", "duckdb", "sqlite-vec", "psycopg", "pgvector", "qdrant-client", "lancedb", "pyarrow", "numpy", "zjmark"]
+    # DuckDB 2.0 + vss HNSW (FLOAT[1024], ip), on-disk; the build installs the vss extension (download)
+    cmd: ["contestants/python/db/.venv/bin/python", "-m", "zj_db.c05_duckdb_vss"]
+    args: ["--input", "{input}", "--output", "{output}", "--threads", "{threads}"]
+    needs_gpu: false
+    servers: []
+    scales: [M, real]
+    anti_pattern: false
+
+  - id: c06_sqlite_vec
+    track: C
+    task: c.dense
+    build: ["uv", "sync", "--frozen", "--project", "contestants/python/db"]
+    versions_cmd: ["contestants/python/db/.venv/bin/python", "-m", "zjmark.envinfo", "faiss-cpu", "duckdb", "sqlite-vec", "psycopg", "pgvector", "qdrant-client", "lancedb", "pyarrow", "numpy", "zjmark"]
+    # SQLite 3.53 + sqlite-vec 0.1.9 vec0: exact KNN with metadata filters (no ANN index)
+    cmd: ["contestants/python/db/.venv/bin/python", "-m", "zj_db.c06_sqlite_vec"]
+    args: ["--input", "{input}", "--output", "{output}", "--threads", "{threads}"]
+    needs_gpu: false
+    servers: []
+    scales: [M, real]
+    anti_pattern: false
+
+  - id: c07_lancedb
+    track: C
+    task: c.dense
+    build: ["uv", "sync", "--frozen", "--project", "contestants/python/db"]
+    versions_cmd: ["contestants/python/db/.venv/bin/python", "-m", "zjmark.envinfo", "faiss-cpu", "duckdb", "sqlite-vec", "psycopg", "pgvector", "qdrant-client", "lancedb", "pyarrow", "numpy", "zjmark"]
+    # LanceDB 0.41 IVF_HNSW_SQ (dot) + bitmap/btree scalar indexes, prefilter, all partitions probed
+    cmd: ["contestants/python/db/.venv/bin/python", "-m", "zj_db.c07_lancedb"]
+    args: ["--input", "{input}", "--output", "{output}", "--threads", "{threads}"]
+    needs_gpu: false
+    servers: []
+    scales: [M, real]
+    anti_pattern: false
+
+  - id: c08_qdrant_cpu
+    track: C
+    task: c.dense
+    build: ["sh", "-c", "uv sync --frozen --project contestants/python/db && docker pull -q qdrant/qdrant:v1.20.0-gpu-nvidia@sha256:002d66bfe0d7115eb4bb60beaa90c21d649e7356756737f1904481caa72cec67"]
+    versions_cmd: ["contestants/python/db/.venv/bin/python", "-m", "zjmark.envinfo", "faiss-cpu", "duckdb", "sqlite-vec", "psycopg", "pgvector", "qdrant-client", "lancedb", "pyarrow", "numpy", "zjmark"]
+    # Qdrant 1.20 (Docker), HNSW fp16 Dot + payload indexes, CPU indexing
+    cmd: ["contestants/python/db/.venv/bin/python", "-m", "zj_db.c08_qdrant", "--gpu", "0"]
+    args: ["--input", "{input}", "--output", "{output}", "--threads", "{threads}"]
+    needs_gpu: false
+    servers: []
+    scales: [M, real]
+    anti_pattern: false
+
+  - id: c08_qdrant_gpu
+    track: C
+    task: c.dense
+    build: ["sh", "-c", "uv sync --frozen --project contestants/python/db && docker pull -q qdrant/qdrant:v1.20.0-gpu-nvidia@sha256:002d66bfe0d7115eb4bb60beaa90c21d649e7356756737f1904481caa72cec67"]
+    versions_cmd: ["contestants/python/db/.venv/bin/python", "-m", "zjmark.envinfo", "faiss-cpu", "duckdb", "sqlite-vec", "psycopg", "pgvector", "qdrant-client", "lancedb", "pyarrow", "numpy", "zjmark"]
+    # Qdrant 1.20 (Docker), same as c08_qdrant_cpu but HNSW built on the GPU (Vulkan); log-checked per segment
+    cmd: ["contestants/python/db/.venv/bin/python", "-m", "zj_db.c08_qdrant", "--gpu", "1"]
+    args: ["--input", "{input}", "--output", "{output}", "--threads", "{threads}"]
+    needs_gpu: true
+    servers: []
+    scales: [M, real]
+    anti_pattern: false
+
+  - id: c11_tantivy
+    track: C
+    task: c.lexical
+    build: ["cargo", "build", "--release", "--locked", "--manifest-path", "contestants/rust/Cargo.toml", "-p", "c11-tantivy"]
+    versions_cmd: ["rustc", "--version"]
+    # Rust Tantivy 0.27 BM25 (German Snowball), constant-score filters: the lexical baseline (PLAN §9)
+    cmd: ["contestants/rust/target/release/c11-tantivy"]
+    args: ["--input", "{input}", "--output", "{output}", "--threads", "{threads}"]
+    needs_gpu: false
+    servers: []
+    scales: [M, real]
+    anti_pattern: false
+
+  - id: c03_pgvector_hybrid
+    track: C
+    task: c.hybrid
+    build: ["sh", "-c", "uv sync --frozen --project contestants/python/db && docker pull -q pgvector/pgvector:0.8.7-pg18-trixie@sha256:5895949dfcdf308eb0cd31c950c93c14895c77f33fbedfecf1fa511ab1d4bcd2"]
+    versions_cmd: ["contestants/python/db/.venv/bin/python", "-m", "zjmark.envinfo", "faiss-cpu", "duckdb", "sqlite-vec", "psycopg", "pgvector", "qdrant-client", "lancedb", "pyarrow", "numpy", "zjmark"]
+    # pgvector HNSW + tsvector(german)/GIN ranked by ts_rank (NOT BM25), RRF in one SQL statement
+    cmd: ["contestants/python/db/.venv/bin/python", "-m", "zj_db.c03_pgvector_hybrid"]
+    args: ["--input", "{input}", "--output", "{output}", "--threads", "{threads}"]
+    needs_gpu: false
+    servers: []
+    scales: [M, real]
+    anti_pattern: false
+
+  - id: c05_duckdb_hybrid
+    track: C
+    task: c.hybrid
+    build: ["sh", "-c", "uv sync --frozen --project contestants/python/db && contestants/python/db/.venv/bin/python -c \"import duckdb; c = duckdb.connect(); c.execute('INSTALL vss'); c.execute('INSTALL fts')\""]
+    versions_cmd: ["contestants/python/db/.venv/bin/python", "-m", "zjmark.envinfo", "faiss-cpu", "duckdb", "sqlite-vec", "psycopg", "pgvector", "qdrant-client", "lancedb", "pyarrow", "numpy", "zjmark"]
+    # DuckDB vss HNSW + fts match_bm25 (german stemmer), RRF in one SQL statement
+    cmd: ["contestants/python/db/.venv/bin/python", "-m", "zj_db.c05_duckdb_hybrid"]
+    args: ["--input", "{input}", "--output", "{output}", "--threads", "{threads}"]
+    needs_gpu: false
+    servers: []
+    scales: [M, real]
+    anti_pattern: false
+
+  - id: c06_sqlite_hybrid
+    track: C
+    task: c.hybrid
+    build: ["uv", "sync", "--frozen", "--project", "contestants/python/db"]
+    versions_cmd: ["contestants/python/db/.venv/bin/python", "-m", "zjmark.envinfo", "faiss-cpu", "duckdb", "sqlite-vec", "psycopg", "pgvector", "qdrant-client", "lancedb", "pyarrow", "numpy", "zjmark"]
+    # sqlite-vec exact KNN + FTS5 bm25() (unicode61, no German stemmer exists), RRF in one SQL statement
+    cmd: ["contestants/python/db/.venv/bin/python", "-m", "zj_db.c06_sqlite_hybrid"]
+    args: ["--input", "{input}", "--output", "{output}", "--threads", "{threads}"]
+    needs_gpu: false
+    servers: []
+    scales: [M, real]
+    anti_pattern: false
+
+  - id: c07_lancedb_hybrid
+    track: C
+    task: c.hybrid
+    build: ["uv", "sync", "--frozen", "--project", "contestants/python/db"]
+    versions_cmd: ["contestants/python/db/.venv/bin/python", "-m", "zjmark.envinfo", "faiss-cpu", "duckdb", "sqlite-vec", "psycopg", "pgvector", "qdrant-client", "lancedb", "pyarrow", "numpy", "zjmark"]
+    # LanceDB native hybrid: IVF_HNSW_SQ + native FTS (BM25, German stemmer) + RRFReranker, prefilter
+    cmd: ["contestants/python/db/.venv/bin/python", "-m", "zj_db.c07_lancedb_hybrid"]
+    args: ["--input", "{input}", "--output", "{output}", "--threads", "{threads}"]
+    needs_gpu: false
+    servers: []
+    scales: [M, real]
+    anti_pattern: false
+
+  - id: c08_qdrant_hybrid
+    track: C
+    task: c.hybrid
+    build: ["sh", "-c", "uv sync --frozen --project contestants/python/db && docker pull -q qdrant/qdrant:v1.20.0-gpu-nvidia@sha256:002d66bfe0d7115eb4bb60beaa90c21d649e7356756737f1904481caa72cec67"]
+    versions_cmd: ["contestants/python/db/.venv/bin/python", "-m", "zjmark.envinfo", "faiss-cpu", "duckdb", "sqlite-vec", "psycopg", "pgvector", "qdrant-client", "lancedb", "pyarrow", "numpy", "zjmark"]
+    # Qdrant 1.20 native hybrid: HNSW fp16 + BM25 text index (German stemmer), server-side RRF prefetch
+    cmd: ["contestants/python/db/.venv/bin/python", "-m", "zj_db.c08_qdrant_hybrid"]
+    args: ["--input", "{input}", "--output", "{output}", "--threads", "{threads}"]
+    needs_gpu: false
+    servers: []
+    scales: [M, real]
+    anti_pattern: false

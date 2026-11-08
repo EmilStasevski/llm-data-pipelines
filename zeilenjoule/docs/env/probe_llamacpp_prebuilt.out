@@ -1,0 +1,12 @@
+0.00.215.606 I cmn  common_param: common_params_print_info: build 12169 (3ed7284f2) with GNU 14.2.0 for Linux x86_64
+0.00.215.607 I cmn  common_param: device_info:
+0.00.344.329 I cmn  common_param:   - CUDA0   : NVIDIA GeForce RTX 5060 Ti (15839 MiB, 15319 MiB free)
+0.00.344.474 I cmn  common_param: system_info: n_threads = 6 (n_threads_batch = 6) / 16 | CUDA : ARCHS = 500,610,700,750,800,860,890,900,1200 | USE_GRAPHS = 1 | FA_QUANTS = q4_0-q4_0,q8_0-q8_0,f16-f16
+0.00.344.941 D srv  init_listene: serve nocache for build.json
+0.00.349.619 I cmn  common_fit_a: fitting params to device memory ...
+0.00.349.708 I common_params_fit_impl: getting device memory data for initial parameters:
+0.00.396.893 I llama_prepare_model_devices: using device CUDA0 (NVIDIA GeForce RTX 5060 Ti) (0000:01:00.0) - 15319 MiB free
+0.00.545.836 D load_tensors: layer   0 assigned to device CUDA0, is_swa = 0
+0.00.545.868 D load_tensors: layer   1 assigned to device CUDA0, is_swa = 0
+0.00.545.881 D load_tensors: layer   2 assigned to device CUDA0, is_swa = 0
+0.00.545.892 D load_tensors: layer   3 assigned to device CUDA0, is_swa = 0

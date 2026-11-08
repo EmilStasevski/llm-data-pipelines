@@ -1,0 +1,26 @@
+[package]
+name = "a17-rs-handrolled"
+description = "Track A contestant a17_rs_handrolled: mmap + memchr chunking + rayon + hand-written parsers + parallel Parquet encoding"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+publish.workspace = true
+
+[dependencies]
+zj-track-a.workspace = true
+zjmark.workspace = true
+tikv-jemallocator.workspace = true
+serde_json.workspace = true
+rayon.workspace = true
+memchr.workspace = true
+memmap2.workspace = true
+arrow-array.workspace = true
+arrow-select.workspace = true
+arrow-ord.workspace = true
+parquet.workspace = true
+
+[dev-dependencies]
+encoding_rs.workspace = true
+
+[lints]
+workspace = true

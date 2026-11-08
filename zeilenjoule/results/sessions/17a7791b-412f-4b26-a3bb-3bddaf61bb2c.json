@@ -1,0 +1,1477 @@
+{
+  "session_id": "17a7791b-412f-4b26-a3bb-3bddaf61bb2c",
+  "created": "2026-11-07T22:47:58Z",
+  "seed": 20261106,
+  "reps": 5,
+  "warmup": 1,
+  "interleave": true,
+  "threads": 0,
+  "scales": [
+    "S",
+    "M",
+    "L",
+    "XL"
+  ],
+  "contestants": [
+    "a05_pandas_vectorized",
+    "a06_pandas_arrow",
+    "a07_cudf_pandas",
+    "a08_polars_map_elements",
+    "a10_polars_lazy",
+    "a11_polars_streaming",
+    "a12_polars_gpu",
+    "a13_duckdb_py",
+    "a15_rs_polars",
+    "a16_rs_arrow_rayon",
+    "a17_rs_handrolled",
+    "a23_polars_gpu_hybrid"
+  ],
+  "items": [
+    {
+      "contestant": "a10_polars_lazy",
+      "scale": "S",
+      "rep": 1,
+      "warmup": true
+    },
+    {
+      "contestant": "a12_polars_gpu",
+      "scale": "S",
+      "rep": 1,
+      "warmup": true
+    },
+    {
+      "contestant": "a07_cudf_pandas",
+      "scale": "S",
+      "rep": 1,
+      "warmup": true
+    },
+    {
+      "contestant": "a23_polars_gpu_hybrid",
+      "scale": "S",
+      "rep": 1,
+      "warmup": true
+    },
+    {
+      "contestant": "a15_rs_polars",
+      "scale": "S",
+      "rep": 1,
+      "warmup": true
+    },
+    {
+      "contestant": "a11_polars_streaming",
+      "scale": "S",
+      "rep": 1,
+      "warmup": true
+    },
+    {
+      "contestant": "a16_rs_arrow_rayon",
+      "scale": "S",
+      "rep": 1,
+      "warmup": true
+    },
+    {
+      "contestant": "a13_duckdb_py",
+      "scale": "S",
+      "rep": 1,
+      "warmup": true
+    },
+    {
+      "contestant": "a08_polars_map_elements",
+      "scale": "S",
+      "rep": 1,
+      "warmup": true
+    },
+    {
+      "contestant": "a05_pandas_vectorized",
+      "scale": "S",
+      "rep": 1,
+      "warmup": true
+    },
+    {
+      "contestant": "a17_rs_handrolled",
+      "scale": "S",
+      "rep": 1,
+      "warmup": true
+    },
+    {
+      "contestant": "a06_pandas_arrow",
+      "scale": "S",
+      "rep": 1,
+      "warmup": true
+    },
+    {
+      "contestant": "a12_polars_gpu",
+      "scale": "S",
+      "rep": 1,
+      "warmup": false
+    },
+    {
+      "contestant": "a16_rs_arrow_rayon",
+      "scale": "S",
+      "rep": 1,
+      "warmup": false
+    },
+    {
+      "contestant": "a11_polars_streaming",
+      "scale": "S",
+      "rep": 1,
+      "warmup": false
+    },
+    {
+      "contestant": "a15_rs_polars",
+      "scale": "S",
+      "rep": 1,
+      "warmup": false
+    },
+    {
+      "contestant": "a13_duckdb_py",
+      "scale": "S",
+      "rep": 1,
+      "warmup": false
+    },
+    {
+      "contestant": "a07_cudf_pandas",
+      "scale": "S",
+      "rep": 1,
+      "warmup": false
+    },
+    {
+      "contestant": "a06_pandas_arrow",
+      "scale": "S",
+      "rep": 1,
+      "warmup": false
+    },
+    {
+      "contestant": "a10_polars_lazy",
+      "scale": "S",
+      "rep": 1,
+      "warmup": false
+    },
+    {
+      "contestant": "a23_polars_gpu_hybrid",
+      "scale": "S",
+      "rep": 1,
+      "warmup": false
+    },
+    {
+      "contestant": "a05_pandas_vectorized",
+      "scale": "S",
+      "rep": 1,
+      "warmup": false
+    },
+    {
+      "contestant": "a17_rs_handrolled",
+      "scale": "S",
+      "rep": 1,
+      "warmup": false
+    },
+    {
+      "contestant": "a08_polars_map_elements",
+      "scale": "S",
+      "rep": 1,
+      "warmup": false
+    },
+    {
+      "contestant": "a06_pandas_arrow",
+      "scale": "S",
+      "rep": 2,
+      "warmup": false
+    },
+    {
+      "contestant": "a08_polars_map_elements",
+      "scale": "S",
+      "rep": 2,
+      "warmup": false
+    },
+    {
+      "contestant": "a12_polars_gpu",
+      "scale": "S",
+      "rep": 2,
+      "warmup": false
+    },
+    {
+      "contestant": "a07_cudf_pandas",
+      "scale": "S",
+      "rep": 2,
+      "warmup": false
+    },
+    {
+      "contestant": "a13_duckdb_py",
+      "scale": "S",
+      "rep": 2,
+      "warmup": false
+    },
+    {
+      "contestant": "a11_polars_streaming",
+      "scale": "S",
+      "rep": 2,
+      "warmup": false
+    },
+    {
+      "contestant": "a17_rs_handrolled",
+      "scale": "S",
+      "rep": 2,
+      "warmup": false
+    },
+    {
+      "contestant": "a05_pandas_vectorized",
+      "scale": "S",
+      "rep": 2,
+      "warmup": false
+    },
+    {
+      "contestant": "a23_polars_gpu_hybrid",
+      "scale": "S",
+      "rep": 2,
+      "warmup": false
+    },
+    {
+      "contestant": "a16_rs_arrow_rayon",
+      "scale": "S",
+      "rep": 2,
+      "warmup": false
+    },
+    {
+      "contestant": "a15_rs_polars",
+      "scale": "S",
+      "rep": 2,
+      "warmup": false
+    },
+    {
+      "contestant": "a10_polars_lazy",
+      "scale": "S",
+      "rep": 2,
+      "warmup": false
+    },
+    {
+      "contestant": "a16_rs_arrow_rayon",
+      "scale": "S",
+      "rep": 3,
+      "warmup": false
+    },
+    {
+      "contestant": "a06_pandas_arrow",
+      "scale": "S",
+      "rep": 3,
+      "warmup": false
+    },
+    {
+      "contestant": "a17_rs_handrolled",
+      "scale": "S",
+      "rep": 3,
+      "warmup": false
+    },
+    {
+      "contestant": "a13_duckdb_py",
+      "scale": "S",
+      "rep": 3,
+      "warmup": false
+    },
+    {
+      "contestant": "a07_cudf_pandas",
+      "scale": "S",
+      "rep": 3,
+      "warmup": false
+    },
+    {
+      "contestant": "a08_polars_map_elements",
+      "scale": "S",
+      "rep": 3,
+      "warmup": false
+    },
+    {
+      "contestant": "a05_pandas_vectorized",
+      "scale": "S",
+      "rep": 3,
+      "warmup": false
+    },
+    {
+      "contestant": "a15_rs_polars",
+      "scale": "S",
+      "rep": 3,
+      "warmup": false
+    },
+    {
+      "contestant": "a11_polars_streaming",
+      "scale": "S",
+      "rep": 3,
+      "warmup": false
+    },
+    {
+      "contestant": "a10_polars_lazy",
+      "scale": "S",
+      "rep": 3,
+      "warmup": false
+    },
+    {
+      "contestant": "a12_polars_gpu",
+      "scale": "S",
+      "rep": 3,
+      "warmup": false
+    },
+    {
+      "contestant": "a23_polars_gpu_hybrid",
+      "scale": "S",
+      "rep": 3,
+      "warmup": false
+    },
+    {
+      "contestant": "a13_duckdb_py",
+      "scale": "S",
+      "rep": 4,
+      "warmup": false
+    },
+    {
+      "contestant": "a08_polars_map_elements",
+      "scale": "S",
+      "rep": 4,
+      "warmup": false
+    },
+    {
+      "contestant": "a06_pandas_arrow",
+      "scale": "S",
+      "rep": 4,
+      "warmup": false
+    },
+    {
+      "contestant": "a05_pandas_vectorized",
+      "scale": "S",
+      "rep": 4,
+      "warmup": false
+    },
+    {
+      "contestant": "a16_rs_arrow_rayon",
+      "scale": "S",
+      "rep": 4,
+      "warmup": false
+    },
+    {
+      "contestant": "a23_polars_gpu_hybrid",
+      "scale": "S",
+      "rep": 4,
+      "warmup": false
+    },
+    {
+      "contestant": "a17_rs_handrolled",
+      "scale": "S",
+      "rep": 4,
+      "warmup": false
+    },
+    {
+      "contestant": "a12_polars_gpu",
+      "scale": "S",
+      "rep": 4,
+      "warmup": false
+    },
+    {
+      "contestant": "a10_polars_lazy",
+      "scale": "S",
+      "rep": 4,
+      "warmup": false
+    },
+    {
+      "contestant": "a11_polars_streaming",
+      "scale": "S",
+      "rep": 4,
+      "warmup": false
+    },
+    {
+      "contestant": "a07_cudf_pandas",
+      "scale": "S",
+      "rep": 4,
+      "warmup": false
+    },
+    {
+      "contestant": "a15_rs_polars",
+      "scale": "S",
+      "rep": 4,
+      "warmup": false
+    },
+    {
+      "contestant": "a08_polars_map_elements",
+      "scale": "S",
+      "rep": 5,
+      "warmup": false
+    },
+    {
+      "contestant": "a16_rs_arrow_rayon",
+      "scale": "S",
+      "rep": 5,
+      "warmup": false
+    },
+    {
+      "contestant": "a07_cudf_pandas",
+      "scale": "S",
+      "rep": 5,
+      "warmup": false
+    },
+    {
+      "contestant": "a23_polars_gpu_hybrid",
+      "scale": "S",
+      "rep": 5,
+      "warmup": false
+    },
+    {
+      "contestant": "a11_polars_streaming",
+      "scale": "S",
+      "rep": 5,
+      "warmup": false
+    },
+    {
+      "contestant": "a06_pandas_arrow",
+      "scale": "S",
+      "rep": 5,
+      "warmup": false
+    },
+    {
+      "contestant": "a17_rs_handrolled",
+      "scale": "S",
+      "rep": 5,
+      "warmup": false
+    },
+    {
+      "contestant": "a15_rs_polars",
+      "scale": "S",
+      "rep": 5,
+      "warmup": false
+    },
+    {
+      "contestant": "a12_polars_gpu",
+      "scale": "S",
+      "rep": 5,
+      "warmup": false
+    },
+    {
+      "contestant": "a13_duckdb_py",
+      "scale": "S",
+      "rep": 5,
+      "warmup": false
+    },
+    {
+      "contestant": "a05_pandas_vectorized",
+      "scale": "S",
+      "rep": 5,
+      "warmup": false
+    },
+    {
+      "contestant": "a10_polars_lazy",
+      "scale": "S",
+      "rep": 5,
+      "warmup": false
+    },
+    {
+      "contestant": "a05_pandas_vectorized",
+      "scale": "M",
+      "rep": 1,
+      "warmup": true
+    },
+    {
+      "contestant": "a08_polars_map_elements",
+      "scale": "M",
+      "rep": 1,
+      "warmup": true
+    },
+    {
+      "contestant": "a11_polars_streaming",
+      "scale": "M",
+      "rep": 1,
+      "warmup": true
+    },
+    {
+      "contestant": "a15_rs_polars",
+      "scale": "M",
+      "rep": 1,
+      "warmup": true
+    },
+    {
+      "contestant": "a06_pandas_arrow",
+      "scale": "M",
+      "rep": 1,
+      "warmup": true
+    },
+    {
+      "contestant": "a23_polars_gpu_hybrid",
+      "scale": "M",
+      "rep": 1,
+      "warmup": true
+    },
+    {
+      "contestant": "a10_polars_lazy",
+      "scale": "M",
+      "rep": 1,
+      "warmup": true
+    },
+    {
+      "contestant": "a17_rs_handrolled",
+      "scale": "M",
+      "rep": 1,
+      "warmup": true
+    },
+    {
+      "contestant": "a07_cudf_pandas",
+      "scale": "M",
+      "rep": 1,
+      "warmup": true
+    },
+    {
+      "contestant": "a13_duckdb_py",
+      "scale": "M",
+      "rep": 1,
+      "warmup": true
+    },
+    {
+      "contestant": "a16_rs_arrow_rayon",
+      "scale": "M",
+      "rep": 1,
+      "warmup": true
+    },
+    {
+      "contestant": "a06_pandas_arrow",
+      "scale": "M",
+      "rep": 1,
+      "warmup": false
+    },
+    {
+      "contestant": "a17_rs_handrolled",
+      "scale": "M",
+      "rep": 1,
+      "warmup": false
+    },
+    {
+      "contestant": "a23_polars_gpu_hybrid",
+      "scale": "M",
+      "rep": 1,
+      "warmup": false
+    },
+    {
+      "contestant": "a13_duckdb_py",
+      "scale": "M",
+      "rep": 1,
+      "warmup": false
+    },
+    {
+      "contestant": "a05_pandas_vectorized",
+      "scale": "M",
+      "rep": 1,
+      "warmup": false
+    },
+    {
+      "contestant": "a11_polars_streaming",
+      "scale": "M",
+      "rep": 1,
+      "warmup": false
+    },
+    {
+      "contestant": "a07_cudf_pandas",
+      "scale": "M",
+      "rep": 1,
+      "warmup": false
+    },
+    {
+      "contestant": "a10_polars_lazy",
+      "scale": "M",
+      "rep": 1,
+      "warmup": false
+    },
+    {
+      "contestant": "a16_rs_arrow_rayon",
+      "scale": "M",
+      "rep": 1,
+      "warmup": false
+    },
+    {
+      "contestant": "a15_rs_polars",
+      "scale": "M",
+      "rep": 1,
+      "warmup": false
+    },
+    {
+      "contestant": "a08_polars_map_elements",
+      "scale": "M",
+      "rep": 1,
+      "warmup": false
+    },
+    {
+      "contestant": "a06_pandas_arrow",
+      "scale": "M",
+      "rep": 2,
+      "warmup": false
+    },
+    {
+      "contestant": "a17_rs_handrolled",
+      "scale": "M",
+      "rep": 2,
+      "warmup": false
+    },
+    {
+      "contestant": "a11_polars_streaming",
+      "scale": "M",
+      "rep": 2,
+      "warmup": false
+    },
+    {
+      "contestant": "a15_rs_polars",
+      "scale": "M",
+      "rep": 2,
+      "warmup": false
+    },
+    {
+      "contestant": "a16_rs_arrow_rayon",
+      "scale": "M",
+      "rep": 2,
+      "warmup": false
+    },
+    {
+      "contestant": "a10_polars_lazy",
+      "scale": "M",
+      "rep": 2,
+      "warmup": false
+    },
+    {
+      "contestant": "a13_duckdb_py",
+      "scale": "M",
+      "rep": 2,
+      "warmup": false
+    },
+    {
+      "contestant": "a05_pandas_vectorized",
+      "scale": "M",
+      "rep": 2,
+      "warmup": false
+    },
+    {
+      "contestant": "a07_cudf_pandas",
+      "scale": "M",
+      "rep": 2,
+      "warmup": false
+    },
+    {
+      "contestant": "a08_polars_map_elements",
+      "scale": "M",
+      "rep": 2,
+      "warmup": false
+    },
+    {
+      "contestant": "a23_polars_gpu_hybrid",
+      "scale": "M",
+      "rep": 2,
+      "warmup": false
+    },
+    {
+      "contestant": "a13_duckdb_py",
+      "scale": "M",
+      "rep": 3,
+      "warmup": false
+    },
+    {
+      "contestant": "a06_pandas_arrow",
+      "scale": "M",
+      "rep": 3,
+      "warmup": false
+    },
+    {
+      "contestant": "a05_pandas_vectorized",
+      "scale": "M",
+      "rep": 3,
+      "warmup": false
+    },
+    {
+      "contestant": "a15_rs_polars",
+      "scale": "M",
+      "rep": 3,
+      "warmup": false
+    },
+    {
+      "contestant": "a11_polars_streaming",
+      "scale": "M",
+      "rep": 3,
+      "warmup": false
+    },
+    {
+      "contestant": "a16_rs_arrow_rayon",
+      "scale": "M",
+      "rep": 3,
+      "warmup": false
+    },
+    {
+      "contestant": "a08_polars_map_elements",
+      "scale": "M",
+      "rep": 3,
+      "warmup": false
+    },
+    {
+      "contestant": "a17_rs_handrolled",
+      "scale": "M",
+      "rep": 3,
+      "warmup": false
+    },
+    {
+      "contestant": "a23_polars_gpu_hybrid",
+      "scale": "M",
+      "rep": 3,
+      "warmup": false
+    },
+    {
+      "contestant": "a10_polars_lazy",
+      "scale": "M",
+      "rep": 3,
+      "warmup": false
+    },
+    {
+      "contestant": "a07_cudf_pandas",
+      "scale": "M",
+      "rep": 3,
+      "warmup": false
+    },
+    {
+      "contestant": "a15_rs_polars",
+      "scale": "M",
+      "rep": 4,
+      "warmup": false
+    },
+    {
+      "contestant": "a11_polars_streaming",
+      "scale": "M",
+      "rep": 4,
+      "warmup": false
+    },
+    {
+      "contestant": "a13_duckdb_py",
+      "scale": "M",
+      "rep": 4,
+      "warmup": false
+    },
+    {
+      "contestant": "a08_polars_map_elements",
+      "scale": "M",
+      "rep": 4,
+      "warmup": false
+    },
+    {
+      "contestant": "a07_cudf_pandas",
+      "scale": "M",
+      "rep": 4,
+      "warmup": false
+    },
+    {
+      "contestant": "a10_polars_lazy",
+      "scale": "M",
+      "rep": 4,
+      "warmup": false
+    },
+    {
+      "contestant": "a17_rs_handrolled",
+      "scale": "M",
+      "rep": 4,
+      "warmup": false
+    },
+    {
+      "contestant": "a06_pandas_arrow",
+      "scale": "M",
+      "rep": 4,
+      "warmup": false
+    },
+    {
+      "contestant": "a16_rs_arrow_rayon",
+      "scale": "M",
+      "rep": 4,
+      "warmup": false
+    },
+    {
+      "contestant": "a23_polars_gpu_hybrid",
+      "scale": "M",
+      "rep": 4,
+      "warmup": false
+    },
+    {
+      "contestant": "a05_pandas_vectorized",
+      "scale": "M",
+      "rep": 4,
+      "warmup": false
+    },
+    {
+      "contestant": "a10_polars_lazy",
+      "scale": "M",
+      "rep": 5,
+      "warmup": false
+    },
+    {
+      "contestant": "a05_pandas_vectorized",
+      "scale": "M",
+      "rep": 5,
+      "warmup": false
+    },
+    {
+      "contestant": "a08_polars_map_elements",
+      "scale": "M",
+      "rep": 5,
+      "warmup": false
+    },
+    {
+      "contestant": "a17_rs_handrolled",
+      "scale": "M",
+      "rep": 5,
+      "warmup": false
+    },
+    {
+      "contestant": "a07_cudf_pandas",
+      "scale": "M",
+      "rep": 5,
+      "warmup": false
+    },
+    {
+      "contestant": "a13_duckdb_py",
+      "scale": "M",
+      "rep": 5,
+      "warmup": false
+    },
+    {
+      "contestant": "a16_rs_arrow_rayon",
+      "scale": "M",
+      "rep": 5,
+      "warmup": false
+    },
+    {
+      "contestant": "a15_rs_polars",
+      "scale": "M",
+      "rep": 5,
+      "warmup": false
+    },
+    {
+      "contestant": "a23_polars_gpu_hybrid",
+      "scale": "M",
+      "rep": 5,
+      "warmup": false
+    },
+    {
+      "contestant": "a06_pandas_arrow",
+      "scale": "M",
+      "rep": 5,
+      "warmup": false
+    },
+    {
+      "contestant": "a11_polars_streaming",
+      "scale": "M",
+      "rep": 5,
+      "warmup": false
+    },
+    {
+      "contestant": "a16_rs_arrow_rayon",
+      "scale": "L",
+      "rep": 1,
+      "warmup": true
+    },
+    {
+      "contestant": "a15_rs_polars",
+      "scale": "L",
+      "rep": 1,
+      "warmup": true
+    },
+    {
+      "contestant": "a23_polars_gpu_hybrid",
+      "scale": "L",
+      "rep": 1,
+      "warmup": true
+    },
+    {
+      "contestant": "a06_pandas_arrow",
+      "scale": "L",
+      "rep": 1,
+      "warmup": true
+    },
+    {
+      "contestant": "a11_polars_streaming",
+      "scale": "L",
+      "rep": 1,
+      "warmup": true
+    },
+    {
+      "contestant": "a07_cudf_pandas",
+      "scale": "L",
+      "rep": 1,
+      "warmup": true
+    },
+    {
+      "contestant": "a13_duckdb_py",
+      "scale": "L",
+      "rep": 1,
+      "warmup": true
+    },
+    {
+      "contestant": "a17_rs_handrolled",
+      "scale": "L",
+      "rep": 1,
+      "warmup": true
+    },
+    {
+      "contestant": "a05_pandas_vectorized",
+      "scale": "L",
+      "rep": 1,
+      "warmup": true
+    },
+    {
+      "contestant": "a10_polars_lazy",
+      "scale": "L",
+      "rep": 1,
+      "warmup": true
+    },
+    {
+      "contestant": "a17_rs_handrolled",
+      "scale": "L",
+      "rep": 1,
+      "warmup": false
+    },
+    {
+      "contestant": "a13_duckdb_py",
+      "scale": "L",
+      "rep": 1,
+      "warmup": false
+    },
+    {
+      "contestant": "a07_cudf_pandas",
+      "scale": "L",
+      "rep": 1,
+      "warmup": false
+    },
+    {
+      "contestant": "a16_rs_arrow_rayon",
+      "scale": "L",
+      "rep": 1,
+      "warmup": false
+    },
+    {
+      "contestant": "a05_pandas_vectorized",
+      "scale": "L",
+      "rep": 1,
+      "warmup": false
+    },
+    {
+      "contestant": "a10_polars_lazy",
+      "scale": "L",
+      "rep": 1,
+      "warmup": false
+    },
+    {
+      "contestant": "a11_polars_streaming",
+      "scale": "L",
+      "rep": 1,
+      "warmup": false
+    },
+    {
+      "contestant": "a23_polars_gpu_hybrid",
+      "scale": "L",
+      "rep": 1,
+      "warmup": false
+    },
+    {
+      "contestant": "a15_rs_polars",
+      "scale": "L",
+      "rep": 1,
+      "warmup": false
+    },
+    {
+      "contestant": "a06_pandas_arrow",
+      "scale": "L",
+      "rep": 1,
+      "warmup": false
+    },
+    {
+      "contestant": "a13_duckdb_py",
+      "scale": "L",
+      "rep": 2,
+      "warmup": false
+    },
+    {
+      "contestant": "a05_pandas_vectorized",
+      "scale": "L",
+      "rep": 2,
+      "warmup": false
+    },
+    {
+      "contestant": "a06_pandas_arrow",
+      "scale": "L",
+      "rep": 2,
+      "warmup": false
+    },
+    {
+      "contestant": "a15_rs_polars",
+      "scale": "L",
+      "rep": 2,
+      "warmup": false
+    },
+    {
+      "contestant": "a16_rs_arrow_rayon",
+      "scale": "L",
+      "rep": 2,
+      "warmup": false
+    },
+    {
+      "contestant": "a17_rs_handrolled",
+      "scale": "L",
+      "rep": 2,
+      "warmup": false
+    },
+    {
+      "contestant": "a10_polars_lazy",
+      "scale": "L",
+      "rep": 2,
+      "warmup": false
+    },
+    {
+      "contestant": "a07_cudf_pandas",
+      "scale": "L",
+      "rep": 2,
+      "warmup": false
+    },
+    {
+      "contestant": "a23_polars_gpu_hybrid",
+      "scale": "L",
+      "rep": 2,
+      "warmup": false
+    },
+    {
+      "contestant": "a11_polars_streaming",
+      "scale": "L",
+      "rep": 2,
+      "warmup": false
+    },
+    {
+      "contestant": "a06_pandas_arrow",
+      "scale": "L",
+      "rep": 3,
+      "warmup": false
+    },
+    {
+      "contestant": "a17_rs_handrolled",
+      "scale": "L",
+      "rep": 3,
+      "warmup": false
+    },
+    {
+      "contestant": "a11_polars_streaming",
+      "scale": "L",
+      "rep": 3,
+      "warmup": false
+    },
+    {
+      "contestant": "a13_duckdb_py",
+      "scale": "L",
+      "rep": 3,
+      "warmup": false
+    },
+    {
+      "contestant": "a15_rs_polars",
+      "scale": "L",
+      "rep": 3,
+      "warmup": false
+    },
+    {
+      "contestant": "a23_polars_gpu_hybrid",
+      "scale": "L",
+      "rep": 3,
+      "warmup": false
+    },
+    {
+      "contestant": "a07_cudf_pandas",
+      "scale": "L",
+      "rep": 3,
+      "warmup": false
+    },
+    {
+      "contestant": "a16_rs_arrow_rayon",
+      "scale": "L",
+      "rep": 3,
+      "warmup": false
+    },
+    {
+      "contestant": "a05_pandas_vectorized",
+      "scale": "L",
+      "rep": 3,
+      "warmup": false
+    },
+    {
+      "contestant": "a10_polars_lazy",
+      "scale": "L",
+      "rep": 3,
+      "warmup": false
+    },
+    {
+      "contestant": "a06_pandas_arrow",
+      "scale": "L",
+      "rep": 4,
+      "warmup": false
+    },
+    {
+      "contestant": "a10_polars_lazy",
+      "scale": "L",
+      "rep": 4,
+      "warmup": false
+    },
+    {
+      "contestant": "a11_polars_streaming",
+      "scale": "L",
+      "rep": 4,
+      "warmup": false
+    },
+    {
+      "contestant": "a16_rs_arrow_rayon",
+      "scale": "L",
+      "rep": 4,
+      "warmup": false
+    },
+    {
+      "contestant": "a07_cudf_pandas",
+      "scale": "L",
+      "rep": 4,
+      "warmup": false
+    },
+    {
+      "contestant": "a13_duckdb_py",
+      "scale": "L",
+      "rep": 4,
+      "warmup": false
+    },
+    {
+      "contestant": "a17_rs_handrolled",
+      "scale": "L",
+      "rep": 4,
+      "warmup": false
+    },
+    {
+      "contestant": "a05_pandas_vectorized",
+      "scale": "L",
+      "rep": 4,
+      "warmup": false
+    },
+    {
+      "contestant": "a15_rs_polars",
+      "scale": "L",
+      "rep": 4,
+      "warmup": false
+    },
+    {
+      "contestant": "a23_polars_gpu_hybrid",
+      "scale": "L",
+      "rep": 4,
+      "warmup": false
+    },
+    {
+      "contestant": "a16_rs_arrow_rayon",
+      "scale": "L",
+      "rep": 5,
+      "warmup": false
+    },
+    {
+      "contestant": "a05_pandas_vectorized",
+      "scale": "L",
+      "rep": 5,
+      "warmup": false
+    },
+    {
+      "contestant": "a11_polars_streaming",
+      "scale": "L",
+      "rep": 5,
+      "warmup": false
+    },
+    {
+      "contestant": "a07_cudf_pandas",
+      "scale": "L",
+      "rep": 5,
+      "warmup": false
+    },
+    {
+      "contestant": "a13_duckdb_py",
+      "scale": "L",
+      "rep": 5,
+      "warmup": false
+    },
+    {
+      "contestant": "a10_polars_lazy",
+      "scale": "L",
+      "rep": 5,
+      "warmup": false
+    },
+    {
+      "contestant": "a15_rs_polars",
+      "scale": "L",
+      "rep": 5,
+      "warmup": false
+    },
+    {
+      "contestant": "a17_rs_handrolled",
+      "scale": "L",
+      "rep": 5,
+      "warmup": false
+    },
+    {
+      "contestant": "a06_pandas_arrow",
+      "scale": "L",
+      "rep": 5,
+      "warmup": false
+    },
+    {
+      "contestant": "a23_polars_gpu_hybrid",
+      "scale": "L",
+      "rep": 5,
+      "warmup": false
+    },
+    {
+      "contestant": "a10_polars_lazy",
+      "scale": "XL",
+      "rep": 1,
+      "warmup": true
+    },
+    {
+      "contestant": "a15_rs_polars",
+      "scale": "XL",
+      "rep": 1,
+      "warmup": true
+    },
+    {
+      "contestant": "a23_polars_gpu_hybrid",
+      "scale": "XL",
+      "rep": 1,
+      "warmup": true
+    },
+    {
+      "contestant": "a13_duckdb_py",
+      "scale": "XL",
+      "rep": 1,
+      "warmup": true
+    },
+    {
+      "contestant": "a17_rs_handrolled",
+      "scale": "XL",
+      "rep": 1,
+      "warmup": true
+    },
+    {
+      "contestant": "a16_rs_arrow_rayon",
+      "scale": "XL",
+      "rep": 1,
+      "warmup": true
+    },
+    {
+      "contestant": "a11_polars_streaming",
+      "scale": "XL",
+      "rep": 1,
+      "warmup": true
+    },
+    {
+      "contestant": "a11_polars_streaming",
+      "scale": "XL",
+      "rep": 1,
+      "warmup": false
+    },
+    {
+      "contestant": "a17_rs_handrolled",
+      "scale": "XL",
+      "rep": 1,
+      "warmup": false
+    },
+    {
+      "contestant": "a15_rs_polars",
+      "scale": "XL",
+      "rep": 1,
+      "warmup": false
+    },
+    {
+      "contestant": "a16_rs_arrow_rayon",
+      "scale": "XL",
+      "rep": 1,
+      "warmup": false
+    },
+    {
+      "contestant": "a23_polars_gpu_hybrid",
+      "scale": "XL",
+      "rep": 1,
+      "warmup": false
+    },
+    {
+      "contestant": "a10_polars_lazy",
+      "scale": "XL",
+      "rep": 1,
+      "warmup": false
+    },
+    {
+      "contestant": "a13_duckdb_py",
+      "scale": "XL",
+      "rep": 1,
+      "warmup": false
+    },
+    {
+      "contestant": "a11_polars_streaming",
+      "scale": "XL",
+      "rep": 2,
+      "warmup": false
+    },
+    {
+      "contestant": "a10_polars_lazy",
+      "scale": "XL",
+      "rep": 2,
+      "warmup": false
+    },
+    {
+      "contestant": "a23_polars_gpu_hybrid",
+      "scale": "XL",
+      "rep": 2,
+      "warmup": false
+    },
+    {
+      "contestant": "a17_rs_handrolled",
+      "scale": "XL",
+      "rep": 2,
+      "warmup": false
+    },
+    {
+      "contestant": "a13_duckdb_py",
+      "scale": "XL",
+      "rep": 2,
+      "warmup": false
+    },
+    {
+      "contestant": "a15_rs_polars",
+      "scale": "XL",
+      "rep": 2,
+      "warmup": false
+    },
+    {
+      "contestant": "a16_rs_arrow_rayon",
+      "scale": "XL",
+      "rep": 2,
+      "warmup": false
+    },
+    {
+      "contestant": "a23_polars_gpu_hybrid",
+      "scale": "XL",
+      "rep": 3,
+      "warmup": false
+    },
+    {
+      "contestant": "a16_rs_arrow_rayon",
+      "scale": "XL",
+      "rep": 3,
+      "warmup": false
+    },
+    {
+      "contestant": "a17_rs_handrolled",
+      "scale": "XL",
+      "rep": 3,
+      "warmup": false
+    },
+    {
+      "contestant": "a15_rs_polars",
+      "scale": "XL",
+      "rep": 3,
+      "warmup": false
+    },
+    {
+      "contestant": "a13_duckdb_py",
+      "scale": "XL",
+      "rep": 3,
+      "warmup": false
+    },
+    {
+      "contestant": "a10_polars_lazy",
+      "scale": "XL",
+      "rep": 3,
+      "warmup": false
+    },
+    {
+      "contestant": "a11_polars_streaming",
+      "scale": "XL",
+      "rep": 3,
+      "warmup": false
+    },
+    {
+      "contestant": "a23_polars_gpu_hybrid",
+      "scale": "XL",
+      "rep": 4,
+      "warmup": false
+    },
+    {
+      "contestant": "a13_duckdb_py",
+      "scale": "XL",
+      "rep": 4,
+      "warmup": false
+    },
+    {
+      "contestant": "a15_rs_polars",
+      "scale": "XL",
+      "rep": 4,
+      "warmup": false
+    },
+    {
+      "contestant": "a11_polars_streaming",
+      "scale": "XL",
+      "rep": 4,
+      "warmup": false
+    },
+    {
+      "contestant": "a16_rs_arrow_rayon",
+      "scale": "XL",
+      "rep": 4,
+      "warmup": false
+    },
+    {
+      "contestant": "a10_polars_lazy",
+      "scale": "XL",
+      "rep": 4,
+      "warmup": false
+    },
+    {
+      "contestant": "a17_rs_handrolled",
+      "scale": "XL",
+      "rep": 4,
+      "warmup": false
+    },
+    {
+      "contestant": "a13_duckdb_py",
+      "scale": "XL",
+      "rep": 5,
+      "warmup": false
+    },
+    {
+      "contestant": "a10_polars_lazy",
+      "scale": "XL",
+      "rep": 5,
+      "warmup": false
+    },
+    {
+      "contestant": "a16_rs_arrow_rayon",
+      "scale": "XL",
+      "rep": 5,
+      "warmup": false
+    },
+    {
+      "contestant": "a11_polars_streaming",
+      "scale": "XL",
+      "rep": 5,
+      "warmup": false
+    },
+    {
+      "contestant": "a15_rs_polars",
+      "scale": "XL",
+      "rep": 5,
+      "warmup": false
+    },
+    {
+      "contestant": "a23_polars_gpu_hybrid",
+      "scale": "XL",
+      "rep": 5,
+      "warmup": false
+    },
+    {
+      "contestant": "a17_rs_handrolled",
+      "scale": "XL",
+      "rep": 5,
+      "warmup": false
+    }
+  ],
+  "args": [
+    "--id",
+    "a05_pandas_vectorized,a06_pandas_arrow,a07_cudf_pandas,a08_polars_map_elements,a10_polars_lazy,a11_polars_streaming,a12_polars_gpu,a13_duckdb_py,a15_rs_polars,a16_rs_arrow_rayon,a17_rs_handrolled,a23_polars_gpu_hybrid",
+    "--scale",
+    "S,M,L,XL"
+  ]
+}

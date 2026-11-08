@@ -1,0 +1,21 @@
+{
+ "duckdb": "2.0.0",
+ "vss": "loaded",
+ "fts": "loaded",
+ "vss_query": [
+  [
+   1
+  ],
+  [
+   3
+  ]
+ ],
+ "hnsw_persistence_setting": false,
+ "fts_query": [
+  [
+   1,
+   0.3536344192449127
+  ]
+ ]
+}
+polars 2.1.0 pandas 3.1.1 pyarrow 26.0.1

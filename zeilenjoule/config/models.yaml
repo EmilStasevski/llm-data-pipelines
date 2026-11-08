@@ -1,0 +1,36 @@
+# Model registry. Rule 8: only models whose licence allows this use.
+# licence_verified: true only after reading the model card ourselves (date + note).
+# status: probe = downloaded in Phase 0 for compatibility tests only; planned = from PLAN, not downloaded yet.
+models:
+  - id: multilingual-e5-small
+    repo: intfloat/multilingual-e5-small
+    kind: embedding
+    licence: MIT
+    licence_verified: false   # PLAN-independent probe model; verify card before any benchmark use
+    status: probe
+  - id: qwen3-0.6b
+    repo: Qwen/Qwen3-0.6B
+    kind: llm
+    licence: Apache-2.0
+    licence_verified: false
+    status: probe
+  - id: qwen3-0.6b-gguf-q8
+    repo: Qwen/Qwen3-0.6B-GGUF
+    file: Qwen3-0.6B-Q8_0.gguf
+    kind: llm
+    licence: Apache-2.0
+    licence_verified: false
+    status: probe
+  # --- planned (PLAN §8, §10); licences as stated in PLAN, to be verified in Phase 5/7 ---
+  - id: bge-m3
+    repo: BAAI/bge-m3
+    revision: 5617a9f61b028005a4858fdac845db406aefb181
+    kind: embedding
+    licence: MIT
+    licence_verified: true     # 2026-11-07: model card front matter `license: mit` at this revision
+    status: downloaded         # models/hub (user-owned HF cache; models/hf has root-owned locks from the Phase 0 TEI probe)
+    files: [pytorch_model.bin, onnx/*, tokenizer + configs]   # 4.3 GB; derived ORT models in models/derived/bge-m3
+  - {id: qwen3-embedding-0.6b, repo: Qwen/Qwen3-Embedding-0.6B, kind: embedding, licence: Apache-2.0, licence_verified: false, status: planned}
+  - {id: me5-large-instruct, repo: intfloat/multilingual-e5-large-instruct, kind: embedding, licence: MIT, licence_verified: false, status: planned}
+  - {id: embeddinggemma-300m, repo: google/embeddinggemma-300m, kind: embedding, licence: Gemma-terms, licence_verified: false, status: planned}
+  - {id: sauerkrautlm-gliner, repo: VAGOsolutions/SauerkrautLM-GLiNER, kind: ner, licence: MIT, licence_verified: false, status: planned}
