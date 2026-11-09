@@ -220,3 +220,29 @@ def test_readme_results_block_is_generated_and_idempotent(tmp_path: Path) -> Non
     assert "20,00" in (repo / "README.de.md").read_text(encoding="utf-8")
     report.main(["--repo", str(repo)])
     assert (repo / "README.md").read_text(encoding="utf-8") == first  # rewritten in place, not appended
+
+
+def test_track_d_details_and_winner_gate(tmp_path: Path) -> None:
+    def rec(c: str, rep: int, f1: float, validity: float) -> dict[str, Any]:
+        stages = [{"name": "load", "depth": 0, "t_s": 5.0, "gpu_j": 100.0, "cpu_j": 50.0},
+                  {"name": "extract", "depth": 0, "t_s": 100.0, "gpu_j": 1500.0, "cpu_j": 500.0},
+                  {"name": "ttft", "depth": 0, "t_s": 3.0}]  # fmt: skip
+        extra = {"throughput": {"rows_per_s": 20.0, "output_tok_per_s": 1600.0},
+                 "latency_ms": {"p50": 700.0, "p95": 900.0, "p99": 990.0},
+                 "ttft_ms": {"median": 120.0, "n": 20},
+                 "server_vram_mb_loaded": 8000}  # fmt: skip
+        return _rec(c, rep, 110.0, 1600.0, 550.0, track="D", task="d.extract", scale="D2k", rows=2000,
+                    stages=stages, result={"extra": extra},
+                    quality={"macro_f1": f1, "json_validity": validity, "schadensart": 0.9})  # fmt: skip
+
+    recs = [rec("d02_llamacpp_x", i, 0.95, 1.0) for i in (1, 2, 3)]
+    recs += [rec("d03_vllm_y", i, 0.80, 1.0) for i in (1, 2, 3)]  # 0.80 < 0.9 × 0.95 → gate fails
+    repo = _repo(tmp_path, recs)
+    report.main(["--repo", str(repo)])
+    en = (repo / "reports" / "REPORT.md").read_text(encoding="utf-8")
+    assert "## Track D: LLM row-wise extraction" in en
+    row = next(ln for ln in en.splitlines() if ln.startswith("| `d02_llamacpp_x` | D2k |"))
+    assert "| 1.00 |" in row  # J/row = 2000 J / 2000 rows
+    assert "| 120 |" in row  # TTFT
+    assert row.endswith("| 0.9500 | ✓ |")
+    assert next(ln for ln in en.splitlines() if ln.startswith("| `d03_vllm_y` | D2k |")).endswith("| ✗ |")

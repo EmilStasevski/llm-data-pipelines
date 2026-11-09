@@ -589,3 +589,356 @@ contestants:
     servers: []
     scales: [M, real]
     anti_pattern: false
+
+  # ---------- Track D (Phase 7): concurrency sweep on the dev set (PLAN §10 step 1, spec/track_d.md) ----------
+  - id: d01_ollama_qwen35_9b_q4_n1
+    track: D
+    task: d.extract
+    build: ["sh", "-c", "uv sync --frozen --project contestants/python/llm-clients && scripts/ollama_pull.sh qwen3.5:9b"]
+    versions_cmd: ["contestants/python/llm-clients/.venv/bin/python", "-m", "zj_llm.envcheck"]
+    # Ollama 0.40.15 (Docker), registry tag qwen3.5:9b (Q4_K_M), format = JSON schema, think false; N = 1 requests in flight, 0-shot
+    cmd: ["contestants/python/llm-clients/.venv/bin/python", "-m", "zj_llm.extract"]
+    args: ["--engine", "ollama", "--model", "qwen35_9b_q4", "--concurrency", "1", "--shots", "0", "--input", "{input}", "--output", "{output}", "--threads", "{threads}"]
+    needs_gpu: true
+    servers: []
+    scales: [dev]
+    anti_pattern: false
+
+  - id: d01_ollama_qwen35_9b_q4_n4
+    track: D
+    task: d.extract
+    build: ["sh", "-c", "uv sync --frozen --project contestants/python/llm-clients && scripts/ollama_pull.sh qwen3.5:9b"]
+    versions_cmd: ["contestants/python/llm-clients/.venv/bin/python", "-m", "zj_llm.envcheck"]
+    # Ollama 0.40.15 (Docker), registry tag qwen3.5:9b (Q4_K_M), format = JSON schema, think false; N = 4 requests in flight, 0-shot
+    cmd: ["contestants/python/llm-clients/.venv/bin/python", "-m", "zj_llm.extract"]
+    args: ["--engine", "ollama", "--model", "qwen35_9b_q4", "--concurrency", "4", "--shots", "0", "--input", "{input}", "--output", "{output}", "--threads", "{threads}"]
+    needs_gpu: true
+    servers: []
+    scales: [dev]
+    anti_pattern: false
+
+  - id: d01_ollama_qwen35_9b_q4_n16
+    track: D
+    task: d.extract
+    build: ["sh", "-c", "uv sync --frozen --project contestants/python/llm-clients && scripts/ollama_pull.sh qwen3.5:9b"]
+    versions_cmd: ["contestants/python/llm-clients/.venv/bin/python", "-m", "zj_llm.envcheck"]
+    # Ollama 0.40.15 (Docker), registry tag qwen3.5:9b (Q4_K_M), format = JSON schema, think false; N = 16 requests in flight, 0-shot
+    cmd: ["contestants/python/llm-clients/.venv/bin/python", "-m", "zj_llm.extract"]
+    args: ["--engine", "ollama", "--model", "qwen35_9b_q4", "--concurrency", "16", "--shots", "0", "--input", "{input}", "--output", "{output}", "--threads", "{threads}"]
+    needs_gpu: true
+    servers: []
+    scales: [dev]
+    anti_pattern: false
+
+  - id: d01_ollama_qwen35_9b_q4_n64
+    track: D
+    task: d.extract
+    build: ["sh", "-c", "uv sync --frozen --project contestants/python/llm-clients && scripts/ollama_pull.sh qwen3.5:9b"]
+    versions_cmd: ["contestants/python/llm-clients/.venv/bin/python", "-m", "zj_llm.envcheck"]
+    # Ollama 0.40.15 (Docker), registry tag qwen3.5:9b (Q4_K_M), format = JSON schema, think false; N = 64 requests in flight, 0-shot
+    cmd: ["contestants/python/llm-clients/.venv/bin/python", "-m", "zj_llm.extract"]
+    args: ["--engine", "ollama", "--model", "qwen35_9b_q4", "--concurrency", "64", "--shots", "0", "--input", "{input}", "--output", "{output}", "--threads", "{threads}"]
+    needs_gpu: true
+    servers: []
+    scales: [dev]
+    anti_pattern: false
+
+  - id: d02_llamacpp_qwen35_9b_q4_n1
+    track: D
+    task: d.extract
+    build: ["sh", "-c", "uv sync --frozen --project contestants/python/llm-clients && docker pull -q ghcr.io/ggml-org/llama.cpp:server-cuda-b12169@sha256:5bb779a449a18d8f4333e9814e887746342fe555c528f5eabc92b2093e32673a"]
+    versions_cmd: ["contestants/python/llm-clients/.venv/bin/python", "-m", "zj_llm.envcheck"]
+    # llama.cpp b12169 llama-server, unsloth Q4_K_M GGUF, -np N continuous batching, json_schema; N = 1 requests in flight, 0-shot
+    cmd: ["contestants/python/llm-clients/.venv/bin/python", "-m", "zj_llm.extract"]
+    args: ["--engine", "llamacpp", "--model", "qwen35_9b_q4", "--concurrency", "1", "--shots", "0", "--input", "{input}", "--output", "{output}", "--threads", "{threads}"]
+    needs_gpu: true
+    servers: []
+    scales: [dev]
+    anti_pattern: false
+
+  - id: d02_llamacpp_qwen35_9b_q4_n4
+    track: D
+    task: d.extract
+    build: ["sh", "-c", "uv sync --frozen --project contestants/python/llm-clients && docker pull -q ghcr.io/ggml-org/llama.cpp:server-cuda-b12169@sha256:5bb779a449a18d8f4333e9814e887746342fe555c528f5eabc92b2093e32673a"]
+    versions_cmd: ["contestants/python/llm-clients/.venv/bin/python", "-m", "zj_llm.envcheck"]
+    # llama.cpp b12169 llama-server, unsloth Q4_K_M GGUF, -np N continuous batching, json_schema; N = 4 requests in flight, 0-shot
+    cmd: ["contestants/python/llm-clients/.venv/bin/python", "-m", "zj_llm.extract"]
+    args: ["--engine", "llamacpp", "--model", "qwen35_9b_q4", "--concurrency", "4", "--shots", "0", "--input", "{input}", "--output", "{output}", "--threads", "{threads}"]
+    needs_gpu: true
+    servers: []
+    scales: [dev]
+    anti_pattern: false
+
+  - id: d02_llamacpp_qwen35_9b_q4_n16
+    track: D
+    task: d.extract
+    build: ["sh", "-c", "uv sync --frozen --project contestants/python/llm-clients && docker pull -q ghcr.io/ggml-org/llama.cpp:server-cuda-b12169@sha256:5bb779a449a18d8f4333e9814e887746342fe555c528f5eabc92b2093e32673a"]
+    versions_cmd: ["contestants/python/llm-clients/.venv/bin/python", "-m", "zj_llm.envcheck"]
+    # llama.cpp b12169 llama-server, unsloth Q4_K_M GGUF, -np N continuous batching, json_schema; N = 16 requests in flight, 0-shot
+    cmd: ["contestants/python/llm-clients/.venv/bin/python", "-m", "zj_llm.extract"]
+    args: ["--engine", "llamacpp", "--model", "qwen35_9b_q4", "--concurrency", "16", "--shots", "0", "--input", "{input}", "--output", "{output}", "--threads", "{threads}"]
+    needs_gpu: true
+    servers: []
+    scales: [dev]
+    anti_pattern: false
+
+  - id: d02_llamacpp_qwen35_9b_q4_n64
+    track: D
+    task: d.extract
+    build: ["sh", "-c", "uv sync --frozen --project contestants/python/llm-clients && docker pull -q ghcr.io/ggml-org/llama.cpp:server-cuda-b12169@sha256:5bb779a449a18d8f4333e9814e887746342fe555c528f5eabc92b2093e32673a"]
+    versions_cmd: ["contestants/python/llm-clients/.venv/bin/python", "-m", "zj_llm.envcheck"]
+    # llama.cpp b12169 llama-server, unsloth Q4_K_M GGUF, -np N continuous batching, json_schema; N = 64 requests in flight, 0-shot
+    cmd: ["contestants/python/llm-clients/.venv/bin/python", "-m", "zj_llm.extract"]
+    args: ["--engine", "llamacpp", "--model", "qwen35_9b_q4", "--concurrency", "64", "--shots", "0", "--input", "{input}", "--output", "{output}", "--threads", "{threads}"]
+    needs_gpu: true
+    servers: []
+    scales: [dev]
+    anti_pattern: false
+
+  - id: d03_vllm_qwen35_9b_awq_n1
+    track: D
+    task: d.extract
+    build: ["sh", "-c", "uv sync --frozen --project contestants/python/llm-clients && docker pull -q vllm/vllm-openai:v0.33.0@sha256:d825baf9ce4b1b6bfc5ecc7b79880c7e6748c65a72d697ce3d47607aafa84c6e"]
+    versions_cmd: ["contestants/python/llm-clients/.venv/bin/python", "-m", "zj_llm.envcheck"]
+    # vLLM 0.33.0, AWQ 4-bit (closest to Q4 GGUF), prefix caching, structured outputs; N = 1 requests in flight, 0-shot
+    cmd: ["contestants/python/llm-clients/.venv/bin/python", "-m", "zj_llm.extract"]
+    args: ["--engine", "vllm", "--model", "qwen35_9b_awq", "--concurrency", "1", "--shots", "0", "--input", "{input}", "--output", "{output}", "--threads", "{threads}"]
+    needs_gpu: true
+    servers: []
+    scales: [dev]
+    anti_pattern: false
+
+  - id: d03_vllm_qwen35_9b_awq_n4
+    track: D
+    task: d.extract
+    build: ["sh", "-c", "uv sync --frozen --project contestants/python/llm-clients && docker pull -q vllm/vllm-openai:v0.33.0@sha256:d825baf9ce4b1b6bfc5ecc7b79880c7e6748c65a72d697ce3d47607aafa84c6e"]
+    versions_cmd: ["contestants/python/llm-clients/.venv/bin/python", "-m", "zj_llm.envcheck"]
+    # vLLM 0.33.0, AWQ 4-bit (closest to Q4 GGUF), prefix caching, structured outputs; N = 4 requests in flight, 0-shot
+    cmd: ["contestants/python/llm-clients/.venv/bin/python", "-m", "zj_llm.extract"]
+    args: ["--engine", "vllm", "--model", "qwen35_9b_awq", "--concurrency", "4", "--shots", "0", "--input", "{input}", "--output", "{output}", "--threads", "{threads}"]
+    needs_gpu: true
+    servers: []
+    scales: [dev]
+    anti_pattern: false
+
+  - id: d03_vllm_qwen35_9b_awq_n16
+    track: D
+    task: d.extract
+    build: ["sh", "-c", "uv sync --frozen --project contestants/python/llm-clients && docker pull -q vllm/vllm-openai:v0.33.0@sha256:d825baf9ce4b1b6bfc5ecc7b79880c7e6748c65a72d697ce3d47607aafa84c6e"]
+    versions_cmd: ["contestants/python/llm-clients/.venv/bin/python", "-m", "zj_llm.envcheck"]
+    # vLLM 0.33.0, AWQ 4-bit (closest to Q4 GGUF), prefix caching, structured outputs; N = 16 requests in flight, 0-shot
+    cmd: ["contestants/python/llm-clients/.venv/bin/python", "-m", "zj_llm.extract"]
+    args: ["--engine", "vllm", "--model", "qwen35_9b_awq", "--concurrency", "16", "--shots", "0", "--input", "{input}", "--output", "{output}", "--threads", "{threads}"]
+    needs_gpu: true
+    servers: []
+    scales: [dev]
+    anti_pattern: false
+
+  - id: d03_vllm_qwen35_9b_awq_n64
+    track: D
+    task: d.extract
+    build: ["sh", "-c", "uv sync --frozen --project contestants/python/llm-clients && docker pull -q vllm/vllm-openai:v0.33.0@sha256:d825baf9ce4b1b6bfc5ecc7b79880c7e6748c65a72d697ce3d47607aafa84c6e"]
+    versions_cmd: ["contestants/python/llm-clients/.venv/bin/python", "-m", "zj_llm.envcheck"]
+    # vLLM 0.33.0, AWQ 4-bit (closest to Q4 GGUF), prefix caching, structured outputs; N = 64 requests in flight, 0-shot
+    cmd: ["contestants/python/llm-clients/.venv/bin/python", "-m", "zj_llm.extract"]
+    args: ["--engine", "vllm", "--model", "qwen35_9b_awq", "--concurrency", "64", "--shots", "0", "--input", "{input}", "--output", "{output}", "--threads", "{threads}"]
+    needs_gpu: true
+    servers: []
+    scales: [dev]
+    anti_pattern: false
+
+  # ---------- Track D: main matrix on D2k at the sweep's best N per engine (by J/row, session 775e9db7) ----------
+  - id: d02_llamacpp_qwen35_9b_q4
+    track: D
+    task: d.extract
+    build: ["sh", "-c", "uv sync --frozen --project contestants/python/llm-clients && docker pull -q ghcr.io/ggml-org/llama.cpp:server-cuda-b12169@sha256:5bb779a449a18d8f4333e9814e887746342fe555c528f5eabc92b2093e32673a"]
+    versions_cmd: ["contestants/python/llm-clients/.venv/bin/python", "-m", "zj_llm.envcheck"]
+    # llamacpp qwen35_9b_q4, N = 16, 0-shot, JSON-schema constrained
+    cmd: ["contestants/python/llm-clients/.venv/bin/python", "-m", "zj_llm.extract"]
+    args: ["--engine", "llamacpp", "--model", "qwen35_9b_q4", "--concurrency", "16", "--shots", "0", "--input", "{input}", "--output", "{output}", "--threads", "{threads}"]
+    needs_gpu: true
+    servers: []
+    scales: [D2k]
+    anti_pattern: false
+
+  - id: d02_llamacpp_qwen35_9b_q4_3shot
+    track: D
+    task: d.extract
+    build: ["sh", "-c", "uv sync --frozen --project contestants/python/llm-clients && docker pull -q ghcr.io/ggml-org/llama.cpp:server-cuda-b12169@sha256:5bb779a449a18d8f4333e9814e887746342fe555c528f5eabc92b2093e32673a"]
+    versions_cmd: ["contestants/python/llm-clients/.venv/bin/python", "-m", "zj_llm.envcheck"]
+    # llamacpp qwen35_9b_q4, N = 16, 3-shot, JSON-schema constrained
+    cmd: ["contestants/python/llm-clients/.venv/bin/python", "-m", "zj_llm.extract"]
+    args: ["--engine", "llamacpp", "--model", "qwen35_9b_q4", "--concurrency", "16", "--shots", "3", "--input", "{input}", "--output", "{output}", "--threads", "{threads}"]
+    needs_gpu: true
+    servers: []
+    scales: [D2k]
+    anti_pattern: false
+
+  - id: d02_llamacpp_qwen35_9b_q8
+    track: D
+    task: d.extract
+    build: ["sh", "-c", "uv sync --frozen --project contestants/python/llm-clients && docker pull -q ghcr.io/ggml-org/llama.cpp:server-cuda-b12169@sha256:5bb779a449a18d8f4333e9814e887746342fe555c528f5eabc92b2093e32673a"]
+    versions_cmd: ["contestants/python/llm-clients/.venv/bin/python", "-m", "zj_llm.envcheck"]
+    # llamacpp qwen35_9b_q8, N = 16, 0-shot, JSON-schema constrained
+    cmd: ["contestants/python/llm-clients/.venv/bin/python", "-m", "zj_llm.extract"]
+    args: ["--engine", "llamacpp", "--model", "qwen35_9b_q8", "--concurrency", "16", "--shots", "0", "--input", "{input}", "--output", "{output}", "--threads", "{threads}"]
+    needs_gpu: true
+    servers: []
+    scales: [D2k]
+    anti_pattern: false
+
+  - id: d02_llamacpp_qwen35_4b_q4
+    track: D
+    task: d.extract
+    build: ["sh", "-c", "uv sync --frozen --project contestants/python/llm-clients && docker pull -q ghcr.io/ggml-org/llama.cpp:server-cuda-b12169@sha256:5bb779a449a18d8f4333e9814e887746342fe555c528f5eabc92b2093e32673a"]
+    versions_cmd: ["contestants/python/llm-clients/.venv/bin/python", "-m", "zj_llm.envcheck"]
+    # llamacpp qwen35_4b_q4, N = 16, 0-shot, JSON-schema constrained
+    cmd: ["contestants/python/llm-clients/.venv/bin/python", "-m", "zj_llm.extract"]
+    args: ["--engine", "llamacpp", "--model", "qwen35_4b_q4", "--concurrency", "16", "--shots", "0", "--input", "{input}", "--output", "{output}", "--threads", "{threads}"]
+    needs_gpu: true
+    servers: []
+    scales: [D2k]
+    anti_pattern: false
+
+  - id: d02_llamacpp_gemma4_e4b_q4
+    track: D
+    task: d.extract
+    build: ["sh", "-c", "uv sync --frozen --project contestants/python/llm-clients && docker pull -q ghcr.io/ggml-org/llama.cpp:server-cuda-b12169@sha256:5bb779a449a18d8f4333e9814e887746342fe555c528f5eabc92b2093e32673a"]
+    versions_cmd: ["contestants/python/llm-clients/.venv/bin/python", "-m", "zj_llm.envcheck"]
+    # llamacpp gemma4_e4b_q4, N = 16, 0-shot, JSON-schema constrained
+    cmd: ["contestants/python/llm-clients/.venv/bin/python", "-m", "zj_llm.extract"]
+    args: ["--engine", "llamacpp", "--model", "gemma4_e4b_q4", "--concurrency", "16", "--shots", "0", "--input", "{input}", "--output", "{output}", "--threads", "{threads}"]
+    needs_gpu: true
+    servers: []
+    scales: [D2k]
+    anti_pattern: false
+
+  - id: d02_llamacpp_gemma4_e4b_q4_3shot
+    track: D
+    task: d.extract
+    build: ["sh", "-c", "uv sync --frozen --project contestants/python/llm-clients && docker pull -q ghcr.io/ggml-org/llama.cpp:server-cuda-b12169@sha256:5bb779a449a18d8f4333e9814e887746342fe555c528f5eabc92b2093e32673a"]
+    versions_cmd: ["contestants/python/llm-clients/.venv/bin/python", "-m", "zj_llm.envcheck"]
+    # llamacpp gemma4_e4b_q4, N = 16, 3-shot, JSON-schema constrained
+    cmd: ["contestants/python/llm-clients/.venv/bin/python", "-m", "zj_llm.extract"]
+    args: ["--engine", "llamacpp", "--model", "gemma4_e4b_q4", "--concurrency", "16", "--shots", "3", "--input", "{input}", "--output", "{output}", "--threads", "{threads}"]
+    needs_gpu: true
+    servers: []
+    scales: [D2k]
+    anti_pattern: false
+
+  - id: d02_llamacpp_gemma4_12b_q4
+    track: D
+    task: d.extract
+    build: ["sh", "-c", "uv sync --frozen --project contestants/python/llm-clients && docker pull -q ghcr.io/ggml-org/llama.cpp:server-cuda-b12169@sha256:5bb779a449a18d8f4333e9814e887746342fe555c528f5eabc92b2093e32673a"]
+    versions_cmd: ["contestants/python/llm-clients/.venv/bin/python", "-m", "zj_llm.envcheck"]
+    # llamacpp gemma4_12b_q4, N = 16, 0-shot, JSON-schema constrained
+    cmd: ["contestants/python/llm-clients/.venv/bin/python", "-m", "zj_llm.extract"]
+    args: ["--engine", "llamacpp", "--model", "gemma4_12b_q4", "--concurrency", "16", "--shots", "0", "--input", "{input}", "--output", "{output}", "--threads", "{threads}"]
+    needs_gpu: true
+    servers: []
+    scales: [D2k]
+    anti_pattern: false
+
+  - id: d02_llamacpp_ministral3_14b_q4
+    track: D
+    task: d.extract
+    build: ["sh", "-c", "uv sync --frozen --project contestants/python/llm-clients && docker pull -q ghcr.io/ggml-org/llama.cpp:server-cuda-b12169@sha256:5bb779a449a18d8f4333e9814e887746342fe555c528f5eabc92b2093e32673a"]
+    versions_cmd: ["contestants/python/llm-clients/.venv/bin/python", "-m", "zj_llm.envcheck"]
+    # llamacpp ministral3_14b_q4, N = 16, 0-shot, JSON-schema constrained
+    cmd: ["contestants/python/llm-clients/.venv/bin/python", "-m", "zj_llm.extract"]
+    args: ["--engine", "llamacpp", "--model", "ministral3_14b_q4", "--concurrency", "16", "--shots", "0", "--input", "{input}", "--output", "{output}", "--threads", "{threads}"]
+    needs_gpu: true
+    servers: []
+    scales: [D2k]
+    anti_pattern: false
+
+  - id: d02_llamacpp_gptoss_20b_mxfp4
+    track: D
+    task: d.extract
+    build: ["sh", "-c", "uv sync --frozen --project contestants/python/llm-clients && docker pull -q ghcr.io/ggml-org/llama.cpp:server-cuda-b12169@sha256:5bb779a449a18d8f4333e9814e887746342fe555c528f5eabc92b2093e32673a"]
+    versions_cmd: ["contestants/python/llm-clients/.venv/bin/python", "-m", "zj_llm.envcheck"]
+    # llamacpp gptoss_20b_mxfp4, N = 16, 0-shot, JSON-schema constrained
+    cmd: ["contestants/python/llm-clients/.venv/bin/python", "-m", "zj_llm.extract"]
+    args: ["--engine", "llamacpp", "--model", "gptoss_20b_mxfp4", "--concurrency", "16", "--shots", "0", "--input", "{input}", "--output", "{output}", "--threads", "{threads}"]
+    needs_gpu: true
+    servers: []
+    scales: [D2k]
+    anti_pattern: false
+
+  - id: d02_llamacpp_eurollm_9b_q8
+    track: D
+    task: d.extract
+    build: ["sh", "-c", "uv sync --frozen --project contestants/python/llm-clients && docker pull -q ghcr.io/ggml-org/llama.cpp:server-cuda-b12169@sha256:5bb779a449a18d8f4333e9814e887746342fe555c528f5eabc92b2093e32673a"]
+    versions_cmd: ["contestants/python/llm-clients/.venv/bin/python", "-m", "zj_llm.envcheck"]
+    # llamacpp eurollm_9b_q8, N = 16, 0-shot, unconstrained: llama.cpp cannot build a grammar for this vocabulary (COMPAT)
+    cmd: ["contestants/python/llm-clients/.venv/bin/python", "-m", "zj_llm.extract"]
+    args: ["--engine", "llamacpp", "--model", "eurollm_9b_q8", "--concurrency", "16", "--shots", "0", "--input", "{input}", "--output", "{output}", "--threads", "{threads}"]
+    needs_gpu: true
+    servers: []
+    scales: [D2k]
+    anti_pattern: false
+
+  - id: d02_llamacpp_teuken_7b_q8
+    track: D
+    task: d.extract
+    build: ["sh", "-c", "uv sync --frozen --project contestants/python/llm-clients && docker pull -q ghcr.io/ggml-org/llama.cpp:server-cuda-b12169@sha256:5bb779a449a18d8f4333e9814e887746342fe555c528f5eabc92b2093e32673a"]
+    versions_cmd: ["contestants/python/llm-clients/.venv/bin/python", "-m", "zj_llm.envcheck"]
+    # llamacpp teuken_7b_q8, N = 16, 0-shot, unconstrained: llama.cpp cannot build a grammar for this vocabulary (COMPAT)
+    cmd: ["contestants/python/llm-clients/.venv/bin/python", "-m", "zj_llm.extract"]
+    args: ["--engine", "llamacpp", "--model", "teuken_7b_q8", "--concurrency", "16", "--shots", "0", "--input", "{input}", "--output", "{output}", "--threads", "{threads}"]
+    needs_gpu: true
+    servers: []
+    scales: [D2k]
+    anti_pattern: false
+
+  - id: d03_vllm_qwen35_9b_awq
+    track: D
+    task: d.extract
+    build: ["sh", "-c", "uv sync --frozen --project contestants/python/llm-clients && docker pull -q vllm/vllm-openai:v0.33.0@sha256:d825baf9ce4b1b6bfc5ecc7b79880c7e6748c65a72d697ce3d47607aafa84c6e"]
+    versions_cmd: ["contestants/python/llm-clients/.venv/bin/python", "-m", "zj_llm.envcheck"]
+    # vllm qwen35_9b_awq, N = 64, 0-shot, JSON-schema constrained
+    cmd: ["contestants/python/llm-clients/.venv/bin/python", "-m", "zj_llm.extract"]
+    args: ["--engine", "vllm", "--model", "qwen35_9b_awq", "--concurrency", "64", "--shots", "0", "--input", "{input}", "--output", "{output}", "--threads", "{threads}"]
+    needs_gpu: true
+    servers: []
+    scales: [D2k]
+    anti_pattern: false
+
+  - id: d03_vllm_qwen35_9b_awq_3shot
+    track: D
+    task: d.extract
+    build: ["sh", "-c", "uv sync --frozen --project contestants/python/llm-clients && docker pull -q vllm/vllm-openai:v0.33.0@sha256:d825baf9ce4b1b6bfc5ecc7b79880c7e6748c65a72d697ce3d47607aafa84c6e"]
+    versions_cmd: ["contestants/python/llm-clients/.venv/bin/python", "-m", "zj_llm.envcheck"]
+    # vllm qwen35_9b_awq, N = 64, 3-shot, JSON-schema constrained
+    cmd: ["contestants/python/llm-clients/.venv/bin/python", "-m", "zj_llm.extract"]
+    args: ["--engine", "vllm", "--model", "qwen35_9b_awq", "--concurrency", "64", "--shots", "3", "--input", "{input}", "--output", "{output}", "--threads", "{threads}"]
+    needs_gpu: true
+    servers: []
+    scales: [D2k]
+    anti_pattern: false
+
+  - id: d03_vllm_qwen35_9b_fp8
+    track: D
+    task: d.extract
+    build: ["sh", "-c", "uv sync --frozen --project contestants/python/llm-clients && docker pull -q vllm/vllm-openai:v0.33.0@sha256:d825baf9ce4b1b6bfc5ecc7b79880c7e6748c65a72d697ce3d47607aafa84c6e"]
+    versions_cmd: ["contestants/python/llm-clients/.venv/bin/python", "-m", "zj_llm.envcheck"]
+    # vllm qwen35_9b_fp8, N = 64, 0-shot, JSON-schema constrained
+    cmd: ["contestants/python/llm-clients/.venv/bin/python", "-m", "zj_llm.extract"]
+    args: ["--engine", "vllm", "--model", "qwen35_9b_fp8", "--concurrency", "64", "--shots", "0", "--input", "{input}", "--output", "{output}", "--threads", "{threads}"]
+    needs_gpu: true
+    servers: []
+    scales: [D2k]
+    anti_pattern: false
+
+  - id: d01_ollama_qwen35_9b_q4
+    track: D
+    task: d.extract
+    build: ["sh", "-c", "uv sync --frozen --project contestants/python/llm-clients && scripts/ollama_pull.sh qwen3.5:9b"]
+    versions_cmd: ["contestants/python/llm-clients/.venv/bin/python", "-m", "zj_llm.envcheck"]
+    # ollama qwen35_9b_q4, N = 64, 0-shot, JSON-schema constrained
+    cmd: ["contestants/python/llm-clients/.venv/bin/python", "-m", "zj_llm.extract"]
+    args: ["--engine", "ollama", "--model", "qwen35_9b_q4", "--concurrency", "64", "--shots", "0", "--input", "{input}", "--output", "{output}", "--threads", "{threads}"]
+    needs_gpu: true
+    servers: []
+    scales: [D2k]
+    anti_pattern: false

@@ -8,7 +8,7 @@ idle_baseline: {duration_s: 60, every_min: 30}
 load_guard: {max_busy_pct: 5, window_s: 2, max_wait_s: 900}   # CPU busy % (all CPUs, /proc/stat) over window_s before each run; ADR 0007
 interleave: true
 seed: 20261106
-scales: {S: 10000, M: 100000, L: 1000000, XL: 10000000, real: 15305}  # real = data/real/corpus (Tracks B/C/E, ADR 0012)
+scales: {S: 10000, M: 100000, L: 1000000, XL: 10000000, real: 15305, D2k: 2000, dev: 300}  # real = data/real/corpus (Tracks B/C/E, ADR 0012); D2k = Track D sample, dev = its 300-row dev set (PLAN §6.1)
 energy:
   price_eur_per_kwh: {household: 0.373, industry: 0.167}   # BDEW 10/2026; industry = SME new contracts 2026
   co2_g_per_kwh: 344                                        # UBA estimate 2025

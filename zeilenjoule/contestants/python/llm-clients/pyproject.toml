@@ -7,6 +7,7 @@ dependencies = [
     "httpx==0.28.1",
     "pydantic==2.14.3",
     "jsonschema==4.26.0",
+    "nvidia-ml-py==13.615.71",
     "zjmark",
 ]
 

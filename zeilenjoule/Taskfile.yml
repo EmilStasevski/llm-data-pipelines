@@ -201,6 +201,21 @@ tasks:
     cmds:
       - uv run --frozen python -m zj_eval.track_c_lex reference --scale {{.SCALE}}
 
+  # ---------- Track D (Phase 7) ----------
+  trackD:prep:
+    desc: Track D inputs (prompts 0/3-shot, schema) + gold for D2k and dev → data/track_d/, data/reference/track_d/
+    cmds:
+      - uv run --frozen python -m zj_eval.track_d prepare
+  trackD:models:
+    desc: Download the Track D models (pinned revisions; GGUF + HF format for vLLM) → models/gguf, models/vllm
+    cmds:
+      - scripts/fetch_models_d.sh {{.WHAT | default "all"}}
+  trackD:pull:
+    desc: Pull Ollama registry models into models/ollama (pinned Ollama image), e.g. TAGS="qwen3.5:9b"
+    requires: { vars: [TAGS] }
+    cmds:
+      - scripts/ollama_pull.sh {{.TAGS}}
+
   # ---------- Track A (Phase 4) ----------
   trackA:spec:
     desc: Recompile spec/track_a_lexicon.json and spec/track_a_cases.jsonl from their sources

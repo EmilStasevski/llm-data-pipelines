@@ -51,3 +51,10 @@ tasks:
     verify_cmd: ["uv", "run", "--frozen", "--project", ".", "python", "-m", "zj_eval.verify_track_c_lex",
                  "--mode", "hybrid", "--output", "{output}", "--reference", "{reference}"]
     reference: "data/reference/track_c/{scale}/hybrid_top10.npy"
+  d.extract:                 # Track D: LLM row-wise extraction → JSON per row (spec/track_d.md)
+    input: "data/track_d/{scale}/rows.parquet"
+    output: out.jsonl
+    verifier: cmd
+    verify_cmd: ["uv", "run", "--frozen", "--project", ".", "python", "-m", "zj_eval.verify_track_d",
+                 "--output", "{output}", "--reference", "{reference}"]
+    reference: "data/reference/track_d/{scale}/gold.jsonl"

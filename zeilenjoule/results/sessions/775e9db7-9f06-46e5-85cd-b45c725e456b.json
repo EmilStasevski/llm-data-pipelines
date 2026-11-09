@@ -1,0 +1,110 @@
+{
+  "session_id": "775e9db7-9f06-46e5-85cd-b45c725e456b",
+  "created": "2026-11-09T01:57:50Z",
+  "seed": 20261106,
+  "reps": 1,
+  "warmup": 0,
+  "interleave": true,
+  "threads": 0,
+  "scales": [
+    "dev"
+  ],
+  "contestants": [
+    "d01_ollama_qwen35_9b_q4_n1",
+    "d01_ollama_qwen35_9b_q4_n16",
+    "d01_ollama_qwen35_9b_q4_n4",
+    "d01_ollama_qwen35_9b_q4_n64",
+    "d02_llamacpp_qwen35_9b_q4_n1",
+    "d02_llamacpp_qwen35_9b_q4_n16",
+    "d02_llamacpp_qwen35_9b_q4_n4",
+    "d02_llamacpp_qwen35_9b_q4_n64",
+    "d03_vllm_qwen35_9b_awq_n1",
+    "d03_vllm_qwen35_9b_awq_n16",
+    "d03_vllm_qwen35_9b_awq_n4",
+    "d03_vllm_qwen35_9b_awq_n64"
+  ],
+  "items": [
+    {
+      "contestant": "d02_llamacpp_qwen35_9b_q4_n1",
+      "scale": "dev",
+      "rep": 1,
+      "warmup": false
+    },
+    {
+      "contestant": "d02_llamacpp_qwen35_9b_q4_n16",
+      "scale": "dev",
+      "rep": 1,
+      "warmup": false
+    },
+    {
+      "contestant": "d01_ollama_qwen35_9b_q4_n16",
+      "scale": "dev",
+      "rep": 1,
+      "warmup": false
+    },
+    {
+      "contestant": "d03_vllm_qwen35_9b_awq_n64",
+      "scale": "dev",
+      "rep": 1,
+      "warmup": false
+    },
+    {
+      "contestant": "d03_vllm_qwen35_9b_awq_n1",
+      "scale": "dev",
+      "rep": 1,
+      "warmup": false
+    },
+    {
+      "contestant": "d02_llamacpp_qwen35_9b_q4_n4",
+      "scale": "dev",
+      "rep": 1,
+      "warmup": false
+    },
+    {
+      "contestant": "d03_vllm_qwen35_9b_awq_n4",
+      "scale": "dev",
+      "rep": 1,
+      "warmup": false
+    },
+    {
+      "contestant": "d02_llamacpp_qwen35_9b_q4_n64",
+      "scale": "dev",
+      "rep": 1,
+      "warmup": false
+    },
+    {
+      "contestant": "d01_ollama_qwen35_9b_q4_n64",
+      "scale": "dev",
+      "rep": 1,
+      "warmup": false
+    },
+    {
+      "contestant": "d01_ollama_qwen35_9b_q4_n1",
+      "scale": "dev",
+      "rep": 1,
+      "warmup": false
+    },
+    {
+      "contestant": "d03_vllm_qwen35_9b_awq_n16",
+      "scale": "dev",
+      "rep": 1,
+      "warmup": false
+    },
+    {
+      "contestant": "d01_ollama_qwen35_9b_q4_n4",
+      "scale": "dev",
+      "rep": 1,
+      "warmup": false
+    }
+  ],
+  "args": [
+    "--track",
+    "D",
+    "--scale",
+    "dev",
+    "--reps",
+    "1",
+    "--warmup",
+    "0"
+  ]
+}

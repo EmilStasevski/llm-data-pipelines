@@ -28,7 +28,8 @@ from zj_analysis.report import (
 BEGIN, END = "<!-- zj:results:begin -->", "<!-- zj:results:end -->"
 # (report section, scale, figure stem): the largest scale that every non-anti-pattern contestant finished
 HIGHLIGHTS = [("A", "L", "track_a_L"), ("B", "M", "track_b_M"), ("C", "M", "track_c_dense_M"),
-              ("C-hybrid", "M", "track_c_hybrid_M"), ("C-lexical", "M", "")]  # fmt: skip
+              ("C-hybrid", "M", "track_c_hybrid_M"), ("C-lexical", "M", ""),
+    ("D", "D2k", "track_d_D2k")]  # fmt: skip
 
 # dataviz reference palette: sequential/categorical blue + orange, chart chrome; dark steps via media query
 CSS = """
@@ -189,9 +190,9 @@ def _rows(con: duckdb.DuckDBPyConnection, section: str, scale: str) -> list[Summ
 
 def _qps(con: duckdb.DuckDBPyConnection, scale: str) -> dict[str, tuple[float, float]]:
     acc: dict[str, dict[str, list[float]]] = {}
-    for c, sc, st, lat, q, tp in con.execute(DETAIL_SQL, list(section_filter("C"))).fetchall():
+    for c, sc, st, ex, q, rows in con.execute(DETAIL_SQL, list(section_filter("C"))).fetchall():
         if sc == scale:
-            accumulate(acc.setdefault(str(c), {}), st, lat, q, tp)
+            accumulate(acc.setdefault(str(c), {}), st, ex, q, rows)
     out: dict[str, tuple[float, float]] = {}
     for c, d in acc.items():
         a, b = median_of(d.get("qps_c1", [])), median_of(d.get("qps_c16", []))

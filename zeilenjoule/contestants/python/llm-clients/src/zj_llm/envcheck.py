@@ -7,7 +7,7 @@ import sys
 from zjmark import canonical_json
 from zjmark.envinfo import Fingerprint, fingerprint
 
-DISTS = ["httpx", "pydantic", "jsonschema", "zjmark"]
+DISTS = ["httpx", "pydantic", "jsonschema", "nvidia-ml-py", "zjmark"]
 
 
 def check(gpu: bool = False) -> Fingerprint:

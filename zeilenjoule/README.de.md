@@ -20,7 +20,7 @@ Ergebnisse: [`reports/REPORT.de.md`](reports/REPORT.de.md) (English: [`reports/R
 | 4 | Track A: Dataframe- und Zeilenverarbeitung (Python-Schleife, pandas, Polars inkl. GPU, cuDF, DuckDB, Rust) | ✅ gemessen |
 | 5 | Track B: Embeddings (bge-m3: PyTorch, ONNX Runtime, TEI, vLLM, llama.cpp, Rust) | ✅ gemessen |
 | 6 | Track C: Speicherung, Index, Suche (FAISS, cuVS, pgvector, DuckDB, SQLite, LanceDB, Qdrant, Tantivy; Konkurrenz 1/16, Hybrid-RRF) | ✅ gemessen |
-| 7 | Track D: LLM-Extraktion | als Nächstes |
+| 7 | Track D: LLM-Extraktion (Ollama, llama.cpp, vLLM; Qwen 3.5, Gemma 4, Ministral, gpt-oss, EuroLLM, Teuken) | ✅ LLMs gemessen · GLiNER + Kaskade offen |
 | 8 | Track E: End-to-End-RAG, Gewinner | offen |
 | 9–10 | Produktion (Go/DevOps), Portfolio | offen |
 
@@ -100,6 +100,25 @@ Generiert von `task report` aus `results/` – Median aus 5 gemessenen Läufen d
 | # | Wettbewerber | Wall s | × schnellster | Energie J (brutto) |
 |---|---|---|---|---|
 | 1 | `c11_tantivy` | 1,49 | 1,00 | 26,8 |
+
+### Track D: LLM-Extraktion je Zeile (`d.extract`): Skala D2k (2 000 Zeilen)
+
+![Track D: LLM-Extraktion je Zeile (`d.extract`): Skala D2k (2 000 Zeilen)](reports/figures/track_d_D2k.de.svg)
+
+| # | Wettbewerber | Wall s | × schnellster | Energie J (brutto) |
+|---|---|---|---|---|
+| 1 | `d03_vllm_qwen35_9b_awq_3shot` | 376,10 | 1,00 | 49 290,2 |
+| 2 | `d03_vllm_qwen35_9b_fp8` | 440,62 | 1,17 | 58 722,0 |
+| 3 | `d03_vllm_qwen35_9b_awq` | 482,00 | 1,28 | 64 814,5 |
+| 4 | `d02_llamacpp_qwen35_4b_q4` | 506,14 | 1,35 | 51 199,0 |
+| 5 | `d02_llamacpp_gemma4_e4b_q4_3shot` | 522,12 | 1,39 | 46 512,6 |
+| 6 | `d02_llamacpp_gemma4_e4b_q4` | 532,84 | 1,42 | 46 580,0 |
+| 7 | `d02_llamacpp_qwen35_9b_q4_3shot` | 601,49 | 1,60 | 72 331,5 |
+| 8 | `d02_llamacpp_ministral3_14b_q4` | 641,46 | 1,71 | 94 288,4 |
+| 9 | `d02_llamacpp_qwen35_9b_q4` | 658,12 | 1,75 | 78 291,4 |
+| 10 | `d02_llamacpp_qwen35_9b_q8` | 747,96 | 1,99 | 89 770,5 |
+| 11 | `d01_ollama_qwen35_9b_q4` | 1 234,09 | 3,28 | 94 917,3 |
+| 12 | `d02_llamacpp_gemma4_12b_q4` | 1 604,34 | 4,27 | 154 713,6 |
 
 <!-- zj:results:end -->
 

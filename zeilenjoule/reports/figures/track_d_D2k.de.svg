@@ -1,0 +1,56 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 820 352" width="820" height="352" role="img" aria-label="Wall-Zeit s (log) · Energie J brutto"><style>
+.bg{fill:#fcfcfb}.ink{fill:#0b0b0b}.sec{fill:#52514e}.mut{fill:#898781}.grid{stroke:#e1e0d9}
+.axis{stroke:#c3c2b7}.s1{fill:#2a78d6}.s2{fill:#eb6834}.anti{fill:#c3c2b7}
+@media (prefers-color-scheme:dark){.bg{fill:#1a1a19}.ink{fill:#f0efec}.sec{fill:#c3c2b7}
+.grid{stroke:#2c2c2a}.axis{stroke:#383835}.s1{fill:#3987e5}.s2{fill:#d95926}.anti{fill:#52514e}}
+text{font-family:ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;font-size:12px}
+.mono{font-family:ui-monospace,SFMono-Regular,Menlo,monospace}
+</style>
+<rect class="bg" width="820" height="352" rx="6"/>
+<text class="ink" x="16" y="20" font-weight="600">Wall-Zeit s (log) · Energie J brutto</text>
+<line class="grid" x1="200.0" x2="200.0" y1="30" y2="322"/>
+<text class="mut" x="200.0" y="338" text-anchor="middle">200</text>
+<line class="grid" x1="387.0" x2="387.0" y1="30" y2="322"/>
+<text class="mut" x="387.0" y="338" text-anchor="middle">500</text>
+<line class="grid" x1="528.5" x2="528.5" y1="30" y2="322"/>
+<text class="mut" x="528.5" y="338" text-anchor="middle">1000</text>
+<line class="grid" x1="670.0" x2="670.0" y1="30" y2="322"/>
+<text class="mut" x="670.0" y="338" text-anchor="middle">2000</text>
+<line class="axis" x1="200" x2="200" y1="30" y2="322"/>
+<text class="sec mono" x="192" y="49" text-anchor="end">d03_vllm_qwen35_9b_awq_3shot</text>
+<path class="s1" d="M200,38H324.9a4,4 0 0 1 4,4v6a4,4 0 0 1 -4,4H200Z"/>
+<text class="ink" x="334.9" y="49">376 s · 49 290 J</text>
+<text class="sec mono" x="192" y="73" text-anchor="end">d03_vllm_qwen35_9b_fp8</text>
+<path class="s1" d="M200,62H357.2a4,4 0 0 1 4,4v6a4,4 0 0 1 -4,4H200Z"/>
+<text class="ink" x="367.2" y="73">441 s · 58 722 J</text>
+<text class="sec mono" x="192" y="97" text-anchor="end">d03_vllm_qwen35_9b_awq</text>
+<path class="s1" d="M200,86H375.5a4,4 0 0 1 4,4v6a4,4 0 0 1 -4,4H200Z"/>
+<text class="ink" x="385.5" y="97">482 s · 64 814 J</text>
+<text class="sec mono" x="192" y="121" text-anchor="end">d02_llamacpp_qwen35_4b_q4</text>
+<path class="s1" d="M200,110H385.5a4,4 0 0 1 4,4v6a4,4 0 0 1 -4,4H200Z"/>
+<text class="ink" x="395.5" y="121">506 s · 51 199 J</text>
+<text class="sec mono" x="192" y="145" text-anchor="end">d02_llamacpp_gemma4_e4b_q4_3shot</text>
+<path class="s1" d="M200,134H391.9a4,4 0 0 1 4,4v6a4,4 0 0 1 -4,4H200Z"/>
+<text class="ink" x="401.9" y="145">522 s · 46 513 J</text>
+<text class="sec mono" x="192" y="169" text-anchor="end">d02_llamacpp_gemma4_e4b_q4</text>
+<path class="s1" d="M200,158H396.0a4,4 0 0 1 4,4v6a4,4 0 0 1 -4,4H200Z"/>
+<text class="ink" x="406.0" y="169">533 s · 46 580 J</text>
+<text class="sec mono" x="192" y="193" text-anchor="end">d02_llamacpp_qwen35_9b_q4_3shot</text>
+<path class="s1" d="M200,182H420.8a4,4 0 0 1 4,4v6a4,4 0 0 1 -4,4H200Z"/>
+<text class="ink" x="430.8" y="193">601 s · 72 332 J</text>
+<text class="sec mono" x="192" y="217" text-anchor="end">d02_llamacpp_ministral3_14b_q4</text>
+<path class="s1" d="M200,206H433.9a4,4 0 0 1 4,4v6a4,4 0 0 1 -4,4H200Z"/>
+<text class="ink" x="443.9" y="217">641 s · 94 288 J</text>
+<text class="sec mono" x="192" y="241" text-anchor="end">d02_llamacpp_qwen35_9b_q4</text>
+<path class="s1" d="M200,230H439.1a4,4 0 0 1 4,4v6a4,4 0 0 1 -4,4H200Z"/>
+<text class="ink" x="449.1" y="241">658 s · 78 291 J</text>
+<text class="sec mono" x="192" y="265" text-anchor="end">d02_llamacpp_qwen35_9b_q8</text>
+<path class="s1" d="M200,254H465.2a4,4 0 0 1 4,4v6a4,4 0 0 1 -4,4H200Z"/>
+<text class="ink" x="475.2" y="265">748 s · 89 771 J</text>
+<text class="sec mono" x="192" y="289" text-anchor="end">d01_ollama_qwen35_9b_q4</text>
+<path class="s1" d="M200,278H567.4a4,4 0 0 1 4,4v6a4,4 0 0 1 -4,4H200Z"/>
+<text class="ink" x="577.4" y="289">1 234 s · 94 917 J</text>
+<text class="sec mono" x="192" y="313" text-anchor="end">d02_llamacpp_gemma4_12b_q4</text>
+<path class="s1" d="M200,302H621.0a4,4 0 0 1 4,4v6a4,4 0 0 1 -4,4H200Z"/>
+<text class="ink" x="631.0" y="313">1 604 s · 154 714 J</text>
+</svg>

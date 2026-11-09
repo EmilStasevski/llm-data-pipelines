@@ -383,3 +383,47 @@ Open questions:
   `reports/figures/` (Wall-Zeit log mit Energie-Label; QPS c1 vs. c16). Keine Zahl von Hand (Regel 3).
 - Report-Helfer öffentlich benannt (`fmt_num`, `summaries`, `accumulate`, `median_of`); Test für Block +
   Idempotenz. analysis: ruff, pyright, pytest grün.
+
+## 2026-11-09 — Phase 7 Teil 1: Track D (`d.extract`) gebaut, Modelle geladen (ungemessen)
+- Spezifikation `spec/track_d.md`, ADR 0018; Schema `spec/schema_stoermeldung.json`; Referenz/Bewertung
+  `zj_reference.track_d` (strenge JSON-Gültigkeit, exakt/Token-F1, macro-F1), `zj_eval.track_d prepare`
+  (Prompts 0/3-shot mit Katalogen aus spec/lexicon), `zj_eval.verify_track_d` (Gate: Gültigkeit ≥ 99,5 %,
+  kein Reasoning). Skalen `D2k` (2 000) und `dev` (300, nur Konkurrenz-Sweep). `task trackD:prep`.
+- Client `zj_llm.extract` für Ollama 0.40.15 (Docker, Modelle unter models/ollama), llama.cpp b12169, vLLM 0.33.0;
+  gleiche Nachrichten, temperature 0, max_tokens 256, JSON-Schema-Decoding, Reasoning aus; Stufen load/extract/
+  write/ttft. 12 Sweep-Kandidaten (3 Engines × N 1/4/16/64, Qwen3.5-9B Q4 bzw. AWQ) in config/contestants.yaml.
+- Modelle (`scripts/fetch_models_d.sh`, gepinnte Revisionen, alle Apache-2.0): Qwen3.5-9B Q4/Q8, Qwen3.5-4B Q4,
+  Gemma 4 12B Q4/Q8, Gemma 4 E4B, EuroLLM-9B-2512 Q8, Teuken-7B Q8, Ministral 3 14B Q4, gpt-oss-20b MXFP4;
+  vLLM: Qwen3.5-9B AWQ/FP8, gpt-oss-20b. Ollama: qwen3.5:9b.
+- Ungemessene Proben (dev, N = 16, nur Richtwerte): llama.cpp Qwen 9B ≈ 2,7 Zeilen/s (N = 64 gleich: 2,76,
+  CPU-gebundenes Grammar-Sampling?), vLLM AWQ 3,9 (N = 64: 4,6), Ollama 1,4; macro-F1 0,93–0,96, Gültigkeit 1,0.
+  Gemma 4 12B übernimmt teils den Klammerzusatz des Katalogs in `komponente` (Prompt präzisiert, bleibt teils).
+- Bericht: Abschnitt Track D mit J/Zeile, Tok/s, TTFT, VRAM, macro-F1 und Gewinner-Gate; `task ci` grün.
+- Offen (Erlaubnis nötig): `models/vllm/gpt-oss-20b/original` + `metal` (≈ 13 GB Duplikat durch zu weites
+  Include-Muster) löschen.
+- Nächstes: gemessener Sweep auf `dev` → N je Engine wählen → D2k-Matrix (Modelle × Engines, 0/3-shot, Q4/Q8).
+- 2026-11-09: `models/vllm/gpt-oss-20b/original` (13 GB Duplikat) mit Erlaubnis gelöscht; Include-Muster korrigiert.
+- Kompatibilitätsproben (100 dev-Zeilen, N = 16, ungemessen): Qwen3.5-4B Q4 0,932; Gemma 4 E4B 0,973 (nach
+  `--reasoning-budget 0`); Qwen3.5-9B Q8 0,964; vLLM FP8 0,961 (mit text-only + 0,95 Speicher); gpt-oss-20b llama.cpp
+  Gültigkeit 0,97; EuroLLM/Teuken ohne Grammatik (llama.cpp-Sampler-Fehler) ungültig; vLLM gpt-oss und Gemma 12B Q8
+  bei N = 16: VRAM zu knapp. Details docs/COMPAT.md.
+
+## 2026-11-09 — Track D Konkurrenz-Sweep gemessen (Session 775e9db7, dev, 12/12 ok, 60 min)
+- Erster Versuch (03:10) brach ab: Leerlauf-Baseline 3× nicht ruhig (loadavg 1,16), nichts aufgezeichnet; Wiederaufnahme ok.
+- Beste N nach J/Zeile: vLLM AWQ N = 64 (4,67 Zeilen/s, 32,0 J/Zeile, macro-F1 0,938), llama.cpp Q4 N = 16 (2,94 Zeilen/s,
+  42,7 J/Zeile, 0,958; N = 64 nicht schneller, 48,6 J), Ollama N = 64 (1,55 Zeilen/s, 62,5 J/Zeile, 0,950; p99 109 s).
+  N = 1 kostet 190–233 J/Zeile. Alle 12 Gültigkeit 1,0. Qualität praktisch unabhängig von N.
+- D2k-Matrix angelegt (15 Konfigurationen: llama.cpp 11 inkl. 3-shot/Q8/EuroLLM+Teuken ohne Grammatik, vLLM 3, Ollama 1);
+  3-shot-Prompts ≤ 1 496 Token passen in 2 048 (ungemessene Probe). Verifier legt completion_tokens_median nun in quality.
+
+## 2026-11-09 — Track D Hauptmatrix gemessen (Session 2501fd1d, D2k, 45 Läufe, 8 h 52 min)
+- 35 ok, 9 disqualifiziert (gpt-oss-20b Gültigkeit 0,962 – Reasoning ohne Aus-Schalter; EuroLLM 0,941 und Teuken 0,000 –
+  ohne Grammatik), 1 fail (vLLM FP8 Wdh. 1: `max_num_seqs 64 > 37 Mamba-Cache-Blöcke`, Wdh. 2/3 ok → n = 2). `task report`.
+- Alle gewerteten Konfigurationen 100 % gültiges JSON und im Gewinner-Gate (bestes macro-F1 0,9712 → Schwelle 0,874).
+- Bestes macro-F1: llama.cpp Qwen3.5-9B Q4 3-shot 0,9712 (35,9 J/Zeile, 3,38 Zeilen/s). Geringste Energie:
+  Gemma 4 E4B 3-shot 23,0 J/Zeile (0,9615, 4,2 GB VRAM) ≈ vLLM AWQ 3-shot 23,3 J/Zeile (0,9640, schnellste: 6,24 Zeilen/s).
+- 3-shot ist besser **und** billiger (kompaktes JSON wie in den Beispielen: 67–68 statt 84 Token/Zeile).
+  Q8 bringt gegenüber Q4 nichts (0,949 vs. 0,953, +15 % Energie). Ollama gleiche Gewichtsklasse: 1,91 Zeilen/s,
+  43,5 J/Zeile vs. llama.cpp 3,09 / 38,8. Gemma 4 12B: 76 J/Zeile, `komponente` 0,68 (Klammerzusatz).
+- Bericht: Zeilen/s mit 2 Nachkommastellen unter 100/s.
+- Offen in Phase 7: d10 GLiNER und d11 Kaskade (PLAN §10, Core); dann Phase 8.

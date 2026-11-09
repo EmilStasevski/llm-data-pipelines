@@ -187,19 +187,43 @@ TRACKS: dict[str, dict[str, tuple[str, str, str, str]]] = {
                "stemmer. Counted only if the dense leg (recall ≥ 0.95), the fusion (≥ 0.95) and the lexical "
                "leg (sanity floor) pass (ADR 0017)."),
     },
+    "D": {
+        "de": ("Track D: LLM-Extraktion je Zeile (`d.extract`)", "Zeilen", "Zeile",
+               "Ein Lauf = Server-Start + Modell laden (`load`) → alle Zeilen mit N gleichzeitigen Anfragen "
+               "(`extract`) → TTFT-Probe. Gleiche Prompts, temperature 0, max_tokens 256, JSON-Schema als "
+               "Constrained Decoding, Reasoning aus. Gewertet nur bei JSON-Gültigkeit ≥ 99,5 % ohne "
+               "Reasoning-Ausstoß (spec/track_d.md, ADR 0018). Skala `dev` = Konkurrenz-Sweep (300 Zeilen)."),
+        "en": ("Track D: LLM row-wise extraction (`d.extract`)", "rows", "row",
+               "One run = server start + model load (`load`) → all rows with N requests in flight "
+               "(`extract`) → TTFT probe. Same prompts, temperature 0, max_tokens 256, JSON-schema "
+               "constrained "
+               "decoding, reasoning off. Counted only with JSON validity ≥ 99.5 % and no reasoning output "
+               "(spec/track_d.md, ADR 0018). Scale `dev` = concurrency sweep (300 rows)."),
+    },
 }  # fmt: skip
-SECTION_TASK = {"C": ("C", "c.dense"), "C-lexical": ("C", "c.lexical"), "C-hybrid": ("C", "c.hybrid")}
+SECTION_TASK = {
+    "C": ("C", "c.dense"),
+    "C-lexical": ("C", "c.lexical"),
+    "C-hybrid": ("C", "c.hybrid"),
+    "D": ("D", "d.extract"),
+}
 DETAIL_SQL = """
 WITH latest AS (
   SELECT contestant, scale, arg_max(session_id, ts) AS sid FROM ok_runs
   WHERE track = $1 AND coalesce(task, '') LIKE $2 GROUP BY ALL)
-SELECT contestant, scale, to_json(stages), json_extract(to_json(result), '$.extra.latency_ms'),
-       to_json(quality), json_extract(to_json(result), '$.extra.throughput')
+SELECT contestant, scale, to_json(stages), json_extract(to_json(result), '$.extra'), to_json(quality), rows
 FROM ok_runs JOIN latest USING (contestant, scale)
 WHERE track = $1 AND coalesce(task, '') LIKE $2 AND session_id = sid
 """
 DETAIL_STAGES = ("load", "ingest", "index", "query")
 N_QUERIES = 1000  # spec/track_c.md
+# per track: top-level stages shown, and stages whose energy becomes a per-unit column
+# (stage → (key, unit divisor: "queries" = N_QUERIES, "rows" = the run's rows, scale factor))
+STAGES_BY_TRACK = {"C": DETAIL_STAGES, "D": ("load", "extract", "ttft")}
+STAGE_ENERGY: dict[str, tuple[str, str, float]] = {
+    "query": ("mj_query", "queries", 1e3), "query_c16": ("mj_query_c16", "queries", 1e3),
+    "extract": ("j_row", "rows", 1.0),
+}  # fmt: skip
 
 
 def headers(track: str, lang: str) -> list[str]:
@@ -240,7 +264,7 @@ def _row(s: Summary, best_wall: float, best_e: float | None, prices: Prices, lan
         str(s.n),
         fmt_num(s.wall, 3, lang) + cv_flag,
         f"{fmt_num(s.q1, 3, lang)}–{fmt_num(s.q3, 3, lang)}",
-        fmt_num(s.rows / s.wall if s.wall else None, 0, lang),
+        fmt_num(s.rows / s.wall if s.wall else None, 2 if s.wall and s.rows / s.wall < 100 else 0, lang),
         fmt_num(s.e_gross, 1, lang),
         fmt_num(s.e_net, 1, lang),
         fmt_num(j_row * 1e3 if j_row is not None else None, 3, lang),
@@ -268,7 +292,7 @@ def track_section(con: duckdb.DuckDBPyConnection, track: str, prices: Prices, la
         title = f"### {label} {scale} ({fmt_num(float(rows[0].rows), 0, lang)} {units})"
         body = [_row(s, rows[0].wall, best_e, prices, lang) for s in rows]
         out += [title, "", _table(body, headers(track, lang)), ""]
-    if track.startswith("C"):
+    if track.startswith(("C", "D")):
         out += _details(con, track, lang)
     if problems:
         title = (
@@ -298,8 +322,13 @@ DETAIL_COLUMNS: dict[str, list[tuple[str, str]]] = {
                  ("lex_ndcg_at_10", "nDCG lex"), ("lex_ndcg_at_10_kompositum", "nDCG lex Komp."),
                  ("dense_ndcg_at_10", "nDCG dense"), ("hit_at_10", "hit@10"), ("lex_hit_at_10", "hit lex"),
                  ("dense_hit_at_10", "hit dense"), ("fusion_agreement", "Fusion")],
+    "d.extract": [("rows_per_s", "{rows}/s"), ("output_tok_per_s", "Tok/s"), ("j_row", "{j}"),
+                  ("ttft_ms", "TTFT ms"), ("vram_mb", "VRAM MiB"), ("completion_tokens_median", "Tok/{row}"),
+                  ("json_validity", "JSON ok"), ("schadensart", "schadensart"), ("komponente", "komponente"),
+                  ("macro_f1", "macro-F1")],
 }  # fmt: skip
-DETAIL_NOTE = {
+WINNER_F1 = 0.9  # PLAN §10: macro-F1 ≥ 0.9 × best macro-F1 in the track (per scale)
+DETAIL_NOTE_C = {
     "de": "Latenz: client-seitig je Anfrage (Konkurrenz 1), vom Wettbewerber gemeldet; QPS c16 = 1 000 "
     "Anfragen "
     "aus 16 Client-Threads / Wall-Zeit; mJ/Anfrage = Energie der Stufe (brutto, GPU + CPU) / 1 000. nDCG@10 "
@@ -311,46 +340,88 @@ DETAIL_NOTE = {
     "(synthetic, graded relevance) / hit@10 (real, known item) = quality of the hits; exact search is the "
     "ceiling of the dense part. Kompositum = one-word queries (spec/track_c.md).",
 }
+DETAIL_NOTE_D = {
+    "de": "Zeilen/s, Tok/s aus Stufe `extract` (N Anfragen gleichzeitig); J/Zeile = Energie der Stufe "
+    "`extract` (brutto, GPU + CPU) / Zeilen; Latenz je Zeile unter Last; TTFT = Zeit bis zum ersten Token, "
+    "20 Zeilen einzeln gestreamt; VRAM = Server nach dem Laden. Qualität: Feld-Mittel und macro-F1 "
+    "(spec/track_d.md §4). Gewinner-Gate: macro-F1 ≥ 0,9 × bestes macro-F1 der Skala und JSON-Gültigkeit "
+    "≥ 99,5 % (PLAN §10).",
+    "en": "Rows/s, tok/s from stage `extract` (N requests in flight); J/row = energy of stage `extract` "
+    "(gross, GPU + CPU) / rows; latency per row under load; TTFT = time to first token, 20 rows streamed one "
+    "at a time; VRAM = server after loading. Quality: field means and macro-F1 (spec/track_d.md §4). Winner "
+    "gate: macro-F1 ≥ 0.9 × best macro-F1 of the scale and JSON validity ≥ 99.5 % (PLAN §10).",
+}
+DETAIL_NOTE = {"c.dense": DETAIL_NOTE_C, "c.lexical": DETAIL_NOTE_C, "c.hybrid": DETAIL_NOTE_C,
+               "d.extract": DETAIL_NOTE_D}  # fmt: skip
 
 
-def accumulate(d: dict[str, list[float]], st: Any, lat: Any, q: Any, tp: Any) -> None:
-    """One run's stage times, per-query energy, throughput, latency and quality into `d`."""
+def _numbers(d: dict[str, list[float]], blob: dict[str, Any]) -> None:
+    for k, v in blob.items():
+        if isinstance(v, (int, float)) and not isinstance(v, bool):
+            d.setdefault(k, []).append(float(v))
+
+
+def accumulate(d: dict[str, list[float]], st: Any, extra: Any, q: Any, rows: Any) -> None:
+    """One run's stage times, per-unit stage energy, throughput, latency, TTFT, VRAM and quality into `d`."""
     for stg in cast("list[dict[str, Any]]", json.loads(st) or []):
         name = str(stg["name"])
         if stg.get("depth", 0) != 0:
             continue
-        if name in DETAIL_STAGES:
-            d.setdefault(name, []).append(float(stg["t_s"]))
+        d.setdefault(f"t_{name}", []).append(float(stg["t_s"]))
         parts = [float(x) for k in ("gpu_j", "cpu_j", "dram_j") if (x := stg.get(k)) is not None]
-        if name in ("query", "query_c16") and parts:  # J per query from the stage's energy
-            d.setdefault(f"mj_{name}", []).append(1e3 * sum(parts) / N_QUERIES)
-    for blob in (tp, lat, q):
-        for k, v in cast("dict[str, Any]", json.loads(blob) if blob else {}).items():
-            if isinstance(v, (int, float)) and not isinstance(v, bool):
-                d.setdefault(k, []).append(float(v))
+        if name in STAGE_ENERGY and parts:  # energy per query / per row from the stage's energy
+            key, unit, factor = STAGE_ENERGY[name]
+            n = N_QUERIES if unit == "queries" else int(rows or 0)
+            if n:
+                d.setdefault(key, []).append(factor * sum(parts) / n)
+    ex = cast("dict[str, Any]", json.loads(extra) if extra else {})
+    for k in ("throughput", "latency_ms"):
+        _numbers(d, cast("dict[str, Any]", ex.get(k) or {}))
+    if (
+        isinstance(t := ex.get("ttft_ms"), dict)
+        and (m := cast("dict[str, Any]", t).get("median")) is not None
+    ):
+        d.setdefault("ttft_ms", []).append(float(m))
+    if (v := ex.get("server_vram_mb_loaded")) is not None:
+        d.setdefault("vram_mb", []).append(float(v))
+    _numbers(d, cast("dict[str, Any]", json.loads(q) if q else {}))
 
 
 def _digits(key: str) -> int:
-    if "_at_10" in key or key == "fusion_agreement":
+    if "_at_10" in key or key == "fusion_agreement" or key in TRACK_D_FIELDS:
         return 4
-    if key.startswith("qps"):
+    if key.startswith("qps") or key in ("vram_mb", "output_tok_per_s", "ttft_ms", "completion_tokens_median"):
         return 0
-    return 2 if key.startswith(("p", "mj")) else 1
+    return 2 if key.startswith(("p", "mj", "rows_per", "j_")) else 1
+
+
+TRACK_D_FIELDS = ("komponente", "schadensart", "ursache", "massnahme", "sicherheitsrelevant",
+                  "stillstand_minuten", "ersatzteil_materialnr", "macro_f1", "json_validity")  # fmt: skip
 
 
 def _details(con: duckdb.DuckDBPyConnection, track: str, lang: str) -> list[str]:
     """Per-stage medians, query latency percentiles, throughput and retrieval quality (Track C)."""
     de = lang == "de"
     acc: dict[tuple[str, str], dict[str, list[float]]] = {}
-    for c, scale, st, lat, q, tp in con.execute(DETAIL_SQL, list(section_filter(track))).fetchall():
-        accumulate(acc.setdefault((str(c), str(scale)), {}), st, lat, q, tp)
+    for c, scale, st, ex, q, rows in con.execute(DETAIL_SQL, list(section_filter(track))).fetchall():
+        accumulate(acc.setdefault((str(c), str(scale)), {}), st, ex, q, rows)
     if not acc:
         return []
-    extra = DETAIL_COLUMNS.get(section_filter(track)[1], [])
-    q_per = "mJ/Anfrage" if de else "mJ/query"
-    keys = [*DETAIL_STAGES, "p50", "p95", "p99", *(k for k, _ in extra)]
-    metrics = [*(f"{x} s" for x in DETAIL_STAGES), "p50 ms", "p95 ms", "p99 ms",
-               *(h.format(q=q_per) for _, h in extra)]  # fmt: skip
+    task = section_filter(track)[1]
+    extra = DETAIL_COLUMNS.get(task, [])
+    stages = STAGES_BY_TRACK.get(track[0], DETAIL_STAGES)
+    words = {"q": "mJ/Anfrage" if de else "mJ/query", "rows": "Zeilen" if de else "rows",
+             "row": "Zeile" if de else "row", "j": "J/Zeile" if de else "J/row"}  # fmt: skip
+    keys = [*(f"t_{x}" for x in stages), "p50", "p95", "p99", *(k for k, _ in extra)]
+    metrics = [*(f"{x} s" for x in stages), "p50 ms", "p95 ms", "p99 ms",
+               *(h.format(**words) for _, h in extra)]  # fmt: skip
+    gate = task == "d.extract"
+    if gate:
+        metrics.append("Gewinner-Gate" if de else "winner gate")
+    best: dict[str, float] = {}
+    for (_, scale), d in acc.items():
+        if (f1 := median_of(d.get("macro_f1", []))) is not None:
+            best[scale] = max(best.get(scale, 0.0), f1)
     title = "Stufen, Latenz, Qualität (Mediane)" if de else "Stages, latency, quality (medians)"
     header = ["Wettbewerber" if de else "Contestant", "Skala" if de else "Scale", *metrics]
     body: list[list[str]] = []
@@ -358,8 +429,12 @@ def _details(con: duckdb.DuckDBPyConnection, track: str, lang: str) -> list[str]
         cells = [
             ("–" if (m := median_of(d.get(k, []))) is None else fmt_num(m, _digits(k), lang)) for k in keys
         ]
+        if gate:
+            f1, ok = median_of(d.get("macro_f1", [])), median_of(d.get("json_validity", []))
+            passed = f1 is not None and ok is not None and f1 >= WINNER_F1 * best[scale] and ok >= 0.995
+            cells.append("✓" if passed else "✗")
         body.append([f"`{c}`", scale, *cells])
-    return [f"### {title}", "", DETAIL_NOTE[lang], "", _table(body, header), ""]
+    return [f"### {title}", "", DETAIL_NOTE.get(task, DETAIL_NOTE_C)[lang], "", _table(body, header), ""]
 
 
 def _intro(prices: Prices, lang: str) -> list[str]:
