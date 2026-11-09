@@ -24,6 +24,9 @@ if [[ $what == all || $what == gguf ]]; then
   gguf mistralai/Ministral-3-14B-Instruct-2512-GGUF 74fac473c433 Ministral-3-14B-Instruct-2512-Q4_K_M.gguf
   gguf QuantFactory/Teuken-7B-instruct-commercial-v0.4-GGUF e9c717be5a56 Teuken-7B-instruct-commercial-v0.4.Q8_0.gguf
 fi
+if [[ $what == all || $what == ner ]]; then  # d10/d11 (MIT)
+  "${HF[@]}" download VAGOsolutions/SauerkrautLM-GLiNER --revision ba967ee030b7 --local-dir models/ner/SauerkrautLM-GLiNER
+fi
 if [[ $what == all || $what == vllm ]]; then
   vllm cyankiwi/Qwen3.5-9B-AWQ-4bit e4d2d39cede8
   vllm openai/gpt-oss-20b 6cee5e81ee83 '*.json' 'model-*.safetensors' '*.jinja'  # not original/, metal/

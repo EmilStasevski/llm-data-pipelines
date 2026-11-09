@@ -1,4 +1,4 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 820 352" width="820" height="352" role="img" aria-label="wall time s (log) · energy J gross"><style>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 820 400" width="820" height="400" role="img" aria-label="wall time s (log) · energy J gross"><style>
 .bg{fill:#fcfcfb}.ink{fill:#0b0b0b}.sec{fill:#52514e}.mut{fill:#898781}.grid{stroke:#e1e0d9}
 .axis{stroke:#c3c2b7}.s1{fill:#2a78d6}.s2{fill:#eb6834}.anti{fill:#c3c2b7}
 @media (prefers-color-scheme:dark){.bg{fill:#1a1a19}.ink{fill:#f0efec}.sec{fill:#c3c2b7}
@@ -6,51 +6,65 @@
 text{font-family:ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;font-size:12px}
 .mono{font-family:ui-monospace,SFMono-Regular,Menlo,monospace}
 </style>
-<rect class="bg" width="820" height="352" rx="6"/>
+<rect class="bg" width="820" height="400" rx="6"/>
 <text class="ink" x="16" y="20" font-weight="600">wall time s (log) · energy J gross</text>
-<line class="grid" x1="200.0" x2="200.0" y1="30" y2="322"/>
-<text class="mut" x="200.0" y="338" text-anchor="middle">200</text>
-<line class="grid" x1="387.0" x2="387.0" y1="30" y2="322"/>
-<text class="mut" x="387.0" y="338" text-anchor="middle">500</text>
-<line class="grid" x1="528.5" x2="528.5" y1="30" y2="322"/>
-<text class="mut" x="528.5" y="338" text-anchor="middle">1000</text>
-<line class="grid" x1="670.0" x2="670.0" y1="30" y2="322"/>
-<text class="mut" x="670.0" y="338" text-anchor="middle">2000</text>
-<line class="axis" x1="200" x2="200" y1="30" y2="322"/>
-<text class="sec mono" x="192" y="49" text-anchor="end">d03_vllm_qwen35_9b_awq_3shot</text>
-<path class="s1" d="M200,38H324.9a4,4 0 0 1 4,4v6a4,4 0 0 1 -4,4H200Z"/>
-<text class="ink" x="334.9" y="49">376 s · 49 290 J</text>
-<text class="sec mono" x="192" y="73" text-anchor="end">d03_vllm_qwen35_9b_fp8</text>
-<path class="s1" d="M200,62H357.2a4,4 0 0 1 4,4v6a4,4 0 0 1 -4,4H200Z"/>
-<text class="ink" x="367.2" y="73">441 s · 58 722 J</text>
-<text class="sec mono" x="192" y="97" text-anchor="end">d03_vllm_qwen35_9b_awq</text>
-<path class="s1" d="M200,86H375.5a4,4 0 0 1 4,4v6a4,4 0 0 1 -4,4H200Z"/>
-<text class="ink" x="385.5" y="97">482 s · 64 814 J</text>
-<text class="sec mono" x="192" y="121" text-anchor="end">d02_llamacpp_qwen35_4b_q4</text>
-<path class="s1" d="M200,110H385.5a4,4 0 0 1 4,4v6a4,4 0 0 1 -4,4H200Z"/>
-<text class="ink" x="395.5" y="121">506 s · 51 199 J</text>
-<text class="sec mono" x="192" y="145" text-anchor="end">d02_llamacpp_gemma4_e4b_q4_3shot</text>
-<path class="s1" d="M200,134H391.9a4,4 0 0 1 4,4v6a4,4 0 0 1 -4,4H200Z"/>
-<text class="ink" x="401.9" y="145">522 s · 46 513 J</text>
-<text class="sec mono" x="192" y="169" text-anchor="end">d02_llamacpp_gemma4_e4b_q4</text>
-<path class="s1" d="M200,158H396.0a4,4 0 0 1 4,4v6a4,4 0 0 1 -4,4H200Z"/>
-<text class="ink" x="406.0" y="169">533 s · 46 580 J</text>
-<text class="sec mono" x="192" y="193" text-anchor="end">d02_llamacpp_qwen35_9b_q4_3shot</text>
-<path class="s1" d="M200,182H420.8a4,4 0 0 1 4,4v6a4,4 0 0 1 -4,4H200Z"/>
-<text class="ink" x="430.8" y="193">601 s · 72 332 J</text>
-<text class="sec mono" x="192" y="217" text-anchor="end">d02_llamacpp_ministral3_14b_q4</text>
-<path class="s1" d="M200,206H433.9a4,4 0 0 1 4,4v6a4,4 0 0 1 -4,4H200Z"/>
-<text class="ink" x="443.9" y="217">641 s · 94 288 J</text>
-<text class="sec mono" x="192" y="241" text-anchor="end">d02_llamacpp_qwen35_9b_q4</text>
-<path class="s1" d="M200,230H439.1a4,4 0 0 1 4,4v6a4,4 0 0 1 -4,4H200Z"/>
-<text class="ink" x="449.1" y="241">658 s · 78 291 J</text>
-<text class="sec mono" x="192" y="265" text-anchor="end">d02_llamacpp_qwen35_9b_q8</text>
-<path class="s1" d="M200,254H465.2a4,4 0 0 1 4,4v6a4,4 0 0 1 -4,4H200Z"/>
-<text class="ink" x="475.2" y="265">748 s · 89 771 J</text>
-<text class="sec mono" x="192" y="289" text-anchor="end">d01_ollama_qwen35_9b_q4</text>
+<line class="grid" x1="200.0" x2="200.0" y1="30" y2="370"/>
+<text class="mut" x="200.0" y="386" text-anchor="middle">10</text>
+<line class="grid" x1="261.5" x2="261.5" y1="30" y2="370"/>
+<text class="mut" x="261.5" y="386" text-anchor="middle">20</text>
+<line class="grid" x1="342.8" x2="342.8" y1="30" y2="370"/>
+<text class="mut" x="342.8" y="386" text-anchor="middle">50</text>
+<line class="grid" x1="404.3" x2="404.3" y1="30" y2="370"/>
+<text class="mut" x="404.3" y="386" text-anchor="middle">100</text>
+<line class="grid" x1="465.7" x2="465.7" y1="30" y2="370"/>
+<text class="mut" x="465.7" y="386" text-anchor="middle">200</text>
+<line class="grid" x1="547.0" x2="547.0" y1="30" y2="370"/>
+<text class="mut" x="547.0" y="386" text-anchor="middle">500</text>
+<line class="grid" x1="608.5" x2="608.5" y1="30" y2="370"/>
+<text class="mut" x="608.5" y="386" text-anchor="middle">1000</text>
+<line class="grid" x1="670.0" x2="670.0" y1="30" y2="370"/>
+<text class="mut" x="670.0" y="386" text-anchor="middle">2000</text>
+<line class="axis" x1="200" x2="200" y1="30" y2="370"/>
+<text class="sec mono" x="192" y="49" text-anchor="end">d10_gliner</text>
+<path class="s1" d="M200,38H252.6a4,4 0 0 1 4,4v6a4,4 0 0 1 -4,4H200Z"/>
+<text class="ink" x="262.6" y="49">18.93 s · 1 300 J</text>
+<text class="sec mono" x="192" y="73" text-anchor="end">d03_vllm_qwen35_9b_awq_3shot</text>
+<path class="s1" d="M200,62H517.8a4,4 0 0 1 4,4v6a4,4 0 0 1 -4,4H200Z"/>
+<text class="ink" x="527.8" y="73">376 s · 49 290 J</text>
+<text class="sec mono" x="192" y="97" text-anchor="end">d11_cascade</text>
+<path class="s1" d="M200,86H520.7a4,4 0 0 1 4,4v6a4,4 0 0 1 -4,4H200Z"/>
+<text class="ink" x="530.7" y="97">389 s · 34 925 J</text>
+<text class="sec mono" x="192" y="121" text-anchor="end">d03_vllm_qwen35_9b_fp8</text>
+<path class="s1" d="M200,110H531.8a4,4 0 0 1 4,4v6a4,4 0 0 1 -4,4H200Z"/>
+<text class="ink" x="541.8" y="121">441 s · 58 722 J</text>
+<text class="sec mono" x="192" y="145" text-anchor="end">d03_vllm_qwen35_9b_awq</text>
+<path class="s1" d="M200,134H539.8a4,4 0 0 1 4,4v6a4,4 0 0 1 -4,4H200Z"/>
+<text class="ink" x="549.8" y="145">482 s · 64 814 J</text>
+<text class="sec mono" x="192" y="169" text-anchor="end">d02_llamacpp_qwen35_4b_q4</text>
+<path class="s1" d="M200,158H544.1a4,4 0 0 1 4,4v6a4,4 0 0 1 -4,4H200Z"/>
+<text class="ink" x="554.1" y="169">506 s · 51 199 J</text>
+<text class="sec mono" x="192" y="193" text-anchor="end">d02_llamacpp_gemma4_e4b_q4_3shot</text>
+<path class="s1" d="M200,182H546.9a4,4 0 0 1 4,4v6a4,4 0 0 1 -4,4H200Z"/>
+<text class="ink" x="556.9" y="193">522 s · 46 513 J</text>
+<text class="sec mono" x="192" y="217" text-anchor="end">d02_llamacpp_gemma4_e4b_q4</text>
+<path class="s1" d="M200,206H548.7a4,4 0 0 1 4,4v6a4,4 0 0 1 -4,4H200Z"/>
+<text class="ink" x="558.7" y="217">533 s · 46 580 J</text>
+<text class="sec mono" x="192" y="241" text-anchor="end">d02_llamacpp_qwen35_9b_q4_3shot</text>
+<path class="s1" d="M200,230H559.4a4,4 0 0 1 4,4v6a4,4 0 0 1 -4,4H200Z"/>
+<text class="ink" x="569.4" y="241">601 s · 72 332 J</text>
+<text class="sec mono" x="192" y="265" text-anchor="end">d02_llamacpp_ministral3_14b_q4</text>
+<path class="s1" d="M200,254H565.1a4,4 0 0 1 4,4v6a4,4 0 0 1 -4,4H200Z"/>
+<text class="ink" x="575.1" y="265">641 s · 94 288 J</text>
+<text class="sec mono" x="192" y="289" text-anchor="end">d02_llamacpp_qwen35_9b_q4</text>
 <path class="s1" d="M200,278H567.4a4,4 0 0 1 4,4v6a4,4 0 0 1 -4,4H200Z"/>
-<text class="ink" x="577.4" y="289">1 234 s · 94 917 J</text>
-<text class="sec mono" x="192" y="313" text-anchor="end">d02_llamacpp_gemma4_12b_q4</text>
-<path class="s1" d="M200,302H621.0a4,4 0 0 1 4,4v6a4,4 0 0 1 -4,4H200Z"/>
-<text class="ink" x="631.0" y="313">1 604 s · 154 714 J</text>
+<text class="ink" x="577.4" y="289">658 s · 78 291 J</text>
+<text class="sec mono" x="192" y="313" text-anchor="end">d02_llamacpp_qwen35_9b_q8</text>
+<path class="s1" d="M200,302H578.8a4,4 0 0 1 4,4v6a4,4 0 0 1 -4,4H200Z"/>
+<text class="ink" x="588.8" y="313">748 s · 89 771 J</text>
+<text class="sec mono" x="192" y="337" text-anchor="end">d01_ollama_qwen35_9b_q4</text>
+<path class="s1" d="M200,326H623.2a4,4 0 0 1 4,4v6a4,4 0 0 1 -4,4H200Z"/>
+<text class="ink" x="633.2" y="337">1 234 s · 94 917 J</text>
+<text class="sec mono" x="192" y="361" text-anchor="end">d02_llamacpp_gemma4_12b_q4</text>
+<path class="s1" d="M200,350H646.4a4,4 0 0 1 4,4v6a4,4 0 0 1 -4,4H200Z"/>
+<text class="ink" x="656.4" y="361">1 604 s · 154 714 J</text>
 </svg>

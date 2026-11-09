@@ -1,0 +1,49 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Störmeldung (Track D d.extract)",
+  "type": "object",
+  "properties": {
+    "komponente": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "schadensart": {
+      "type": "string",
+      "enum": [
+        "Leckage",
+        "Verschleiß",
+        "Überhitzung",
+        "Schwingung",
+        "Kurzschluss",
+        "Bruch",
+        "Korrosion",
+        "Verstopfung",
+        "Kavitation",
+        "Kommunikationsfehler",
+        "Fehlalarm",
+        "Sonstiges"
+      ]
+    },
+    "ursache": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "massnahme": {
+      "type": [
+        "string",
+        "null"
+      ]
+    }
+  },
+  "required": [
+    "komponente",
+    "schadensart",
+    "ursache",
+    "massnahme"
+  ],
+  "additionalProperties": false
+}

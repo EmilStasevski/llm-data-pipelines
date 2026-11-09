@@ -52,50 +52,63 @@ def catalog() -> dict[str, Any]:
     }
 
 
-def schema() -> dict[str, Any]:
+SEMANTIC_FIELDS = ("komponente", "schadensart", "ursache", "massnahme")  # the cascade's LLM part (§7)
+
+
+def schema(fields: tuple[str, ...] = FIELDS) -> dict[str, Any]:
     c = catalog()
     nullable_str = {"type": ["string", "null"]}
+    props: dict[str, Any] = {
+        "komponente": nullable_str,
+        "schadensart": {"type": "string", "enum": c["schadensarten"]},
+        "ursache": nullable_str,
+        "massnahme": nullable_str,
+        "sicherheitsrelevant": {"type": "boolean"},
+        "stillstand_minuten": {"type": ["integer", "null"]},
+        "ersatzteil_materialnr": nullable_str,
+    }
     return {
         "$schema": "https://json-schema.org/draft/2020-12/schema",
         "title": "Störmeldung (Track D d.extract)",
         "type": "object",
-        "properties": {
-            "komponente": nullable_str,
-            "schadensart": {"type": "string", "enum": c["schadensarten"]},
-            "ursache": nullable_str,
-            "massnahme": nullable_str,
-            "sicherheitsrelevant": {"type": "boolean"},
-            "stillstand_minuten": {"type": ["integer", "null"]},
-            "ersatzteil_materialnr": nullable_str,
-        },
-        "required": list(FIELDS),
+        "properties": {k: props[k] for k in fields},
+        "required": list(fields),
         "additionalProperties": False,
     }
 
 
-def system_prompt() -> str:
+def _field_lines() -> dict[str, str]:
     c = catalog()
     komp = "; ".join(f"{n} ({', '.join(f)})" if f else n for n, f in c["komponenten"])
+    return {
+        "komponente": "- komponente: betroffene Komponente, nur der Katalogname ohne Klammerzusatz; "
+        "in Klammern stehen Schreibweisen aus Meldungen, die zu diesem Namen gehören. "
+        f"Katalog: {komp}. null, wenn keine erkennbar.",
+        "schadensart": f"- schadensart: genau einer dieser Werte: {', '.join(c['schadensarten'])}.",
+        "ursache": f"- ursache: Ursache als Katalogwert: {', '.join(c['ursachen'])}. "
+        "null, wenn keine Ursache genannt oder sie unklar ist (z. B. „Ursache in Klärung“).",
+        "massnahme": "- massnahme: durchgeführte Maßnahme als Katalogwert: "
+        f"{', '.join(c['massnahmen'])}. null, wenn keine Maßnahme genannt oder sie noch offen ist "
+        "(z. B. „IH informiert“).",
+        "sicherheitsrelevant": "- sicherheitsrelevant: true, wenn die Meldung ein Sicherheitsereignis "
+        f"nennt (z. B. {', '.join(c['sicherheit'])}), sonst false.",
+        "stillstand_minuten": "- stillstand_minuten: Stillstandsdauer in ganzen Minuten aus dem Feld "
+        "Stillstand oder dem Text (1,5 h = 90; „ca.“ ignorieren; bei Bereichen wie „1-2h“ die Obergrenze). "
+        "null, wenn keine Angabe.",
+        "ersatzteil_materialnr": "- ersatzteil_materialnr: Materialnummer eines verbauten Ersatzteils, "
+        "nur die Ziffern als Text. null, wenn keine genannt.",
+    }
+
+
+def system_prompt(fields: tuple[str, ...] = FIELDS) -> str:
+    lines = _field_lines()
     return "\n".join([
         "Du bist Assistenz der Instandhaltung in einem Industriebetrieb in NRW. Du liest eine Störmeldung "
         "und extrahierst strukturierte Felder. Antworte ausschließlich mit einem JSON-Objekt mit genau "
         "diesen Schlüsseln, ohne Erklärung und ohne Markdown.",
         "",
         "Felder:",
-        "- komponente: betroffene Komponente, nur der Katalogname ohne Klammerzusatz; in Klammern stehen "
-        f"Schreibweisen aus Meldungen, die zu diesem Namen gehören. Katalog: {komp}. null, wenn keine "
-        "erkennbar.",
-        f"- schadensart: genau einer dieser Werte: {', '.join(c['schadensarten'])}.",
-        f"- ursache: Ursache als Katalogwert: {', '.join(c['ursachen'])}. null, wenn keine Ursache genannt "
-        "oder sie unklar ist (z. B. „Ursache in Klärung“).",
-        f"- massnahme: durchgeführte Maßnahme als Katalogwert: {', '.join(c['massnahmen'])}. null, wenn "
-        "keine Maßnahme genannt oder sie noch offen ist (z. B. „IH informiert“).",
-        "- sicherheitsrelevant: true, wenn die Meldung ein Sicherheitsereignis nennt (z. B. "
-        f"{', '.join(c['sicherheit'])}), sonst false.",
-        "- stillstand_minuten: Stillstandsdauer in ganzen Minuten aus dem Feld Stillstand oder dem Text "
-        "(1,5 h = 90; „ca.“ ignorieren; bei Bereichen wie „1-2h“ die Obergrenze). null, wenn keine Angabe.",
-        "- ersatzteil_materialnr: Materialnummer eines verbauten Ersatzteils, nur die Ziffern als Text. "
-        "null, wenn keine genannt.",
+        *(lines[k] for k in fields),
         "",
         "Die Meldungen können Tippfehler, Abkürzungen (IH, MA, ET, FU, SPS …), englische Wörter, "
         "fehlende Umlaute (ae, oe, ue) oder kaputte Zeichenkodierung (Ã¼ statt ü) enthalten.",
@@ -111,8 +124,8 @@ def user_message(row: dict[str, Any]) -> str:
     ])  # fmt: skip
 
 
-def gold_json(g: dict[str, Any]) -> str:
-    return json.dumps({k: g[k] for k in FIELDS}, ensure_ascii=False)
+def gold_json(g: dict[str, Any], fields: tuple[str, ...] = FIELDS) -> str:
+    return json.dumps({k: g[k] for k in fields}, ensure_ascii=False)
 
 
 def pick_shots(dev: list[dict[str, Any]], gold: dict[str, dict[str, Any]]) -> list[str]:
@@ -132,10 +145,17 @@ def pick_shots(dev: list[dict[str, Any]], gold: dict[str, dict[str, Any]]) -> li
     return out
 
 
-def messages(row: dict[str, Any], shots: list[tuple[dict[str, Any], dict[str, Any]]]) -> list[dict[str, str]]:
-    m = [{"role": "system", "content": system_prompt()}]
+def messages(
+    row: dict[str, Any],
+    shots: list[tuple[dict[str, Any], dict[str, Any]]],
+    fields: tuple[str, ...] = FIELDS,
+) -> list[dict[str, str]]:
+    m = [{"role": "system", "content": system_prompt(fields)}]
     for r, g in shots:
-        m += [{"role": "user", "content": user_message(r)}, {"role": "assistant", "content": gold_json(g)}]
+        m += [
+            {"role": "user", "content": user_message(r)},
+            {"role": "assistant", "content": gold_json(g, fields)},
+        ]
     return [*m, {"role": "user", "content": user_message(row)}]
 
 

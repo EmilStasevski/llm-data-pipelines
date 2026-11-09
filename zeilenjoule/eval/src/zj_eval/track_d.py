@@ -30,20 +30,21 @@ def _rows(path: Path) -> list[dict[str, Any]]:
 
 
 Shots = list[tuple[dict[str, Any], dict[str, Any]]]
+Variant = tuple[Shots, tuple[str, ...]]  # (few-shot examples, fields the model answers)
 
 
 def _write_scale(repo: Path, scale: str, src: tuple[Path, list[dict[str, Any]], list[dict[str, Any]]],
-                 variants: dict[str, Shots]) -> None:  # fmt: skip
+                 variants: dict[str, Variant]) -> None:  # fmt: skip
     rows_path, rows, gold = src
     if [r["meldung_id"] for r in rows] != [g["meldung_id"] for g in gold]:
         raise ValueError(f"{scale}: rows and gold disagree on row order")
     out = repo / "data" / "track_d" / scale
     out.mkdir(parents=True, exist_ok=True)
     shutil.copyfile(rows_path, out / "rows.parquet")
-    for name, s in variants.items():
+    for name, (s, fields) in variants.items():
         with (out / f"prompts.{name}.jsonl").open("w", encoding="utf-8") as f:
             for r in rows:
-                f.write(json.dumps({"meldung_id": r["meldung_id"], "messages": ref.messages(r, s)},
+                f.write(json.dumps({"meldung_id": r["meldung_id"], "messages": ref.messages(r, s, fields)},
                                    ensure_ascii=False) + "\n")  # fmt: skip
     refdir = repo / "data" / "reference" / "track_d" / scale
     refdir.mkdir(parents=True, exist_ok=True)
@@ -61,12 +62,18 @@ def prepare(repo: Path = REPO) -> dict[str, Any]:
     shot_ids = ref.pick_shots(dev, dev_gold)
     dev_by_id = {r["meldung_id"]: r for r in dev}
     shots = [(dev_by_id[i], dev_gold[i]) for i in shot_ids]
-    (repo / "spec" / "schema_stoermeldung.json").write_text(
-        json.dumps(ref.schema(), ensure_ascii=False, indent=2) + "\n", "utf-8"
-    )
-    _write_scale(repo, SCALE, (src / "d2k.parquet", rows, gold), {"0shot": [], "3shot": shots})
+    for name, fields in (("schema_stoermeldung", ref.FIELDS),
+                         ("schema_stoermeldung_semantic", ref.SEMANTIC_FIELDS)):  # fmt: skip
+        (repo / "spec" / f"{name}.json").write_text(
+            json.dumps(ref.schema(fields), ensure_ascii=False, indent=2) + "\n", "utf-8"
+        )
+    _write_scale(repo, SCALE, (src / "d2k.parquet", rows, gold), {
+        "0shot": ([], ref.FIELDS), "3shot": (shots, ref.FIELDS),
+        # cascade d11: the LLM answers only the semantic fields
+        "semantic3shot": (shots, ref.SEMANTIC_FIELDS),
+    })  # fmt: skip
     # dev = concurrency sweep (PLAN §10 step 1); 0-shot only: the three shots come from dev
-    _write_scale(repo, "dev", (src / "dev.parquet", dev, dev_gold_rows), {"0shot": []})
+    _write_scale(repo, "dev", (src / "dev.parquet", dev, dev_gold_rows), {"0shot": ([], ref.FIELDS)})
     return {
         "rows": len(rows),
         "dev_rows": len(dev),

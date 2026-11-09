@@ -14,7 +14,7 @@ vars:
     sh: command -v golangci-lint || echo "$(go env GOPATH)/bin/golangci-lint"
   GOVULNCHECK:
     sh: command -v govulncheck || echo "$(go env GOPATH)/bin/govulncheck"
-  PY_ENVS: df gpu_df embed llm-clients db gpu_vs
+  PY_ENVS: df gpu_df embed llm-clients db gpu_vs ner
   RUST_DIRS: libs/rust/zjmark contestants/rust
 
 tasks:

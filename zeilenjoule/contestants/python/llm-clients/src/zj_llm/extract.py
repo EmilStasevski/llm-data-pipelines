@@ -44,12 +44,15 @@ VLLM_IMAGE = (
 OLLAMA_IMAGE = "ollama/ollama:0.40.15@sha256:0e59999e0e8f9fd4e704bd788a89b7e4cad399367fb1365f8c102ac662288761"
 
 
-RESPONSE_FORMAT = {
-    "response_format": {
-        "type": "json_schema",
-        "json_schema": {"name": "stoermeldung", "schema": SCHEMA, "strict": True},
+def response_format(schema: dict[str, Any]) -> dict[str, Any]:
+    return {
+        "response_format": {
+            "type": "json_schema",
+            "json_schema": {"name": "stoermeldung", "schema": schema, "strict": True},
+        }
     }
-}
+
+
 # Qwen 3.5 is multimodal: text-only rows need no vision encoder memory profiling
 TEXT_ONLY = ("--limit-mm-per-prompt", '{"image": 0, "video": 0}')
 
@@ -115,7 +118,9 @@ class Engine:
     info: dict[str, Any]
 
 
-def _openai(port: int, name: str, m: Model) -> tuple[Callable[..., dict[str, Any]], Callable[..., float]]:
+def _openai(
+    port: int, name: str, m: Model, schema: dict[str, Any]
+) -> tuple[Callable[..., dict[str, Any]], Callable[..., float]]:
     def body(messages: list[dict[str, str]]) -> dict[str, Any]:
         return {
             "model": name,
@@ -123,7 +128,7 @@ def _openai(port: int, name: str, m: Model) -> tuple[Callable[..., dict[str, Any
             "temperature": 0,
             "seed": SEED,
             "max_tokens": MAX_TOKENS,
-            **(RESPONSE_FORMAT if m.grammar else {}),
+            **(response_format(schema) if m.grammar else {}),
             **openai_extras(m),
         }
 
@@ -143,7 +148,7 @@ def _openai(port: int, name: str, m: Model) -> tuple[Callable[..., dict[str, Any
     return request, ttft
 
 
-def llamacpp(m: Model, n: int) -> Engine:
+def llamacpp(m: Model, n: int, schema: dict[str, Any] = SCHEMA) -> Engine:
     if m.gguf is None:
         raise SystemExit("model has no GGUF file")
     port = 18191
@@ -182,11 +187,11 @@ def llamacpp(m: Model, n: int) -> Engine:
         mounts=[(GGUF, "/models")],
         extra_docker=["--user", uid_gid()],
     )
-    request, ttft = _openai(port, "model", m)
+    request, ttft = _openai(port, "model", m, schema)
     return Engine(srv, request, ttft, lambda: None, {"gguf": m.gguf, "slots": n, "constrained": m.grammar})
 
 
-def vllm(m: Model, n: int) -> Engine:
+def vllm(m: Model, n: int, schema: dict[str, Any] = SCHEMA) -> Engine:
     if m.vllm is None:
         raise SystemExit("model has no vLLM (HF-format) directory")
     port = 18192
@@ -221,11 +226,11 @@ def vllm(m: Model, n: int) -> Engine:
         env={"HOME": "/cache", "HF_HUB_OFFLINE": "1", "VLLM_NO_USAGE_STATS": "1", "DO_NOT_TRACK": "1"},
         extra_docker=["--user", uid_gid(), "--ipc=host"],
     )
-    request, ttft = _openai(port, "model", m)
+    request, ttft = _openai(port, "model", m, schema)
     return Engine(srv, request, ttft, lambda: None, {"hf_dir": m.vllm, "max_num_seqs": n})
 
 
-def ollama(m: Model, n: int) -> Engine:
+def ollama(m: Model, n: int, schema: dict[str, Any] = SCHEMA) -> Engine:
     if m.ollama is None:
         raise SystemExit("model has no Ollama tag")
     port = 18193
@@ -254,7 +259,7 @@ def ollama(m: Model, n: int) -> Engine:
             "model": m.ollama,
             "messages": messages,
             "stream": stream,
-            "format": SCHEMA,
+            "format": schema,
             **think,
             "options": {"temperature": 0, "seed": SEED, "num_predict": MAX_TOKENS, "num_ctx": m.ctx},
         }
@@ -284,8 +289,8 @@ def ollama(m: Model, n: int) -> Engine:
 ENGINES = {"ollama": ollama, "llamacpp": llamacpp, "vllm": vllm}
 
 
-def read_prompts(input_path: Path, shots: int) -> list[dict[str, Any]]:
-    path = input_path.parent / f"prompts.{shots}shot.jsonl"
+def read_prompts(input_path: Path, shots: int, variant: str = "") -> list[dict[str, Any]]:
+    path = input_path.parent / f"prompts.{variant or f'{shots}shot'}.jsonl"
     return [json.loads(x) for x in path.read_text("utf-8").splitlines() if x]
 
 
@@ -329,7 +334,7 @@ def main(argv: list[str] | None = None) -> int:
             evidence = stack.enter_context(running(eng.server))
             eng.setup()
             eng.request(rows[0]["messages"])  # model on the GPU, kernels compiled, shared prefix cached
-            loaded = _vram(eng.server)
+            loaded = vram_mb(eng.server)
             if loaded < MIN_VRAM_MB:  # rule 6: no silent CPU run (Ollama loads lazily, so check after use)
                 raise RuntimeError(f"server holds only {loaded} MiB on the GPU after loading the model")
             evidence = {**evidence, "server_vram_mb_loaded": loaded}
@@ -372,7 +377,7 @@ def main(argv: list[str] | None = None) -> int:
     return 0
 
 
-def _vram(s: Server) -> int:
+def vram_mb(s: Server) -> int:
     from zj_llm.server import container_vram_mb  # noqa: PLC0415
 
     return round(container_vram_mb(s))

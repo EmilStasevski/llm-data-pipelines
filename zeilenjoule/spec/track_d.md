@@ -42,6 +42,18 @@ Stufen: `load` (Container, Modell, GPU-Nachweis, eine ungezählte Anfrage: Kerne
 `extract` (alle Zeilen, N Anfragen gleichzeitig), `write`, `ttft` (20 Zeilen einzeln gestreamt, außerhalb
 des Vergleichs). Kennzahlen: Zeilen/s und Output-Token/s aus `extract`, J/Zeile, VRAM, TTFT.
 
+## 7. Ohne LLM und Kaskade (`d10_gliner`, `d11_cascade`, ADR 0019)
+- **Stufe 0 (Regeln)** = Track-A-Regeln (spec/track_a.md): `komponente` (Wörterbuch), `sicherheitsrelevant`
+  (Auslöser), `stillstand_minuten` (Spalte Stillstand), `ersatzteil_materialnr` (Regex).
+- **Stufe 1 (GLiNER)** = SauerkrautLM-GLiNER, Labels Bauteil/Schaden/Ursache/Maßnahme, Schwelle 0,3 (auf `dev`
+  gewählt). Ein Span zählt, wenn er alle Wörter (≥ 4 Buchstaben, gefaltet, als Teilstring) genau eines
+  Katalog**namens** enthält (keine Phrasenlisten des Generators); mehrere → längster Name.
+- **d10** = Stufe 0 + 1, nicht zugeordnet: `schadensart` = „Sonstiges“, `ursache`/`massnahme` = null.
+- **d11** = Stufe 0 für Sicherheit/Stillstand/Materialnummer + **LLM nur für die vier semantischen Felder**
+  (`prompts.semantic3shot.jsonl`, `spec/schema_stoermeldung_semantic.json`; llama.cpp, Gemma 4 E4B Q4, 3-shot,
+  N = 16 – die sparsamste Konfiguration der Hauptmatrix). Ungültige LLM-Antwort → Werte aus Stufe 0/1.
+  Alle Zeilen erreichen das LLM (Stufe 1 löst auf `dev` zu wenig auf, siehe ADR 0019).
+
 ## English summary
 Each engine sends identical prompts (German system prompt with the lexicon catalogues, optional 3 fixed
 dev-set shots) with temperature 0, max_tokens 256, JSON-schema constrained decoding and reasoning off, and
@@ -49,3 +61,5 @@ writes the raw model text per row. Valid = the whole text is one schema-conformi
 for enum/bool/int/material number, token-F1 for component/cause/action, macro-F1 = mean of the seven
 fields. `zj verify` passes with all rows in order, JSON validity ≥ 99.5 % and no reasoning output; the
 winner gate (macro-F1 ≥ 0.9 × best) is applied by the report. Concurrency sweep on the 300-row dev set.
+§7: d10 = Track A rules + GLiNER spans mapped onto catalogue names (no LLM); d11 cascade = rules for
+safety/downtime/material number + the LLM (Gemma 4 E4B, 3-shot) for the four semantic fields only.

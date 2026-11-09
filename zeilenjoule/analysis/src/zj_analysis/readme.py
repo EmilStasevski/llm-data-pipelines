@@ -17,6 +17,7 @@ import duckdb
 from zj_analysis.report import (
     DETAIL_SQL,
     TRACKS,
+    WINNER_F1,
     Summary,
     accumulate,
     fmt_num,
@@ -53,7 +54,7 @@ TXT: dict[str, dict[str, str]] = {
         "netto, Kosten, CO₂, Latenz und Qualität: [`reports/REPORT.de.md`](reports/REPORT.de.md).",
         "scale": "Skala", "anti": "Anti-Muster (bewusst naiv)",
         "c16": "QPS: 1 Client vs. 16 Client-Threads", "wall": "Wall-Zeit s (log) · Energie J brutto",
-        "c1": "1 Client", "c16l": "16 Clients",
+        "c1": "1 Client", "c16l": "16 Clients", "gate": "Gewinner-Gate",
     },
     "en": {
         "title": "Results (generated)",
@@ -62,7 +63,7 @@ TXT: dict[str, dict[str, str]] = {
         "cost, CO₂, latency and quality: [`reports/REPORT.md`](reports/REPORT.md).",
         "scale": "scale", "anti": "anti-pattern (deliberately naive)",
         "c16": "QPS: 1 client vs. 16 client threads", "wall": "wall time s (log) · energy J gross",
-        "c1": "1 client", "c16l": "16 clients",
+        "c1": "1 client", "c16l": "16 clients", "gate": "winner gate",
     },
 }  # fmt: skip
 
@@ -201,6 +202,20 @@ def _qps(con: duckdb.DuckDBPyConnection, scale: str) -> dict[str, tuple[float, f
     return out
 
 
+def _quality_d(con: duckdb.DuckDBPyConnection, scale: str) -> dict[str, tuple[float, float]]:
+    """Median macro-F1 and JSON validity per Track D contestant at `scale`."""
+    acc: dict[str, dict[str, list[float]]] = {}
+    for c, sc, st, ex, q, rows in con.execute(DETAIL_SQL, list(section_filter("D"))).fetchall():
+        if sc == scale:
+            accumulate(acc.setdefault(str(c), {}), st, ex, q, rows)
+    out: dict[str, tuple[float, float]] = {}
+    for c, d in acc.items():
+        f1, ok = median_of(d.get("macro_f1", [])), median_of(d.get("json_validity", []))
+        if f1 is not None and ok is not None:
+            out[c] = (f1, ok)
+    return out
+
+
 def _value_text(s: Summary, lang: str) -> str:
     e = f" · {fmt_num(s.e_gross, 0 if s.e_gross >= 100 else 1, lang)} J" if s.e_gross is not None else ""
     return f"{fmt_num(s.wall, 2 if s.wall < 100 else 0, lang)} s{e}"
@@ -226,7 +241,15 @@ def block(con: duckdb.DuckDBPyConnection, figs: Path, lang: str) -> str:
             name = f"`{s.contestant}`" + (f" ({t['anti']})" if s.anti else "")
             body.append([str(i), name, fmt_num(s.wall, 2, lang), fmt_num(ratio, 2 if ratio < 10 else 0, lang),
                          fmt_num(s.e_gross, 1, lang)])  # fmt: skip
-        out += ["| " + " | ".join(HEAD[lang]) + " |", "|" + "---|" * len(HEAD[lang])]
+        head_cells = HEAD[lang]
+        if section == "D" and (q := _quality_d(con, scale)):  # Track D: quality decides as much as speed
+            best = max(f1 for f1, _ in q.values())
+            head_cells = [*head_cells, "macro-F1", t["gate"]]
+            for r, s in zip(body, rows, strict=True):
+                f1, ok = q.get(s.contestant, (None, None))
+                passed = f1 is not None and ok is not None and f1 >= WINNER_F1 * best and ok >= 0.995
+                r += [fmt_num(f1, 3, lang), "✓" if passed else "✗"]
+        out += ["| " + " | ".join(head_cells) + " |", "|" + "---|" * len(head_cells)]
         out += ["| " + " | ".join(r) + " |" for r in body] + [""]
         if section == "C" and (qps := _qps(con, scale)):
             order = sorted(qps, key=lambda c: -qps[c][1])

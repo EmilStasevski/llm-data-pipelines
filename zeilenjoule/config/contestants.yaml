@@ -942,3 +942,30 @@ contestants:
     servers: []
     scales: [D2k]
     anti_pattern: false
+
+  # ---------- Track D: non-LLM extractor and cascade (PLAN §10 d10/d11, spec/track_d.md §7, ADR 0019) ----------
+  - id: d10_gliner
+    track: D
+    task: d.extract
+    build: ["sh", "-c", "uv sync --frozen --project contestants/python/ner && test -f models/ner/SauerkrautLM-GLiNER/pytorch_model.bin"]
+    versions_cmd: ["contestants/python/ner/.venv/bin/python", "-m", "zj_ner.envcheck"]
+    # no LLM: Track A rules + SauerkrautLM-GLiNER (MIT) spans mapped onto the catalogue names, GPU
+    cmd: ["contestants/python/ner/.venv/bin/python", "-m", "zj_ner.d10_gliner"]
+    args: ["--input", "{input}", "--output", "{output}", "--threads", "{threads}"]
+    needs_gpu: true
+    servers: []
+    scales: [D2k]
+    anti_pattern: false
+
+  - id: d11_cascade
+    track: D
+    task: d.extract
+    build: ["sh", "-c", "uv sync --frozen --project contestants/python/ner && docker pull -q ghcr.io/ggml-org/llama.cpp:server-cuda-b12169@sha256:5bb779a449a18d8f4333e9814e887746342fe555c528f5eabc92b2093e32673a"]
+    versions_cmd: ["contestants/python/ner/.venv/bin/python", "-m", "zj_ner.envcheck"]
+    # rules for safety/downtime/material no., llama.cpp Gemma 4 E4B Q4 3-shot N = 16 for the 4 semantic fields only
+    cmd: ["contestants/python/ner/.venv/bin/python", "-m", "zj_ner.d11_cascade"]
+    args: ["--input", "{input}", "--output", "{output}", "--threads", "{threads}"]
+    needs_gpu: true
+    servers: []
+    scales: [D2k]
+    anti_pattern: false

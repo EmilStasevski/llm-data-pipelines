@@ -55,8 +55,11 @@ stop_all() {
   {
     echo "k3s=$(systemctl is-active k3s 2>/dev/null || true)"
     echo "ollama=$(systemctl is-active ollama 2>/dev/null || true)"
-    echo "containers=$(docker ps --format '{{.Names}}' | tr '\n' ' ')"
+    # our own benchmark containers (zj-*) are not services: contestants start and remove them themselves
+    echo "containers=$(docker ps --format '{{.Names}}' | grep -v '^zj-' | tr '\n' ' ')"
   } > "$STATE"
+  local stray; stray=$(docker ps --format '{{.Names}}' | grep '^zj-' | tr '\n' ' ' || true)
+  [[ -n "${stray// }" ]] && { say "removing leftover benchmark containers: $stray"; run docker rm -f $stray >/dev/null; }
   say "saved state → $STATE"; sed 's/^/  /' "$STATE" >&2
   if pgrep -f '^/opt/google/chrome/chrome' >/dev/null; then
     say "closing Google Chrome (SIGTERM, graceful)"
@@ -78,7 +81,13 @@ restore() {
   if grep -q '^k3s=active' "$STATE"; then say "starting k3s"; run sudo systemctl start k3s; fi
   if grep -q '^ollama=active' "$STATE"; then say "starting ollama"; run sudo systemctl start ollama; fi
   local containers; containers=$(grep '^containers=' "$STATE" | cut -d= -f2-)
-  [[ -n "${containers// }" ]] && { say "starting containers: $containers"; run docker start $containers >/dev/null; }
+  if [[ -n "${containers// }" ]]; then
+    say "starting containers: $containers"
+    for c in $containers; do  # one at a time: a container that no longer exists must not block the rest
+      [[ $c == zj-* ]] && continue
+      run docker start "$c" >/dev/null || say "  could not start $c (removed?), skipped"
+    done
+  fi
   run rm -f "$STATE"
   say "restored (Chrome is not restarted automatically)"
 }

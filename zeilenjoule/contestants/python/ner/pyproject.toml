@@ -1,0 +1,37 @@
+[project]
+name = "zj-ner"
+version = "0.1.0"
+description = "Track D non-LLM extractors: GLiNER span NER (d10) and the rules → GLiNER → LLM cascade (d11)"
+requires-python = ">=3.12,<3.13"
+dependencies = [
+    "torch==2.14.1",
+    "transformers==5.22.2",
+    "gliner==0.2.30",
+    "nvidia-ml-py==13.615.71",
+    "pyarrow==26.0.1",
+    "pyyaml==6.0.3",
+    "zjmark",
+    "zj-reference",
+    "zj-llm-clients",
+]
+
+[dependency-groups]
+dev = ["pytest==9.*"]
+
+[tool.uv.sources]
+zjmark = { path = "../../../libs/python/zjmark", editable = true }
+zj-reference = { path = "../../../reference", editable = true }
+zj-llm-clients = { path = "../llm-clients", editable = true }
+torch = { index = "pytorch-cu130" }
+
+[[tool.uv.index]]
+name = "pytorch-cu130"
+url = "https://download.pytorch.org/whl/cu130"
+explicit = true
+
+[build-system]
+requires = ["uv_build>=0.12,<0.14"]
+build-backend = "uv_build"
+
+[tool.uv.build-backend]
+module-name = "zj_ner"

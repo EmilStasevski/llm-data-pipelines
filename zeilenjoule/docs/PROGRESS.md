@@ -427,3 +427,23 @@ Open questions:
   43,5 J/Zeile vs. llama.cpp 3,09 / 38,8. Gemma 4 12B: 76 J/Zeile, `komponente` 0,68 (Klammerzusatz).
 - Bericht: Zeilen/s mit 2 Nachkommastellen unter 100/s.
 - Offen in Phase 7: d10 GLiNER und d11 Kaskade (PLAN §10, Core); dann Phase 8.
+
+## 2026-11-09 — Phase 7 Teil 3: d10 GLiNER + d11 Kaskade gebaut (ungemessen)
+- Neue uv-Umgebung `contestants/python/ner` (torch 2.14.1 cu130, transformers 5.22.2, gliner 0.2.30);
+  SauerkrautLM-GLiNER (MIT, `models/ner/`). `zj_ner.fields` (Stufe 0 Track-A-Regeln, Stufe 1 GLiNER → Katalognamen),
+  `d10_gliner` (ohne LLM), `d11_cascade` (Regeln + Gemma 4 E4B nur für 4 semantische Felder, verkleinertes Schema).
+- Referenz: Prompt/Schema je Feldmenge (`SEMANTIC_FIELDS`), neue Variante `prompts.semantic3shot.jsonl` und
+  `spec/schema_stoermeldung_semantic.json`; bestehende Prompts bytegleich. ADR 0019, spec/track_d.md §7.
+- Ungemessen (zj verify, D2k): d10 20 s, macro-F1 0,775 (GLiNER löst 36 % schadensart / 20 % ursache / 5 % massnahme);
+  d11 392 s, 5,2 Zeilen/s, macro-F1 0,966, Gültigkeit 1,0.
+- Nächstes: gemessene Session d10 + d11 (D2k, 3 Wdh.), dann Phase 8.
+- 2026-11-10: quiet_box: zj-*-Container werden nicht mehr als Dienst gesichert (Restore scheiterte an einem gelöschten zj-d01-ollama und blockierte jeden Start); Restore startet Container einzeln.
+
+## 2026-11-10 — Phase 7 abgeschlossen: d10 + d11 gemessen (Session 98fa9eac, D2k, 6/6 ok, 22 min)
+- d11 Kaskade (Regeln + Gemma 4 E4B nur für 4 semantische Felder): **17,2 J/Zeile** (vs. 23,0 Gemma E4B 3-shot mit
+  vollem Schema, −25 %), 5,25 Zeilen/s, 57 statt 93 Token/Zeile, macro-F1 **0,966** (Gewinner-Gate ✓; bestes LLM
+  0,971 Qwen3.5-9B 3-shot bei 35,9 J/Zeile). Damit sparsamste gewertete Konfiguration von Track D.
+- d10 GLiNER ohne LLM: 18,9 s, 0,38 J/Zeile (≈ 45× weniger als d11), macro-F1 0,775 → Gewinner-Gate ✗
+  (schadensart 0,34). Nicht-LLM-Untergrenze.
+- Kandidat für Phase 8 (Extraktion im End-to-End-Stack): d11 Kaskade; Alternative bei Qualitätsvorrang Qwen3.5-9B 3-shot.
+- Nächstes: Phase 8 (Track E End-to-End-RAG, WINNER.md, Produktionsarchitektur) → Gate 2.

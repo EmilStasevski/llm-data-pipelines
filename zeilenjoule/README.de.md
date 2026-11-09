@@ -8,7 +8,7 @@ Gemessen werden **Laufzeit und Energie (Joule)** auf einem Rechner mit NVIDIA RT
 Der schnellste Stack, der alle Qualitätsprüfungen besteht, bekommt anschließend ein Go-basiertes Produktions-Setup.
 
 ## Status
-**Phasen 0–6 abgeschlossen**: Track A (Dataframes), B (Embeddings) und C (Speicherung/Index/Suche: dense, BM25, hybrid) sind gemessen.
+**Phasen 0–7 abgeschlossen**: Track A (Dataframes), B (Embeddings), C (Speicherung/Index/Suche: dense, BM25, hybrid) und D (LLM-Extraktion) sind gemessen.
 Ergebnisse: [`reports/REPORT.de.md`](reports/REPORT.de.md) (English: [`reports/REPORT.md`](reports/REPORT.md)). Alle Zahlen dort stammen ausschließlich aus `results/` (Harness-Ausgabe) und werden von `task report` erzeugt. Ein Lauf zählt nur, wenn er die Prüfung gegen die Referenzimplementierung besteht.
 
 | Phase | Inhalt | Status |
@@ -20,8 +20,8 @@ Ergebnisse: [`reports/REPORT.de.md`](reports/REPORT.de.md) (English: [`reports/R
 | 4 | Track A: Dataframe- und Zeilenverarbeitung (Python-Schleife, pandas, Polars inkl. GPU, cuDF, DuckDB, Rust) | ✅ gemessen |
 | 5 | Track B: Embeddings (bge-m3: PyTorch, ONNX Runtime, TEI, vLLM, llama.cpp, Rust) | ✅ gemessen |
 | 6 | Track C: Speicherung, Index, Suche (FAISS, cuVS, pgvector, DuckDB, SQLite, LanceDB, Qdrant, Tantivy; Konkurrenz 1/16, Hybrid-RRF) | ✅ gemessen |
-| 7 | Track D: LLM-Extraktion (Ollama, llama.cpp, vLLM; Qwen 3.5, Gemma 4, Ministral, gpt-oss, EuroLLM, Teuken) | ✅ LLMs gemessen · GLiNER + Kaskade offen |
-| 8 | Track E: End-to-End-RAG, Gewinner | offen |
+| 7 | Track D: LLM-Extraktion (Ollama, llama.cpp, vLLM; Qwen 3.5, Gemma 4, Ministral, gpt-oss, EuroLLM, Teuken) | ✅ gemessen (inkl. GLiNER und Regeln+LLM-Kaskade) |
+| 8 | Track E: End-to-End-RAG, Gewinner | als Nächstes |
 | 9–10 | Produktion (Go/DevOps), Portfolio | offen |
 
 <!-- zj:results:begin -->
@@ -105,20 +105,22 @@ Generiert von `task report` aus `results/` – Median aus 5 gemessenen Läufen d
 
 ![Track D: LLM-Extraktion je Zeile (`d.extract`): Skala D2k (2 000 Zeilen)](reports/figures/track_d_D2k.de.svg)
 
-| # | Wettbewerber | Wall s | × schnellster | Energie J (brutto) |
-|---|---|---|---|---|
-| 1 | `d03_vllm_qwen35_9b_awq_3shot` | 376,10 | 1,00 | 49 290,2 |
-| 2 | `d03_vllm_qwen35_9b_fp8` | 440,62 | 1,17 | 58 722,0 |
-| 3 | `d03_vllm_qwen35_9b_awq` | 482,00 | 1,28 | 64 814,5 |
-| 4 | `d02_llamacpp_qwen35_4b_q4` | 506,14 | 1,35 | 51 199,0 |
-| 5 | `d02_llamacpp_gemma4_e4b_q4_3shot` | 522,12 | 1,39 | 46 512,6 |
-| 6 | `d02_llamacpp_gemma4_e4b_q4` | 532,84 | 1,42 | 46 580,0 |
-| 7 | `d02_llamacpp_qwen35_9b_q4_3shot` | 601,49 | 1,60 | 72 331,5 |
-| 8 | `d02_llamacpp_ministral3_14b_q4` | 641,46 | 1,71 | 94 288,4 |
-| 9 | `d02_llamacpp_qwen35_9b_q4` | 658,12 | 1,75 | 78 291,4 |
-| 10 | `d02_llamacpp_qwen35_9b_q8` | 747,96 | 1,99 | 89 770,5 |
-| 11 | `d01_ollama_qwen35_9b_q4` | 1 234,09 | 3,28 | 94 917,3 |
-| 12 | `d02_llamacpp_gemma4_12b_q4` | 1 604,34 | 4,27 | 154 713,6 |
+| # | Wettbewerber | Wall s | × schnellster | Energie J (brutto) | macro-F1 | Gewinner-Gate |
+|---|---|---|---|---|---|---|
+| 1 | `d10_gliner` | 18,93 | 1,00 | 1 299,5 | 0,775 | ✗ |
+| 2 | `d03_vllm_qwen35_9b_awq_3shot` | 376,10 | 20 | 49 290,2 | 0,964 | ✓ |
+| 3 | `d11_cascade` | 388,93 | 21 | 34 925,0 | 0,966 | ✓ |
+| 4 | `d03_vllm_qwen35_9b_fp8` | 440,62 | 23 | 58 722,0 | 0,946 | ✓ |
+| 5 | `d03_vllm_qwen35_9b_awq` | 482,00 | 25 | 64 814,5 | 0,935 | ✓ |
+| 6 | `d02_llamacpp_qwen35_4b_q4` | 506,14 | 27 | 51 199,0 | 0,936 | ✓ |
+| 7 | `d02_llamacpp_gemma4_e4b_q4_3shot` | 522,12 | 28 | 46 512,6 | 0,962 | ✓ |
+| 8 | `d02_llamacpp_gemma4_e4b_q4` | 532,84 | 28 | 46 580,0 | 0,961 | ✓ |
+| 9 | `d02_llamacpp_qwen35_9b_q4_3shot` | 601,49 | 32 | 72 331,5 | 0,971 | ✓ |
+| 10 | `d02_llamacpp_ministral3_14b_q4` | 641,46 | 34 | 94 288,4 | 0,938 | ✓ |
+| 11 | `d02_llamacpp_qwen35_9b_q4` | 658,12 | 35 | 78 291,4 | 0,953 | ✓ |
+| 12 | `d02_llamacpp_qwen35_9b_q8` | 747,96 | 40 | 89 770,5 | 0,949 | ✓ |
+| 13 | `d01_ollama_qwen35_9b_q4` | 1 234,09 | 65 | 94 917,3 | 0,946 | ✓ |
+| 14 | `d02_llamacpp_gemma4_12b_q4` | 1 604,34 | 85 | 154 713,6 | 0,919 | ✓ |
 
 <!-- zj:results:end -->
 
