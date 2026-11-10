@@ -14,7 +14,7 @@ vars:
     sh: command -v golangci-lint || echo "$(go env GOPATH)/bin/golangci-lint"
   GOVULNCHECK:
     sh: command -v govulncheck || echo "$(go env GOPATH)/bin/govulncheck"
-  PY_ENVS: df gpu_df embed llm-clients db gpu_vs ner
+  PY_ENVS: df gpu_df embed llm-clients db gpu_vs ner e2e
   RUST_DIRS: libs/rust/zjmark contestants/rust
 
 tasks:
@@ -215,6 +215,12 @@ tasks:
     requires: { vars: [TAGS] }
     cmds:
       - scripts/ollama_pull.sh {{.TAGS}}
+
+  # ---------- Track E (Phase 8) ----------
+  trackE:prep:
+    desc: Track E inputs (questions without gold, router/answer/label prompts) → data/track_e/<scale>/
+    cmds:
+      - uv run --frozen python -m zj_eval.track_e prepare --scale {{.SCALE | default "L"}}
 
   # ---------- Track A (Phase 4) ----------
   trackA:spec:

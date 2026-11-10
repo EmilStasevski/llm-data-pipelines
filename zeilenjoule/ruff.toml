@@ -14,6 +14,10 @@ allowed-confusables = ["‚", "„", "–", " ", "œ", "Ÿ", "×", " "]
 "datagen/src/zj_datagen/cards.py" = ["E501"]  # dataset-card templates: long German prose strings
 "spec/build_track_a_cases.py" = ["E501"]  # golden-vector data literals (one case per line is easier to review)
 "contestants/python/df/src/zj_df/track_a/duckdb_impl.py" = ["E501"]  # SQL macro generator: unwrapped SQL reads better
+"eval/src/zj_eval/track_e.py" = ["E501"]  # German router/answer prompt text and the router examples (one example per entry)
+"analysis/src/zj_analysis/report.py" = ["E501"]  # German/English report prose (section notes)
+"analysis/src/zj_analysis/winner.py" = ["E501"]  # German/English WINNER.md text table
+"contestants/python/e2e/src/zj_e2e/stores.py" = ["E501"]  # store DDL/queries: unwrapped SQL reads better
 
 [lint.isort]
 known-first-party = ["zjmark", "zj_*"]

@@ -200,12 +200,27 @@ TRACKS: dict[str, dict[str, tuple[str, str, str, str]]] = {
                "decoding, reasoning off. Counted only with JSON validity ≥ 99.5 % and no reasoning output "
                "(spec/track_d.md, ADR 0018). Scale `dev` = concurrency sweep (300 rows)."),
     },
+    "E": {
+        "de": ("Track E: End-to-End-RAG (`e.rag`)", "Zeilen", "Zeile",
+               "Ein Lauf = Roh-CSV → Track-A-Kandidat (S1–S3) → Track-B-Kandidat (S4, bge-m3) → Schadensart per "
+               "Destillation (LLM etikettiert 2 000 Zeilen, linearer Klassifikator den Rest) → Index + SQL-Sicht "
+               "(S5) → 300 Fragen über einen Router (SQL ↔ Hybrid-Suche), alle mit Qwen3.5-9B. Wall-Zeit = alles; "
+               "Time-to-RAG = Stufen ingest … index. Gewertet bei vollständigen Antworten ohne unsichere SQL "
+               "(spec/track_e.md, ADR 0020)."),
+        "en": ("Track E: end-to-end RAG (`e.rag`)", "rows", "row",
+               "One run = raw CSV → Track A contestant (S1–S3) → Track B contestant (S4, bge-m3) → damage type by "
+               "distillation (the LLM labels 2,000 rows, a linear classifier the rest) → index + SQL view (S5) → "
+               "300 questions through a router (SQL ↔ hybrid search), all with Qwen3.5-9B. Wall time = everything; "
+               "time-to-RAG = stages ingest … index. Counted with complete answers and no unsafe SQL "
+               "(spec/track_e.md, ADR 0020)."),
+    },
 }  # fmt: skip
 SECTION_TASK = {
     "C": ("C", "c.dense"),
     "C-lexical": ("C", "c.lexical"),
     "C-hybrid": ("C", "c.hybrid"),
     "D": ("D", "d.extract"),
+    "E": ("E", "e.rag"),
 }
 DETAIL_SQL = """
 WITH latest AS (
@@ -219,10 +234,14 @@ DETAIL_STAGES = ("load", "ingest", "index", "query")
 N_QUERIES = 1000  # spec/track_c.md
 # per track: top-level stages shown, and stages whose energy becomes a per-unit column
 # (stage → (key, unit divisor: "queries" = N_QUERIES, "rows" = the run's rows, scale factor))
-STAGES_BY_TRACK = {"C": DETAIL_STAGES, "D": ("load", "extract", "ttft")}
+STAGES_BY_TRACK = {"C": DETAIL_STAGES, "D": ("load", "extract", "ttft"),
+                   "E": ("ingest", "embed", "label", "index", "answer")}  # fmt: skip
+RAG_STAGES = ("ingest", "embed", "label", "index")  # Track E time-to-RAG (spec/track_e.md §2)
+N_QUESTIONS_E = 300
 STAGE_ENERGY: dict[str, tuple[str, str, float]] = {
     "query": ("mj_query", "queries", 1e3), "query_c16": ("mj_query_c16", "queries", 1e3),
     "extract": ("j_row", "rows", 1.0),
+    "answer": ("j_question", "questions", 1.0),
 }  # fmt: skip
 
 
@@ -292,7 +311,7 @@ def track_section(con: duckdb.DuckDBPyConnection, track: str, prices: Prices, la
         title = f"### {label} {scale} ({fmt_num(float(rows[0].rows), 0, lang)} {units})"
         body = [_row(s, rows[0].wall, best_e, prices, lang) for s in rows]
         out += [title, "", _table(body, headers(track, lang)), ""]
-    if track.startswith(("C", "D")):
+    if track.startswith(("C", "D", "E")):
         out += _details(con, track, lang)
     if problems:
         title = (
@@ -327,7 +346,15 @@ DETAIL_COLUMNS: dict[str, list[tuple[str, str]]] = {
                   ("json_validity", "JSON ok"), ("schadensart", "schadensart"), ("komponente", "komponente"),
                   ("macro_f1", "macro-F1")],
 }  # fmt: skip
+DETAIL_COLUMNS["e.rag"] = [
+    ("time_to_rag_s", "Time-to-RAG s"), ("rag_wh", "Energy-to-RAG Wh"), ("j_question", "{jq}"),
+    ("label_classifier_holdout_acc", "{cls}"), ("lookup_score", "lookup"), ("filtered_semantic_score", "semantic F1"),
+    ("aggregation_score", "{agg}"), ("aggregation_mean_rel_error", "{relerr}"), ("router_accuracy", "Router"),
+    ("citation_precision", "{citp}"), ("citation_recall", "{citr}"), ("overall", "{overall}"),
+]  # fmt: skip
 WINNER_F1 = 0.9  # PLAN §10: macro-F1 ≥ 0.9 × best macro-F1 in the track (per scale)
+# winner gate per task: (quality key, optional (validity key, minimum))
+GATE = {"d.extract": ("macro_f1", ("json_validity", 0.995)), "e.rag": ("overall", None)}
 DETAIL_NOTE_C = {
     "de": "Latenz: client-seitig je Anfrage (Konkurrenz 1), vom Wettbewerber gemeldet; QPS c16 = 1 000 "
     "Anfragen "
@@ -351,8 +378,20 @@ DETAIL_NOTE_D = {
     "at a time; VRAM = server after loading. Quality: field means and macro-F1 (spec/track_d.md §4). Winner "
     "gate: macro-F1 ≥ 0.9 × best macro-F1 of the scale and JSON validity ≥ 99.5 % (PLAN §10).",
 }
+DETAIL_NOTE_E = {
+    "de": "Stufen in s; Time-to-RAG und Energy-to-RAG = ingest + embed + label + index (brutto, GPU + CPU); "
+    "J/Frage = Energie der Stufe `answer` / 300; Latenz je Frage = Router + Ausführung + ggf. Antwortaufruf "
+    "(Fragen laufen gebündelt, N gleichzeitig). Klassifikator = Übereinstimmung mit den LLM-Etiketten auf 10 % "
+    "Rückhalt. lookup/Aggregation = Anteil richtig, semantic = Mengen-F1, rel. Fehler = mittlerer relativer Fehler "
+    "der Aggregationen; Gesamt = Mittel der drei Typen. Gewinner-Gate: Gesamt ≥ 0,9 × bestes Gesamt.",
+    "en": "Stages in s; time-to-RAG and energy-to-RAG = ingest + embed + label + index (gross, GPU + CPU); "
+    "J/question = energy of stage `answer` / 300; latency per question = router + execution + answer call where "
+    "needed (questions run as a batch, N in flight). Classifier = agreement with the LLM labels on a 10 % "
+    "hold-out. lookup/aggregation = share correct, semantic = set F1, rel. error = mean relative error of the "
+    "aggregations; overall = mean of the three types. Winner gate: overall ≥ 0.9 × best overall.",
+}
 DETAIL_NOTE = {"c.dense": DETAIL_NOTE_C, "c.lexical": DETAIL_NOTE_C, "c.hybrid": DETAIL_NOTE_C,
-               "d.extract": DETAIL_NOTE_D}  # fmt: skip
+               "d.extract": DETAIL_NOTE_D, "e.rag": DETAIL_NOTE_E}  # fmt: skip
 
 
 def _numbers(d: dict[str, list[float]], blob: dict[str, Any]) -> None:
@@ -363,17 +402,26 @@ def _numbers(d: dict[str, list[float]], blob: dict[str, Any]) -> None:
 
 def accumulate(d: dict[str, list[float]], st: Any, extra: Any, q: Any, rows: Any) -> None:
     """One run's stage times, per-unit stage energy, throughput, latency, TTFT, VRAM and quality into `d`."""
+    run_t: dict[str, float] = {}
+    run_e: dict[str, float] = {}
     for stg in cast("list[dict[str, Any]]", json.loads(st) or []):
         name = str(stg["name"])
         if stg.get("depth", 0) != 0:
             continue
         d.setdefault(f"t_{name}", []).append(float(stg["t_s"]))
         parts = [float(x) for k in ("gpu_j", "cpu_j", "dram_j") if (x := stg.get(k)) is not None]
+        run_t[name] = float(stg["t_s"])
+        if parts:
+            run_e[name] = sum(parts)
         if name in STAGE_ENERGY and parts:  # energy per query / per row from the stage's energy
             key, unit, factor = STAGE_ENERGY[name]
-            n = N_QUERIES if unit == "queries" else int(rows or 0)
+            n = {"queries": N_QUERIES, "questions": N_QUESTIONS_E}.get(unit, int(rows or 0))
             if n:
                 d.setdefault(key, []).append(factor * sum(parts) / n)
+    if all(x in run_t for x in RAG_STAGES):  # Track E: raw CSV → queryable index
+        d.setdefault("time_to_rag_s", []).append(sum(run_t[x] for x in RAG_STAGES))
+        if all(x in run_e for x in RAG_STAGES):
+            d.setdefault("rag_wh", []).append(sum(run_e[x] for x in RAG_STAGES) / 3600)
     ex = cast("dict[str, Any]", json.loads(extra) if extra else {})
     for k in ("throughput", "latency_ms"):
         _numbers(d, cast("dict[str, Any]", ex.get(k) or {}))
@@ -390,13 +438,41 @@ def accumulate(d: dict[str, list[float]], st: Any, extra: Any, q: Any, rows: Any
 def _digits(key: str) -> int:
     if "_at_10" in key or key == "fusion_agreement" or key in TRACK_D_FIELDS:
         return 4
+    if key in TRACK_E_FIELDS:
+        return 3
+    if key in ("time_to_rag_s", "j_question"):
+        return 0 if key == "time_to_rag_s" else 1
     if key.startswith("qps") or key in ("vram_mb", "output_tok_per_s", "ttft_ms", "completion_tokens_median"):
         return 0
     return 2 if key.startswith(("p", "mj", "rows_per", "j_")) else 1
 
 
+TRACK_E_FIELDS = (
+    "lookup_score",
+    "filtered_semantic_score",
+    "aggregation_score",
+    "aggregation_mean_rel_error",
+    "router_accuracy",
+    "citation_precision",
+    "citation_recall",
+    "overall",
+    "label_classifier_holdout_acc",
+)
 TRACK_D_FIELDS = ("komponente", "schadensart", "ursache", "massnahme", "sicherheitsrelevant",
                   "stillstand_minuten", "ersatzteil_materialnr", "macro_f1", "json_validity")  # fmt: skip
+
+
+def passes_gate(
+    d: dict[str, list[float]], gate: tuple[str, tuple[str, float] | None], best: float | None
+) -> bool:
+    """Winner gate: quality ≥ WINNER_F1 × best of the scale (and the validity minimum where there is one)."""
+    q = median_of(d.get(gate[0], []))
+    if q is None or best is None or q < WINNER_F1 * best:
+        return False
+    if gate[1] is None:
+        return True
+    v = median_of(d.get(gate[1][0], []))
+    return v is not None and v >= gate[1][1]
 
 
 def _details(con: duckdb.DuckDBPyConnection, track: str, lang: str) -> list[str]:
@@ -411,16 +487,20 @@ def _details(con: duckdb.DuckDBPyConnection, track: str, lang: str) -> list[str]
     extra = DETAIL_COLUMNS.get(task, [])
     stages = STAGES_BY_TRACK.get(track[0], DETAIL_STAGES)
     words = {"q": "mJ/Anfrage" if de else "mJ/query", "rows": "Zeilen" if de else "rows",
-             "row": "Zeile" if de else "row", "j": "J/Zeile" if de else "J/row"}  # fmt: skip
+             "row": "Zeile" if de else "row", "j": "J/Zeile" if de else "J/row",
+             "jq": "J/Frage" if de else "J/question", "cls": "Klassifikator" if de else "classifier",
+             "agg": "Aggregation" if de else "aggregation", "relerr": "rel. Fehler" if de else "rel. error",
+             "citp": "Zitat-P" if de else "citation P", "citr": "Zitat-R" if de else "citation R",
+             "overall": "Gesamt" if de else "overall"}  # fmt: skip
     keys = [*(f"t_{x}" for x in stages), "p50", "p95", "p99", *(k for k, _ in extra)]
     metrics = [*(f"{x} s" for x in stages), "p50 ms", "p95 ms", "p99 ms",
                *(h.format(**words) for _, h in extra)]  # fmt: skip
-    gate = task == "d.extract"
+    gate = GATE.get(task)
     if gate:
         metrics.append("Gewinner-Gate" if de else "winner gate")
     best: dict[str, float] = {}
     for (_, scale), d in acc.items():
-        if (f1 := median_of(d.get("macro_f1", []))) is not None:
+        if gate and (f1 := median_of(d.get(gate[0], []))) is not None:
             best[scale] = max(best.get(scale, 0.0), f1)
     title = "Stufen, Latenz, Qualität (Mediane)" if de else "Stages, latency, quality (medians)"
     header = ["Wettbewerber" if de else "Contestant", "Skala" if de else "Scale", *metrics]
@@ -430,9 +510,7 @@ def _details(con: duckdb.DuckDBPyConnection, track: str, lang: str) -> list[str]
             ("–" if (m := median_of(d.get(k, []))) is None else fmt_num(m, _digits(k), lang)) for k in keys
         ]
         if gate:
-            f1, ok = median_of(d.get("macro_f1", [])), median_of(d.get("json_validity", []))
-            passed = f1 is not None and ok is not None and f1 >= WINNER_F1 * best[scale] and ok >= 0.995
-            cells.append("✓" if passed else "✗")
+            cells.append("✓" if passes_gate(d, gate, best.get(scale)) else "✗")
         body.append([f"`{c}`", scale, *cells])
     return [f"### {title}", "", DETAIL_NOTE.get(task, DETAIL_NOTE_C)[lang], "", _table(body, header), ""]
 
@@ -506,6 +584,10 @@ def main(argv: list[str] | None = None) -> int:
 
     con = duckdb.connect(str(a.repo / "results" / "zj.duckdb"), read_only=True)
     done = readme.update(a.repo, con) if readme.has_runs(con) else []
+    if readme.has_runs(con):
+        from zj_analysis import winner  # noqa: PLC0415
+
+        done += winner.write(a.repo, con)
     con.close()
     print(
         f"reports/REPORT.de.md, reports/REPORT.md{''.join(', ' + d for d in done)} from {counts['runs']} runs"

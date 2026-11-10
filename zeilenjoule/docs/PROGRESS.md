@@ -447,3 +447,26 @@ Open questions:
   (schadensart 0,34). Nicht-LLM-Untergrenze.
 - Kandidat für Phase 8 (Extraktion im End-to-End-Stack): d11 Kaskade; Alternative bei Qualitätsvorrang Qwen3.5-9B 3-shot.
 - Nächstes: Phase 8 (Track E End-to-End-RAG, WINNER.md, Produktionsarchitektur) → Gate 2.
+
+## 2026-11-10 — Phase 8 Teil 1: Track E (`e.rag`) gebaut, auf M ungemessen geprüft
+- spec/track_e.md, ADR 0020; `zj_eval.track_e` (Fragen ohne Gold, zentrale Router-/Antwort-/Label-Prompts + Schemas,
+  programmatische Bewertung, Verifier); Task `e.rag`, `task trackE:prep`.
+- Neue uv-Umgebung `contestants/python/e2e`: `zj_e2e.sqlsafe` (sqlglot: genau ein SELECT auf `meldungen`, keine
+  Datei-/Seiteneffekt-Funktionen, Transpilieren je Dialekt), `zj_e2e.stores` (FAISS+sqlite3, DuckDB vss+fts, Postgres
+  pgvector+FTS mit SELECT-only-Rolle + statement_timeout, Qdrant hybrid + DuckDB-SQL), `zj_e2e.pipeline`
+  (Track-A/B-Kandidaten per CLI, Schadensart per Destillation, ein Router-Aufruf je Frage mit Self-Query-Filtern).
+  Pipelines e01 (pandas/ST fp32/FAISS/Ollama), e02 (Polars/ORT/DuckDB/llama.cpp), e03 (Rust/TEI/Postgres/vLLM),
+  e05 (aus results/zj.duckdb: a17 → b06 → c08 Qdrant → vLLM). e04 (reines Rust) noch offen.
+- Fehler auf dem Weg (ungemessen gefunden, behoben): Bewerter las Ein-Zeilen-Tabellen nicht („welches Werk“);
+  Text-Antwortweg brauchte `meldung_id`; feste k = 50 ohne Komponenten-/Schadensart-Filter (semantic F1 0,28 → 0,76);
+  ZJMARK-Zeilen der Unterprozesse kamen verspätet beim Harness an (jetzt herausgefiltert).
+- Ungemessen auf M (300 Fragen): e02 Gesamt 0,714, e03 0,747 (553 s), e05 0,744 (417 s); Router 100 %, keine SQL
+  abgelehnt/fehlgeschlagen. Restfehler sind echt: Ursache/Maßnahme nicht als Katalogwert (Lookup 0,6–0,8),
+  Summen über geschätzte Schadensart (Klassifikator 0,885 auf LLM-Etiketten), 294/100 000 unlesbare Daten.
+- Bericht: Abschnitt Track E (Time-to-RAG s/Wh, J/Frage, Typ-Werte, Router, Zitate, Gate); `reports/WINNER.md` +
+  `WINNER.en.md` generiert (Schnellster, Effizientester, Pareto-Front, Produktionsregel 5 mit Diensten).
+- e01 erster Probelauf: Zeitüberschreitung beim Etikettieren → Ursache: Ollama verteilt Qwen3.5-9B bei 64 × 4 096 Token
+  stillschweigend 25 %/75 % auf CPU/GPU. Neu: `gpu_check` (Ollama `ollama ps` muss „100% GPU“ zeigen, sonst Abbruch,
+  Regel 6); e01 mit N = 16 → ungemessen auf M 1 195 s, Gesamt 0,669, 100 % GPU. Track-D-Ollama-Läufe (64 × 2 048)
+  nachgeprüft: 100 % GPU.
+- `task ci` grün (logs/ci_tracke.log). Nächstes: gemessene Session Track E auf L (4 Pipelines × 3 Wdh., ≈ 11 h).

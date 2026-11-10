@@ -969,3 +969,57 @@ contestants:
     servers: []
     scales: [D2k]
     anti_pattern: false
+
+  # ---------- Track E (Phase 8): end-to-end RAG pipelines (spec/track_e.md, ADR 0020) ----------
+  # each pipeline calls Track A/B contestants by id (their envs/binaries must be built: task build)
+  - id: e01_classic_python
+    track: E
+    task: e.rag
+    build: ["sh", "-c", "uv sync --frozen --project contestants/python/e2e && scripts/ollama_pull.sh qwen3.5:9b"]
+    versions_cmd: ["contestants/python/e2e/.venv/bin/python", "-m", "zj_e2e.envcheck"]
+    # a05 pandas → b01 sentence-transformers fp32 → FAISS flat + sqlite3 → Ollama qwen3.5:9b
+    cmd: ["contestants/python/e2e/.venv/bin/python", "-m", "zj_e2e.pipeline"]
+    args: ["--pipeline", "e01_classic_python", "--input", "{input}", "--output", "{output}", "--threads", "{threads}"]
+    needs_gpu: true
+    servers: []
+    scales: [L]
+    anti_pattern: false
+
+  - id: e02_modern_embedded
+    track: E
+    task: e.rag
+    build: ["sh", "-c", "uv sync --frozen --project contestants/python/e2e"]
+    versions_cmd: ["contestants/python/e2e/.venv/bin/python", "-m", "zj_e2e.envcheck"]
+    # a10 Polars lazy → b04 ORT CUDA → DuckDB vss+fts+SQL → llama.cpp Qwen3.5-9B Q4
+    cmd: ["contestants/python/e2e/.venv/bin/python", "-m", "zj_e2e.pipeline"]
+    args: ["--pipeline", "e02_modern_embedded", "--input", "{input}", "--output", "{output}", "--threads", "{threads}"]
+    needs_gpu: true
+    servers: []
+    scales: [L]
+    anti_pattern: false
+
+  - id: e03_postgres_only
+    track: E
+    task: e.rag
+    build: ["sh", "-c", "uv sync --frozen --project contestants/python/e2e"]
+    versions_cmd: ["contestants/python/e2e/.venv/bin/python", "-m", "zj_e2e.envcheck"]
+    # a16 Rust arrow → b06 TEI → Postgres pgvector+FTS+SQL (reader role) → vLLM Qwen3.5-9B AWQ
+    cmd: ["contestants/python/e2e/.venv/bin/python", "-m", "zj_e2e.pipeline"]
+    args: ["--pipeline", "e03_postgres_only", "--input", "{input}", "--output", "{output}", "--threads", "{threads}"]
+    needs_gpu: true
+    servers: []
+    scales: [L]
+    anti_pattern: false
+
+  - id: e05_best_of_tracks
+    track: E
+    task: e.rag
+    build: ["sh", "-c", "uv sync --frozen --project contestants/python/e2e"]
+    versions_cmd: ["contestants/python/e2e/.venv/bin/python", "-m", "zj_e2e.envcheck"]
+    # fastest counted contestant per track from results/zj.duckdb (A L, B M, C hybrid M, D D2k)
+    cmd: ["contestants/python/e2e/.venv/bin/python", "-m", "zj_e2e.pipeline"]
+    args: ["--pipeline", "e05_best_of_tracks", "--input", "{input}", "--output", "{output}", "--threads", "{threads}"]
+    needs_gpu: true
+    servers: []
+    scales: [L]
+    anti_pattern: false

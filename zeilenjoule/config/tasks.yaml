@@ -58,3 +58,10 @@ tasks:
     verify_cmd: ["uv", "run", "--frozen", "--project", ".", "python", "-m", "zj_eval.verify_track_d",
                  "--output", "{output}", "--reference", "{reference}"]
     reference: "data/reference/track_d/{scale}/gold.jsonl"
+  e.rag:                     # Track E: raw CSV → index → 300 routed questions (spec/track_e.md)
+    input: "data/synth/stoermeldungen/{scale}/stoermeldungen.cp1252.csv"
+    output: out.jsonl
+    verifier: cmd
+    verify_cmd: ["uv", "run", "--frozen", "--project", ".", "python", "-m", "zj_eval.track_e", "verify",
+                 "--output", "{output}", "--reference", "{reference}"]
+    reference: "spec/questions_e.{scale}.jsonl"

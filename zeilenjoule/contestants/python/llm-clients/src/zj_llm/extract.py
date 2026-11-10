@@ -116,6 +116,8 @@ class Engine:
     ttft: Callable[[list[dict[str, str]]], float]
     setup: Callable[[], None]
     info: dict[str, Any]
+    # after the first request: proof that the model runs fully on the GPU (rule 6); returns evidence
+    gpu_check: Callable[[], dict[str, Any]] = lambda: {}
 
 
 def _openai(
@@ -277,12 +279,24 @@ def ollama(m: Model, n: int, schema: dict[str, Any] = SCHEMA) -> Engine:
         if (m.ollama or "") not in exec_in(srv, "ollama", "list"):
             raise RuntimeError(f"{m.ollama} not pulled into models/ollama (task trackD:pull)")
 
+    def gpu_check() -> dict[str, Any]:
+        """Ollama silently splits a model across CPU and GPU when the KV cache does not fit (e.g. 64 slots ×
+        4 096 tokens of Qwen3.5-9B: 25 %/75 % CPU/GPU) → fail loudly unless `ollama ps` says 100 % GPU."""
+        ps = exec_in(srv, "ollama", "ps")
+        line = next((x for x in ps.splitlines() if x.startswith(str(m.ollama))), "")
+        if "100% GPU" not in line:
+            raise RuntimeError(
+                f"Ollama does not run {m.ollama} fully on the GPU (rule 6): {line.strip() or ps}"
+            )
+        return {"ollama_ps": " ".join(line.split())}
+
     return Engine(
         srv,
         request,
         lambda msgs: post_stream(port, "/api/chat", body(msgs, True)),
         setup,
         {"ollama_tag": m.ollama, "num_parallel": n},
+        gpu_check,
     )
 
 
@@ -334,6 +348,7 @@ def main(argv: list[str] | None = None) -> int:
             evidence = stack.enter_context(running(eng.server))
             eng.setup()
             eng.request(rows[0]["messages"])  # model on the GPU, kernels compiled, shared prefix cached
+            evidence = {**evidence, **eng.gpu_check()}
             loaded = vram_mb(eng.server)
             if loaded < MIN_VRAM_MB:  # rule 6: no silent CPU run (Ollama loads lazily, so check after use)
                 raise RuntimeError(f"server holds only {loaded} MiB on the GPU after loading the model")

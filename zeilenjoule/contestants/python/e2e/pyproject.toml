@@ -1,0 +1,30 @@
+[project]
+name = "zj-e2e"
+version = "0.1.0"
+description = "Track E end-to-end RAG pipelines composed from Track A–D contestants (spec/track_e.md)"
+requires-python = ">=3.12,<3.13"
+dependencies = [
+    "sqlglot==30.25.0",
+    "pandas==3.1.1",
+    "numpy==2.5.4",
+    "pyarrow==26.0.1",
+    "pyyaml==6.0.3",
+    "zjmark",
+    "zj-db",
+    "zj-llm-clients",
+]
+
+[dependency-groups]
+dev = ["pytest==9.*"]
+
+[tool.uv.sources]
+zjmark = { path = "../../../libs/python/zjmark", editable = true }
+zj-db = { path = "../db", editable = true }
+zj-llm-clients = { path = "../llm-clients", editable = true }
+
+[build-system]
+requires = ["uv_build>=0.12,<0.14"]
+build-backend = "uv_build"
+
+[tool.uv.build-backend]
+module-name = "zj_e2e"
