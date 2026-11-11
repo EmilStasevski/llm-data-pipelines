@@ -432,6 +432,8 @@ def accumulate(d: dict[str, list[float]], st: Any, extra: Any, q: Any, rows: Any
         d.setdefault("ttft_ms", []).append(float(m))
     if (v := ex.get("server_vram_mb_loaded")) is not None:
         d.setdefault("vram_mb", []).append(float(v))
+    if (v := ex.get("label_classifier_holdout_acc")) is not None:  # Track E: distilled damage-type classifier
+        d.setdefault("label_classifier_holdout_acc", []).append(float(v))
     _numbers(d, cast("dict[str, Any]", json.loads(q) if q else {}))
 
 

@@ -97,6 +97,7 @@ func TestValidateContestants(t *testing.T) {
 		{"placeholder", []Contestant{mut(func(c *Contestant) { c.Args = []string{"{output}", "{inptu}"} })}, "unknown placeholder {inptu}"},
 		{"no output", []Contestant{mut(func(c *Contestant) { c.Args = []string{"--threads", "{threads}"} })}, "{output}"},
 		{"scale", []Contestant{mut(func(c *Contestant) { c.Scales = []string{"XXL"} })}, `scale "XXL"`},
+		{"timeout", []Contestant{mut(func(c *Contestant) { c.TimeoutS = -1 })}, `timeout_s must be >= 0`},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -105,5 +106,14 @@ func TestValidateContestants(t *testing.T) {
 				t.Fatalf("want error containing %q, got %v", tt.want, err)
 			}
 		})
+	}
+}
+
+func TestContestantTimeoutOverride(t *testing.T) {
+	if got := (Contestant{}).Timeout(1800); got != 1800 {
+		t.Fatalf("default: got %d, want 1800", got)
+	}
+	if got := (Contestant{TimeoutS: 9000}).Timeout(1800); got != 9000 {
+		t.Fatalf("override: got %d, want 9000", got)
 	}
 }

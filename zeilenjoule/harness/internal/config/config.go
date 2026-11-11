@@ -100,6 +100,17 @@ type Contestant struct {
 	Servers     []string `yaml:"servers"`
 	Scales      []string `yaml:"scales"`
 	AntiPattern bool     `yaml:"anti_pattern"`
+	// TimeoutS overrides bench.yaml timeout_s for this contestant (0 = use the global value), e.g. the Track E
+	// end-to-end pipelines on 1 M rows run far longer than any single-stage contestant.
+	TimeoutS int `yaml:"timeout_s"`
+}
+
+// Timeout returns the contestant's own limit or the global one.
+func (c Contestant) Timeout(global int) int {
+	if c.TimeoutS > 0 {
+		return c.TimeoutS
+	}
+	return global
 }
 
 var (
@@ -224,6 +235,9 @@ func ValidateContestants(cs []Contestant, bench *Bench) error {
 		}
 		if len(c.Scales) == 0 {
 			bad("scales must not be empty")
+		}
+		if c.TimeoutS < 0 {
+			bad("timeout_s must be >= 0 (0 = bench.yaml timeout_s)")
 		}
 		for _, s := range c.Scales {
 			if _, ok := bench.Scales[s]; !ok {

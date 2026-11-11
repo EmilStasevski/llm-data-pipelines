@@ -71,8 +71,22 @@
 
 ## Track E: End-to-End-RAG (`e.rag`) – Skala L
 
-_Noch keine gewerteten Läufe._
+- **Schnellster:** `e03_postgres_only` (1 740,04 s)
+- **Effizientester:** `e03_postgres_only` (247 894,5 J)
+
+**Pareto-Front (Zeit ↔ Energie):**
+
+| Wettbewerber | Wall s | Energie J | ZJ-Score | Qualität | Gate |
+|---|---|---|---|---|---|
+| `e03_postgres_only` | 1 740,04 | 247 894,5 | 1,00 | 0,754 | ✓ |
 
 ## Produktions-Stack (Regel 5)
 
-_Noch keine gewertete End-to-End-Pipeline._
+_Nicht gebaut: e04_pure_rust (reines Rust, PLAN §11) – vor Gate 2 bewusst ausgelassen (ADR 0020); die Rust-Bausteine a16/a17 sind in e03/e05 enthalten._
+
+- Kandidat = schnellste End-to-End-Pipeline, die alle Gates besteht: **`e03_postgres_only`** (1 740,0 s, 247 895 J)
+- Energie im Verhältnis zur effizientesten Pipeline: 1,00 (> 1,5 → ADR)
+- Dienste: PostgreSQL, TEI, vLLM; nächstschnellere Pipeline `e02_modern_embedded`: llama.cpp (Δ +2, > 2 → ADR)
+- ✓ keine Abwägung nötig
+
+Architekturvorschlag: `docs/ARCHITEKTUR.md`.

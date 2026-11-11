@@ -470,3 +470,21 @@ Open questions:
   Regel 6); e01 mit N = 16 → ungemessen auf M 1 195 s, Gesamt 0,669, 100 % GPU. Track-D-Ollama-Läufe (64 × 2 048)
   nachgeprüft: 100 % GPU.
 - `task ci` grün (logs/ci_tracke.log). Nächstes: gemessene Session Track E auf L (4 Pipelines × 3 Wdh., ≈ 11 h).
+- 2026-11-10: e04_pure_rust vor Gate 2 ausgelassen (Entscheidung des Nutzers), in ADR 0020 und WINNER.md vermerkt.
+
+## 2026-11-11 — Track E: Vorbereitung der gemessenen Session nach Aufräumen
+- Session `ba8fd0f7` (2026-11-10): e02 und e01 auf L nach 1 800 s abgebrochen (dnf, globales `timeout_s`), dann
+  abgebrochen/Neustart. Harness: neues optionales `timeout_s` je Wettbewerber (Go, Test); Track E 10 800 s.
+- Nutzer hat Docker aufgeräumt: Images vLLM, Ollama, Qdrant, pgvector fehlten → mit gepinnten Digests neu geladen
+  (vLLM ≈ 35 GB mit Erlaubnis). TEI und llama.cpp unverändert (Digest geprüft). Zwei liegengebliebene Container
+  (`zj-b06-tei`, `zj-d02-llamacpp`, nach dem Neustart) entfernt. quiet_box-Restore übersprang die gelöschten Dienste.
+
+## 2026-11-11 — Phase 8 abgeschlossen: Track E gemessen (Session 444b1e05, L, 12/12 ok, 9 h 18 min) → Gate 2
+- Wall-Zeit (Median, 1 Mio. Zeilen + 300 Fragen): e03 Postgres 1 740 s / 247,9 kJ, e02 DuckDB 1 864 s / 288,6 kJ,
+  e05 best-of-tracks 1 954 s / 261,5 kJ, e01 klassisch 5 330 s / 957,8 kJ. Alle im Gewinner-Gate (Gesamt 0,697–0,757).
+- Time-to-RAG: e02 1 646 s (schnellster Index), e03 1 672 s / 66,4 Wh (sparsamster); Einbetten = 80 % der Energie.
+  J/Frage: vLLM-Pipelines 26–27 J, llama.cpp 65 J, Ollama 89 J. 2 400 Router-SQL, 0 abgelehnt/fehlgeschlagen/unsicher.
+- e05 (Track-Sieger zusammengesetzt) verliert gegen e03: Qdrant-Index bei 1 Mio. Punkten 729 s vs. pgvector 505 s.
+- Bericht: Klassifikator-Spalte liest jetzt `result.extra` (Verifier künftig auch aus `ingest.json.label`).
+- `reports/WINNER.md` (Regel 5: e03, keine Abwägung nötig), `docs/ARCHITEKTUR.md`, ADR 0021 (vorgeschlagen).
+- **Gate 2: warten auf Bestätigung der Produktionsarchitektur vor Phase 9.**

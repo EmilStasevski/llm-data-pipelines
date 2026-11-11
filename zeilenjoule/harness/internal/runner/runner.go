@@ -230,7 +230,7 @@ func (r *Runner) Run(ctx context.Context, spec RunSpec) (results.Record, error) 
 	ex := Execute(ctx, ExecSpec{
 		Argv: argv, Dir: r.Repo,
 		Env:      append(os.Environ(), "ZJ_RUN_ID="+runID, "ZJ_THREADS="+strconv.Itoa(threads)),
-		Timeout:  time.Duration(r.Bench.TimeoutS) * time.Second,
+		Timeout:  time.Duration(c.Timeout(r.Bench.TimeoutS)) * time.Second,
 		Log:      logFile,
 		Clock:    sampler.Since,
 		Tree:     r.Tree,
@@ -264,7 +264,7 @@ func (r *Runner) Run(ctx context.Context, spec RunSpec) (results.Record, error) 
 	if ex.StartErr == nil {
 		r.measure(&rec, ex, samples, readErrs, memBefore)
 	}
-	r.classify(ctx, &rec, ex, task)
+	r.classify(ctx, &rec, ex, task, c.Timeout(r.Bench.TimeoutS))
 	rec.Derive()
 
 	if r.Bench.Runs.KeepOutputs == "none" || (r.Bench.Runs.KeepOutputs == "failed" && rec.Status == results.StatusOK) {
@@ -323,7 +323,7 @@ func (r *Runner) measure(rec *results.Record, ex ExecResult, samples []energy.Sa
 	}
 }
 
-func (r *Runner) classify(ctx context.Context, rec *results.Record, ex ExecResult, task config.Task) {
+func (r *Runner) classify(ctx context.Context, rec *results.Record, ex ExecResult, task config.Task, timeoutS int) {
 	_, perrs := PairStages(ex.Markers)
 	protocol := append(append([]string{}, ex.ProtocolErrors...), perrs...)
 	if ex.Result == nil && ex.StartErr == nil && !ex.TimedOut && ex.Signal == "" && ex.ExitCode == 0 {
@@ -340,7 +340,7 @@ func (r *Runner) classify(ctx context.Context, rec *results.Record, ex ExecResul
 	case ex.StartErr != nil:
 		fail(results.StatusFail, "start: "+ex.StartErr.Error())
 	case ex.TimedOut:
-		fail(results.StatusDNF, fmt.Sprintf("timeout after %d s", r.Bench.TimeoutS))
+		fail(results.StatusDNF, fmt.Sprintf("timeout after %d s", timeoutS))
 	case ex.Signal == syscall.SIGKILL.String():
 		fail(results.StatusOOM, "SIGKILL not sent by the harness (likely the kernel OOM killer); peak RSS recorded")
 	case ex.Signal != "":

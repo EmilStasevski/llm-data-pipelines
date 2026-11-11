@@ -8,7 +8,7 @@ Gemessen werden **Laufzeit und Energie (Joule)** auf einem Rechner mit NVIDIA RT
 Der schnellste Stack, der alle Qualitätsprüfungen besteht, bekommt anschließend ein Go-basiertes Produktions-Setup.
 
 ## Status
-**Phasen 0–7 abgeschlossen**: Track A (Dataframes), B (Embeddings), C (Speicherung/Index/Suche: dense, BM25, hybrid) und D (LLM-Extraktion) sind gemessen.
+**Phasen 0–8 abgeschlossen**: Track A–E sind gemessen (Dataframes, Embeddings, Speicherung/Suche, LLM-Extraktion, End-to-End-RAG). Wartet an Gate 2 auf die Produktionsentscheidung.
 Ergebnisse: [`reports/REPORT.de.md`](reports/REPORT.de.md) (English: [`reports/REPORT.md`](reports/REPORT.md)). Alle Zahlen dort stammen ausschließlich aus `results/` (Harness-Ausgabe) und werden von `task report` erzeugt. Ein Lauf zählt nur, wenn er die Prüfung gegen die Referenzimplementierung besteht.
 
 | Phase | Inhalt | Status |
@@ -21,7 +21,7 @@ Ergebnisse: [`reports/REPORT.de.md`](reports/REPORT.de.md) (English: [`reports/R
 | 5 | Track B: Embeddings (bge-m3: PyTorch, ONNX Runtime, TEI, vLLM, llama.cpp, Rust) | ✅ gemessen |
 | 6 | Track C: Speicherung, Index, Suche (FAISS, cuVS, pgvector, DuckDB, SQLite, LanceDB, Qdrant, Tantivy; Konkurrenz 1/16, Hybrid-RRF) | ✅ gemessen |
 | 7 | Track D: LLM-Extraktion (Ollama, llama.cpp, vLLM; Qwen 3.5, Gemma 4, Ministral, gpt-oss, EuroLLM, Teuken) | ✅ gemessen (inkl. GLiNER und Regeln+LLM-Kaskade) |
-| 8 | Track E: End-to-End-RAG, Gewinner | als Nächstes |
+| 8 | Track E: End-to-End-RAG (4 Pipelines auf 1 Mio. Zeilen), Gewinneranalyse | ✅ gemessen · Gate 2: `reports/WINNER.md`, `docs/ARCHITEKTUR.md` |
 | 9–10 | Produktion (Go/DevOps), Portfolio | offen |
 
 <!-- zj:results:begin -->

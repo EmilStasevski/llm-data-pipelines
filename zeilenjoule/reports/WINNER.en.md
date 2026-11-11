@@ -71,8 +71,22 @@
 
 ## Track E: end-to-end RAG (`e.rag`) – scale L
 
-_No counted runs yet._
+- **Fastest:** `e03_postgres_only` (1 740.04 s)
+- **Most efficient:** `e03_postgres_only` (247 894.5 J)
+
+**Pareto front (time ↔ energy):**
+
+| Contestant | wall s | energy J | ZJ score | quality | gate |
+|---|---|---|---|---|---|
+| `e03_postgres_only` | 1 740.04 | 247 894.5 | 1.00 | 0.754 | ✓ |
 
 ## Production stack (rule 5)
 
-_No counted end-to-end pipeline yet._
+_Not built: e04_pure_rust (pure Rust, PLAN §11) – deliberately left out before Gate 2 (ADR 0020); the Rust building blocks a16/a17 are part of e03/e05._
+
+- Candidate = fastest end-to-end pipeline passing every gate: **`e03_postgres_only`** (1 740.0 s, 247 895 J)
+- energy relative to the most efficient pipeline: 1.00 (> 1.5 → ADR)
+- services: PostgreSQL, TEI, vLLM; next-fastest pipeline `e02_modern_embedded`: llama.cpp (Δ +2, > 2 → ADR)
+- ✓ no trade-off needed
+
+Architecture proposal: `docs/ARCHITEKTUR.md`.

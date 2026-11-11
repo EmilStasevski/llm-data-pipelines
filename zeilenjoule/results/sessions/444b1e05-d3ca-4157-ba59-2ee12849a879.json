@@ -1,0 +1,102 @@
+{
+  "session_id": "444b1e05-d3ca-4157-ba59-2ee12849a879",
+  "created": "2026-11-10T23:57:03Z",
+  "seed": 20261106,
+  "reps": 3,
+  "warmup": 0,
+  "interleave": true,
+  "threads": 0,
+  "scales": [
+    "L"
+  ],
+  "contestants": [
+    "e01_classic_python",
+    "e02_modern_embedded",
+    "e03_postgres_only",
+    "e05_best_of_tracks"
+  ],
+  "items": [
+    {
+      "contestant": "e02_modern_embedded",
+      "scale": "L",
+      "rep": 1,
+      "warmup": false
+    },
+    {
+      "contestant": "e01_classic_python",
+      "scale": "L",
+      "rep": 1,
+      "warmup": false
+    },
+    {
+      "contestant": "e03_postgres_only",
+      "scale": "L",
+      "rep": 1,
+      "warmup": false
+    },
+    {
+      "contestant": "e05_best_of_tracks",
+      "scale": "L",
+      "rep": 1,
+      "warmup": false
+    },
+    {
+      "contestant": "e02_modern_embedded",
+      "scale": "L",
+      "rep": 2,
+      "warmup": false
+    },
+    {
+      "contestant": "e03_postgres_only",
+      "scale": "L",
+      "rep": 2,
+      "warmup": false
+    },
+    {
+      "contestant": "e05_best_of_tracks",
+      "scale": "L",
+      "rep": 2,
+      "warmup": false
+    },
+    {
+      "contestant": "e01_classic_python",
+      "scale": "L",
+      "rep": 2,
+      "warmup": false
+    },
+    {
+      "contestant": "e01_classic_python",
+      "scale": "L",
+      "rep": 3,
+      "warmup": false
+    },
+    {
+      "contestant": "e03_postgres_only",
+      "scale": "L",
+      "rep": 3,
+      "warmup": false
+    },
+    {
+      "contestant": "e05_best_of_tracks",
+      "scale": "L",
+      "rep": 3,
+      "warmup": false
+    },
+    {
+      "contestant": "e02_modern_embedded",
+      "scale": "L",
+      "rep": 3,
+      "warmup": false
+    }
+  ],
+  "args": [
+    "--track",
+    "E",
+    "--scale",
+    "L",
+    "--reps",
+    "3",
+    "--warmup",
+    "0"
+  ]
+}

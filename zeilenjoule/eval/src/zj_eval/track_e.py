@@ -379,9 +379,13 @@ def check(output: Path, reference: Path) -> dict[str, Any]:
             else f"{unsafe} unsafe SQL executed"
         )
     q = {k: round(v, 4) for k, v in score(out, gold).items()}
+    flat = {
+        **info,
+        **cast("dict[str, Any]", info.get("label") or {}),
+    }  # label stats are nested in ingest.json
     for k in ("sql_executed", "sql_rejected", "sql_failed", "label_classifier_holdout_acc"):
-        if k in info:
-            q[k] = info[k]
+        if k in flat:
+            q[k] = flat[k]
     passed = not problems
     detail = (
         f"{len(out)} answers, overall {q['overall']:.3f}, router {q['router_accuracy']:.3f}"

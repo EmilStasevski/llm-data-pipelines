@@ -256,23 +256,6 @@ Latenz: client-seitig je Anfrage (Konkurrenz 1), vom Wettbewerber gemeldet; QPS 
 
 Ein Lauf = Server-Start + Modell laden (`load`) → alle Zeilen mit N gleichzeitigen Anfragen (`extract`) → TTFT-Probe. Gleiche Prompts, temperature 0, max_tokens 256, JSON-Schema als Constrained Decoding, Reasoning aus. Gewertet nur bei JSON-Gültigkeit ≥ 99,5 % ohne Reasoning-Ausstoß (spec/track_d.md, ADR 0018). Skala `dev` = Konkurrenz-Sweep (300 Zeilen).
 
-### Skala dev (300 Zeilen)
-
-| Wettbewerber | n | Wall s (Median) | IQR s | Zeilen/s | E brutto J | E netto J | mJ/Zeile | €/1 Mio. Zeilen (Haushalt) | €/1 Mio. Zeilen (Industrie) | g CO₂/1 Mio. Zeilen | ZJ-Score | niedr. Konfidenz |
-|---|---|---|---|---|---|---|---|---|---|---|---|---|
-| `d02_llamacpp_qwen35_9b_q4_n16` | 1 | 110,167 | 110,167–110,167 | 2,72 | 13 412,7 | 12 556,7 | 44 708,935 | 4,63 | 2,07 | 4 272,19 | 1,00 | 0 % |
-| `d02_llamacpp_qwen35_9b_q4_n64` | 1 | 144,046 | 144,046–144,046 | 2,08 | 16 346,6 | 15 258,1 | 54 488,634 | 5,65 | 2,53 | 5 206,69 | 1,26 | 0 % |
-| `d03_vllm_qwen35_9b_awq_n64` | 1 | 151,702 | 151,702–151,702 | 1,98 | 13 646,2 | 12 467,5 | 45 487,434 | 4,71 | 2,11 | 4 346,58 | 1,18 | 0 % |
-| `d03_vllm_qwen35_9b_awq_n16` | 1 | 160,912 | 160,912–160,912 | 1,86 | 14 332,3 | 13 116,3 | 47 774,186 | 4,95 | 2,22 | 4 565,09 | 1,25 | 0 % |
-| `d02_llamacpp_qwen35_9b_q4_n4` | 1 | 211,408 | 211,408–211,408 | 1,42 | 38 046,8 | 36 404,1 | 126 822,672 | 13,1 | 5,88 | 12 118,61 | 2,33 | 0 % |
-| `d03_vllm_qwen35_9b_awq_n4` | 1 | 228,069 | 228,069–228,069 | 1,32 | 22 752,3 | 20 980,2 | 75 841,152 | 7,86 | 3,52 | 7 247,04 | 1,87 | 0 % |
-| `d01_ollama_qwen35_9b_q4_n16` | 1 | 293,784 | 293,784–293,784 | 1,02 | 34 330,3 | 32 047,5 | 114 434,298 | 11,9 | 5,31 | 10 934,83 | 2,61 | 0 % |
-| `d01_ollama_qwen35_9b_q4_n4` | 1 | 316,204 | 316,204–316,204 | 0,95 | 41 201,7 | 38 812,3 | 137 338,971 | 14,2 | 6,37 | 13 123,50 | 2,97 | 0 % |
-| `d01_ollama_qwen35_9b_q4_n64` | 1 | 372,440 | 372,440–372,440 | 0,81 | 26 347,2 | 23 532,8 | 87 824,022 | 9,1 | 4,07 | 8 392,07 | 2,58 | 0 % |
-| `d02_llamacpp_qwen35_9b_q4_n1` | 1 | 388,922 | 388,922–388,922 | 0,77 | 68 490,8 | 65 468,7 | 228 302,535 | 23,7 | 10,6 | 21 815,58 | 4,25 | 0 % |
-| `d01_ollama_qwen35_9b_q4_n1` | 1 | 503,998 | 503,998–503,998 | 0,60 | 73 306,6 | 69 498,1 | 244 355,349 | 25,3 | 11,3 | 23 349,51 | 5,00 | 0 % |
-| `d03_vllm_qwen35_9b_awq_n1` | 1 | 515,059 | 515,059–515,059 | 0,58 | 59 824,2 | 55 822,0 | 199 413,918 | 20,7 | 9,25 | 19 055,11 | 4,57 | 0 % |
-
 ### Skala D2k (2 000 Zeilen)
 
 | Wettbewerber | n | Wall s (Median) | IQR s | Zeilen/s | E brutto J | E netto J | mJ/Zeile | €/1 Mio. Zeilen (Haushalt) | €/1 Mio. Zeilen (Industrie) | g CO₂/1 Mio. Zeilen | ZJ-Score | niedr. Konfidenz |
@@ -291,6 +274,23 @@ Ein Lauf = Server-Start + Modell laden (`load`) → alle Zeilen mit N gleichzeit
 | `d02_llamacpp_qwen35_9b_q8` | 3 | 747,963 | 746,456–748,533 | 2,67 | 89 770,5 | 84 099,5 | 44 885,258 | 4,65 | 2,08 | 4 289,04 | 52,24 | 0 % |
 | `d01_ollama_qwen35_9b_q4` | 3 | 1 234,095 | 1 230,241–1 239,272 | 1,62 | 94 917,3 | 85 212,2 | 47 458,669 | 4,92 | 2,2 | 4 534,94 | 69,00 | 0 % |
 | `d02_llamacpp_gemma4_12b_q4` | 3 | 1 604,335 | 1 603,948–1 606,342 | 1,25 | 154 713,6 | 142 474,6 | 77 356,793 | 8,02 | 3,59 | 7 391,87 | 100,44 | 0 % |
+
+### Skala dev (300 Zeilen)
+
+| Wettbewerber | n | Wall s (Median) | IQR s | Zeilen/s | E brutto J | E netto J | mJ/Zeile | €/1 Mio. Zeilen (Haushalt) | €/1 Mio. Zeilen (Industrie) | g CO₂/1 Mio. Zeilen | ZJ-Score | niedr. Konfidenz |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| `d02_llamacpp_qwen35_9b_q4_n16` | 1 | 110,167 | 110,167–110,167 | 2,72 | 13 412,7 | 12 556,7 | 44 708,935 | 4,63 | 2,07 | 4 272,19 | 1,00 | 0 % |
+| `d02_llamacpp_qwen35_9b_q4_n64` | 1 | 144,046 | 144,046–144,046 | 2,08 | 16 346,6 | 15 258,1 | 54 488,634 | 5,65 | 2,53 | 5 206,69 | 1,26 | 0 % |
+| `d03_vllm_qwen35_9b_awq_n64` | 1 | 151,702 | 151,702–151,702 | 1,98 | 13 646,2 | 12 467,5 | 45 487,434 | 4,71 | 2,11 | 4 346,58 | 1,18 | 0 % |
+| `d03_vllm_qwen35_9b_awq_n16` | 1 | 160,912 | 160,912–160,912 | 1,86 | 14 332,3 | 13 116,3 | 47 774,186 | 4,95 | 2,22 | 4 565,09 | 1,25 | 0 % |
+| `d02_llamacpp_qwen35_9b_q4_n4` | 1 | 211,408 | 211,408–211,408 | 1,42 | 38 046,8 | 36 404,1 | 126 822,672 | 13,1 | 5,88 | 12 118,61 | 2,33 | 0 % |
+| `d03_vllm_qwen35_9b_awq_n4` | 1 | 228,069 | 228,069–228,069 | 1,32 | 22 752,3 | 20 980,2 | 75 841,152 | 7,86 | 3,52 | 7 247,04 | 1,87 | 0 % |
+| `d01_ollama_qwen35_9b_q4_n16` | 1 | 293,784 | 293,784–293,784 | 1,02 | 34 330,3 | 32 047,5 | 114 434,298 | 11,9 | 5,31 | 10 934,83 | 2,61 | 0 % |
+| `d01_ollama_qwen35_9b_q4_n4` | 1 | 316,204 | 316,204–316,204 | 0,95 | 41 201,7 | 38 812,3 | 137 338,971 | 14,2 | 6,37 | 13 123,50 | 2,97 | 0 % |
+| `d01_ollama_qwen35_9b_q4_n64` | 1 | 372,440 | 372,440–372,440 | 0,81 | 26 347,2 | 23 532,8 | 87 824,022 | 9,1 | 4,07 | 8 392,07 | 2,58 | 0 % |
+| `d02_llamacpp_qwen35_9b_q4_n1` | 1 | 388,922 | 388,922–388,922 | 0,77 | 68 490,8 | 65 468,7 | 228 302,535 | 23,7 | 10,6 | 21 815,58 | 4,25 | 0 % |
+| `d01_ollama_qwen35_9b_q4_n1` | 1 | 503,998 | 503,998–503,998 | 0,60 | 73 306,6 | 69 498,1 | 244 355,349 | 25,3 | 11,3 | 23 349,51 | 5,00 | 0 % |
+| `d03_vllm_qwen35_9b_awq_n1` | 1 | 515,059 | 515,059–515,059 | 0,58 | 59 824,2 | 55 822,0 | 199 413,918 | 20,7 | 9,25 | 19 055,11 | 4,57 | 0 % |
 
 ### Stufen, Latenz, Qualität (Mediane)
 
@@ -333,3 +333,34 @@ Zeilen/s, Tok/s aus Stufe `extract` (N Anfragen gleichzeitig); J/Zeile = Energie
 | `d02_llamacpp_gptoss_20b_mxfp4` | D2k | disqualified | 3 | verify: JSON validity 0.9620 < 0.995 |
 | `d02_llamacpp_teuken_7b_q8` | D2k | disqualified | 3 | verify: JSON validity 0.0000 < 0.995 |
 | `d03_vllm_qwen35_9b_fp8` | D2k | fail | 1 | exit code 1 (see logs/runs/2501fd1d-a2d9-4f77-9565-974a6759b69e/fd2d3e40-3da9-4c06-8e9f-99af2748ef2c.log) |
+
+## Track E: End-to-End-RAG (`e.rag`)
+
+Ein Lauf = Roh-CSV → Track-A-Kandidat (S1–S3) → Track-B-Kandidat (S4, bge-m3) → Schadensart per Destillation (LLM etikettiert 2 000 Zeilen, linearer Klassifikator den Rest) → Index + SQL-Sicht (S5) → 300 Fragen über einen Router (SQL ↔ Hybrid-Suche), alle mit Qwen3.5-9B. Wall-Zeit = alles; Time-to-RAG = Stufen ingest … index. Gewertet bei vollständigen Antworten ohne unsichere SQL (spec/track_e.md, ADR 0020).
+
+### Skala L (1 000 000 Zeilen)
+
+| Wettbewerber | n | Wall s (Median) | IQR s | Zeilen/s | E brutto J | E netto J | mJ/Zeile | €/1 Mio. Zeilen (Haushalt) | €/1 Mio. Zeilen (Industrie) | g CO₂/1 Mio. Zeilen | ZJ-Score | niedr. Konfidenz |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| `e03_postgres_only` | 3 | 1 740,039 | 1 739,477–1 740,492 | 575 | 247 894,5 | 235 170,6 | 247,895 | 0,0257 | 0,0115 | 23,69 | 1,00 | 0 % |
+| `e02_modern_embedded` | 3 | 1 864,437 | 1 863,959–1 873,320 | 536 | 288 648,8 | 274 408,9 | 288,649 | 0,0299 | 0,0134 | 27,58 | 1,12 | 0 % |
+| `e05_best_of_tracks` | 3 | 1 953,578 | 1 950,434–1 954,159 | 512 | 261 518,7 | 246 746,5 | 261,519 | 0,0271 | 0,0121 | 24,99 | 1,09 | 0 % |
+| `e01_classic_python` | 3 | 5 330,080 | 5 329,734–5 331,609 | 188 | 957 824,8 | 918 620,0 | 957,825 | 0,0992 | 0,0444 | 91,53 | 3,44 | 0 % |
+
+### Stufen, Latenz, Qualität (Mediane)
+
+Stufen in s; Time-to-RAG und Energy-to-RAG = ingest + embed + label + index (brutto, GPU + CPU); J/Frage = Energie der Stufe `answer` / 300; Latenz je Frage = Router + Ausführung + ggf. Antwortaufruf (Fragen laufen gebündelt, N gleichzeitig). Klassifikator = Übereinstimmung mit den LLM-Etiketten auf 10 % Rückhalt. lookup/Aggregation = Anteil richtig, semantic = Mengen-F1, rel. Fehler = mittlerer relativer Fehler der Aggregationen; Gesamt = Mittel der drei Typen. Gewinner-Gate: Gesamt ≥ 0,9 × bestes Gesamt.
+
+| Wettbewerber | Skala | ingest s | embed s | label s | index s | answer s | p50 ms | p95 ms | p99 ms | Time-to-RAG s | Energy-to-RAG Wh | J/Frage | Klassifikator | lookup | semantic F1 | Aggregation | rel. Fehler | Router | Zitat-P | Zitat-R | Gesamt | Gewinner-Gate |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| `e01_classic_python` | L | 36,4 | 4 543,1 | 490,2 | 6,0 | 251,1 | 11 272,90 | 21 595,70 | 27 243,60 | 5 074 | 258,5 | 88,5 | 0,840 | 0,830 | 0,663 | 0,600 | 0,237 | 1,000 | 0,743 | 0,634 | 0,697 | ✓ |
+| `e02_modern_embedded` | L | 4,3 | 1 103,3 | 324,6 | 212,9 | 214,4 | 7 131,00 | 18 620,10 | 20 537,60 | 1 646 | 74,7 | 65,2 | 0,880 | 0,830 | 0,809 | 0,600 | 0,234 | 1,000 | 0,744 | 0,728 | 0,745 | ✓ |
+| `e03_postgres_only` | L | 3,2 | 976,9 | 185,9 | 505,0 | 65,1 | 9 906,30 | 19 892,40 | 20 628,20 | 1 672 | 66,4 | 27,2 | 0,885 | 0,850 | 0,822 | 0,590 | 0,233 | 1,000 | 0,757 | 0,732 | 0,754 | ✓ |
+| `e05_best_of_tracks` | L | 1,6 | 979,0 | 182,9 | 729,3 | 58,5 | 9 908,00 | 19 954,00 | 20 677,20 | 1 892 | 70,5 | 26,1 | 0,885 | 0,850 | 0,822 | 0,590 | 0,234 | 1,000 | 0,757 | 0,731 | 0,757 | ✓ |
+
+### Nicht gewertete Läufe (Regel 4: nicht versteckt)
+
+| Wettbewerber | Skala | Status | n | Detail |
+|---|---|---|---|---|
+| `e01_classic_python` | L | dnf | 1 | timeout after 1800 s |
+| `e02_modern_embedded` | L | dnf | 1 | timeout after 1800 s |
