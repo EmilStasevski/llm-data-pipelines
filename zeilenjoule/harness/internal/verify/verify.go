@@ -28,6 +28,7 @@ type Func func(Input) (bool, string)
 var builtins = map[string]Func{
 	"x.smoke": smoke,
 	"x.calib": calib,
+	"e.load":  load,
 }
 
 // Run executes the verifier named by spec ("builtin:<name>").
@@ -81,6 +82,73 @@ func calib(in Input) (bool, string) {
 		return false, fmt.Sprintf("wrapped command reported %q", first)
 	}
 	return true, "wrapped command exited 0"
+}
+
+// load: the open-loop load curve of the production stack (e07_stack_load, ADR 0026). Errors under overload
+// (timeouts, 5xx, generator overload) are measurements; the run fails if the ingest is incomplete, a step is
+// missing or short, any 2xx answer had the wrong shape or any request was rejected as a client error (4xx), or
+// the lowest rate of an endpoint got no correct answer at all.
+func load(in Input) (bool, string) {
+	if in.ResultRows != in.ExpectedRows {
+		return false, fmt.Sprintf("ZJRESULT rows=%d, expected %d (ingest incomplete)", in.ResultRows, in.ExpectedRows)
+	}
+	b, err := os.ReadFile(in.OutputPath)
+	if err != nil {
+		return false, "output: " + err.Error()
+	}
+	var out struct {
+		Rows  int64 `json:"rows"`
+		Steps []struct {
+			Stage    string         `json:"stage"`
+			Endpoint string         `json:"endpoint"`
+			RateRPS  float64        `json:"rate_rps"`
+			Planned  int            `json:"planned"`
+			Sent     int            `json:"sent"`
+			OK       int            `json:"ok"`
+			Errors   map[string]int `json:"errors"`
+		} `json:"steps"`
+	}
+	if err := json.Unmarshal(b, &out); err != nil {
+		return false, "output: " + err.Error()
+	}
+	if out.Rows != in.ExpectedRows {
+		return false, fmt.Sprintf("out.json rows=%d, expected %d", out.Rows, in.ExpectedRows)
+	}
+	lowest := map[string]float64{}
+	okAtLowest := map[string]int{}
+	var requests, ok int
+	for _, st := range out.Steps {
+		if st.Endpoint != "search" && st.Endpoint != "ask" {
+			return false, fmt.Sprintf("step %q: unknown endpoint %q", st.Stage, st.Endpoint)
+		}
+		if st.Planned <= 0 {
+			return false, fmt.Sprintf("step %q: no requests planned", st.Stage)
+		}
+		errs := 0
+		for _, n := range st.Errors {
+			errs += n
+		}
+		if st.OK+errs != st.Planned {
+			return false, fmt.Sprintf("step %q: ok %d + errors %d != planned %d", st.Stage, st.OK, errs, st.Planned)
+		}
+		if n := st.Errors["invalid"] + st.Errors["http_4xx"]; n > 0 {
+			return false, fmt.Sprintf("step %q: %d wrong-shaped or rejected (4xx) answers", st.Stage, n)
+		}
+		if r, seen := lowest[st.Endpoint]; !seen || st.RateRPS < r {
+			lowest[st.Endpoint], okAtLowest[st.Endpoint] = st.RateRPS, st.OK
+		}
+		requests += st.Planned
+		ok += st.OK
+	}
+	for _, ep := range []string{"search", "ask"} {
+		if _, seen := lowest[ep]; !seen {
+			return false, "no " + ep + " step"
+		}
+		if okAtLowest[ep] == 0 {
+			return false, fmt.Sprintf("%s: no correct answer at the lowest rate %v/s", ep, lowest[ep])
+		}
+	}
+	return true, fmt.Sprintf("%d steps, %d requests, %d ok, %d rows ingested", len(out.Steps), requests, ok, out.Rows)
 }
 
 // RunCmd runs an external verifier (e.g. zj_eval.verify_track_a). Fail-closed: the run passes only if

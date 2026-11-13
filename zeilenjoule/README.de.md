@@ -8,7 +8,7 @@ Gemessen werden **Laufzeit und Energie (Joule)** auf einem Rechner mit NVIDIA RT
 Der schnellste Stack, der alle Qualitätsprüfungen besteht, bekommt anschließend ein Go-basiertes Produktions-Setup.
 
 ## Status
-**Phasen 0–8 abgeschlossen**: Track A–E sind gemessen (Dataframes, Embeddings, Speicherung/Suche, LLM-Extraktion, End-to-End-RAG). Wartet an Gate 2 auf die Produktionsentscheidung.
+**Phasen 0–8 abgeschlossen, Phase 9 gebaut**: Track A–E sind gemessen (Dataframes, Embeddings, Speicherung/Suche, LLM-Extraktion, End-to-End-RAG); der Gewinner `e03_postgres_only` läuft als Go-Produktions-Stack und ist selbst als `e06_stack_go` gemessen. Offen: gemessene Lastkurve `e07_stack_load` (PLAN §12.3), dann Phase 10 (Portfolio).
 Ergebnisse: [`reports/REPORT.de.md`](reports/REPORT.de.md) (English: [`reports/REPORT.md`](reports/REPORT.md)). Alle Zahlen dort stammen ausschließlich aus `results/` (Harness-Ausgabe) und werden von `task report` erzeugt. Ein Lauf zählt nur, wenn er die Prüfung gegen die Referenzimplementierung besteht.
 
 | Phase | Inhalt | Status |
@@ -22,12 +22,13 @@ Ergebnisse: [`reports/REPORT.de.md`](reports/REPORT.de.md) (English: [`reports/R
 | 6 | Track C: Speicherung, Index, Suche (FAISS, cuVS, pgvector, DuckDB, SQLite, LanceDB, Qdrant, Tantivy; Konkurrenz 1/16, Hybrid-RRF) | ✅ gemessen |
 | 7 | Track D: LLM-Extraktion (Ollama, llama.cpp, vLLM; Qwen 3.5, Gemma 4, Ministral, gpt-oss, EuroLLM, Teuken) | ✅ gemessen (inkl. GLiNER und Regeln+LLM-Kaskade) |
 | 8 | Track E: End-to-End-RAG (4 Pipelines auf 1 Mio. Zeilen), Gewinneranalyse | ✅ gemessen · Gate 2: `reports/WINNER.md`, `docs/ARCHITEKTUR.md` |
-| 9–10 | Produktion (Go/DevOps), Portfolio | offen |
+| 9 | Produktion: Go-Gateway + Worker, Compose, k3s/Helm, Monitoring mit Energie, lokale CI/CD | 🔶 `docs/RUNBOOK.md`, `docs/CI.md`, gemessen als `e06_stack_go`; Lastkurve `e07_stack_load` offen |
+| 10 | Portfolio | offen |
 
 <!-- zj:results:begin -->
 ## Ergebnisse (generiert)
 
-Generiert von `task report` aus `results/` – Median aus 5 gemessenen Läufen der neuesten Session, nur Läufe, die die Prüfung gegen die Referenz bestehen. Vollständige Tabellen mit Energie netto, Kosten, CO₂, Latenz und Qualität: [`reports/REPORT.de.md`](reports/REPORT.de.md).
+Generiert von `task report` aus `results/` – Median der gemessenen Läufe der neuesten Session (3–5 je Wettbewerber), nur Läufe, die die Prüfung gegen die Referenz bestehen. Vollständige Tabellen mit Energie netto, Kosten, CO₂, Latenz und Qualität: [`reports/REPORT.de.md`](reports/REPORT.de.md).
 
 ### Track A: Dataframe- und Zeilenverarbeitung (`a.full`): Skala L (1 000 000 Zeilen)
 
@@ -122,7 +123,27 @@ Generiert von `task report` aus `results/` – Median aus 5 gemessenen Läufen d
 | 13 | `d01_ollama_qwen35_9b_q4` | 1 234,09 | 65 | 94 917,3 | 0,946 | ✓ |
 | 14 | `d02_llamacpp_gemma4_12b_q4` | 1 604,34 | 85 | 154 713,6 | 0,919 | ✓ |
 
+### Track E: End-to-End-RAG (`e.rag`): Skala L (1 000 000 Zeilen)
+
+![Track E: End-to-End-RAG (`e.rag`): Skala L (1 000 000 Zeilen)](reports/figures/track_e_L.de.svg)
+
+| # | Wettbewerber | Wall s | × schnellster | Energie J (brutto) | Qualität gesamt | Gewinner-Gate |
+|---|---|---|---|---|---|---|
+| 1 | `e06_stack_go` (Phase 9: Produktions-Stack, kein Kandidat) | 1 719,38 | 1,00 | 244 378,1 | 0,751 | ✓ |
+| 2 | `e03_postgres_only` | 1 740,04 | 1,01 | 247 894,5 | 0,754 | ✓ |
+| 3 | `e02_modern_embedded` | 1 864,44 | 1,08 | 288 648,8 | 0,745 | ✓ |
+| 4 | `e05_best_of_tracks` | 1 953,58 | 1,14 | 261 518,7 | 0,757 | ✓ |
+| 5 | `e01_classic_python` | 5 330,08 | 3,10 | 957 824,8 | 0,697 | ✓ |
+
 <!-- zj:results:end -->
+
+## Produktions-Stack (Phase 9)
+Der Track-E-Gewinner als Dienst (ADR 0021–0025, Architektur: [`docs/ARCHITEKTUR.md`](docs/ARCHITEKTUR.md)):
+- **Go-Gateway** (OpenAPI 3.1, API-Schlüssel, Ratenbegrenzung, SSE) und **Go-Worker** (River-Warteschlange in PostgreSQL) mit dem Rust-Parser aus Track A, TEI (bge-m3) und vLLM (Qwen3.5-9B AWQ) auf einer GPU.
+- **Fragen beantworten:** Router (SQL ↔ Hybrid-Suche); jede LLM-SQL läuft durch eine AST-Prüfung (`pg_query`) und dann als Nur-Lese-Rolle mit Zeitlimit (ADR 0022).
+- **Betrieb:** `task up` (Docker Compose) oder `task k3s:up` (Helm-Chart, PodSecurity „restricted“, NetworkPolicies, Backup-CronJob); Prometheus + Grafana mit GPU- und CPU-Energie (NVML/RAPL) – Joule pro Anfrage live. Handbuch: [`docs/RUNBOOK.md`](docs/RUNBOOK.md).
+- **CI/CD lokal:** `task ci` (Lint, Tests inkl. Postgres-Integration, hadolint, helm lint + kubeconform, gitleaks, trivy) und `task ci:release` (Images, trivy image, SBOM); [`docs/CI.md`](docs/CI.md).
+- **Gemessen wie jeder Wettbewerber:** `e06_stack_go` lädt dieselbe CSV über die HTTP-API und beantwortet dieselben 300 Fragen; Vergleich mit dem Skript in [`reports/WINNER.md`](reports/WINNER.md) (Abschnitt Phase 9). Lastkurve und SLOs: `e07_stack_load` (ADR 0026), Auswertung im Bericht.
 
 ## Schnellstart
 ```bash

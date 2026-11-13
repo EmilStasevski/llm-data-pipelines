@@ -90,3 +90,14 @@ _Not built: e04_pure_rust (pure Rust, PLAN §11) – deliberately left out befor
 - ✓ no trade-off needed
 
 Architecture proposal: `docs/ARCHITEKTUR.md`.
+
+## Phase 9: production stack versus the winner as a script
+
+Same CSV bytes, same 300 questions, same scorer; the stack runs as a service (compose: gateway, worker, River, PostgreSQL, TEI, vLLM) and is driven through its HTTP API (ADR 0025). Δ = stack ÷ script - 1.
+
+| metric | `e06_stack_go` | `e03_postgres_only` | Δ |
+|---|---|---|---|
+| Wall s | 1 719.4 | 1 740.0 | -1.2 % |
+| energy J | 244 378 | 247 895 | -1.4 % |
+| quality | 0.751 | 0.754 | -0.3 % |
+| Gate | ✓ | ✓ | |

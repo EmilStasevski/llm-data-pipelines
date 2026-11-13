@@ -1,0 +1,28 @@
+# Example production overrides (multi-node cluster, managed TLS, external model servers or a GPU node pool).
+# `helm upgrade --install zeilenjoule deploy/helm/zeilenjoule -n zeilenjoule -f values-prod.yaml --set image.registry=…`
+image:
+  registry: registry.example.internal   # placeholder: your registry; pin digests via image.*Digest
+  pullPolicy: IfNotPresent
+logLevel: info
+gateway:
+  autoscaling: {enabled: true, minReplicas: 2, maxReplicas: 6, targetCPUUtilization: 70}
+  # the per-key rate limit is per pod: effective limit = rateLimit × replicas (ADR 0024)
+  rateLimit: 5
+  ingress:
+    enabled: true
+    className: traefik
+    host: zeilenjoule.example.internal
+    tls: [{secretName: zeilenjoule-tls, hosts: [zeilenjoule.example.internal]}]
+uploads:
+  storageClass: nfs-rwx   # placeholder: gateway and worker pods may land on different nodes
+  accessMode: ReadWriteMany
+  size: 100Gi
+postgres:
+  storage: 200Gi
+backup:
+  keep: 14
+models:
+  hostPath: ""
+  existingClaim: zeilenjoule-models   # pre-provisioned volume with the same layout as models/
+monitoring:
+  enabled: true

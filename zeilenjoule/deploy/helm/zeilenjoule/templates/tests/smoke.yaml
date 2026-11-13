@@ -1,0 +1,41 @@
+# `helm test zeilenjoule -n zeilenjoule`: readiness (DB + TEI + vLLM), auth required, one search with a real key.
+apiVersion: v1
+kind: Pod
+metadata:
+  name: zeilenjoule-smoke
+  labels:
+    app.kubernetes.io/name: zeilenjoule
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/component: test
+    zeilenjoule.io/api-client: "true"
+  annotations:
+    helm.sh/hook: test
+    helm.sh/hook-delete-policy: before-hook-creation,hook-succeeded
+spec:
+  restartPolicy: Never
+  automountServiceAccountToken: false
+  securityContext:
+    {{- include "zj.podSecurity" . | nindent 4 }}
+    runAsUser: 100
+  containers:
+    - name: smoke
+      image: {{ .Values.tests.image }}
+      env:
+        - name: ZJ_API_KEYS
+          valueFrom: {secretKeyRef: {name: {{ .Values.existingSecret }}, key: ZJ_API_KEYS}}
+      command:
+        - sh
+        - -euc
+        - |
+          g=http://gateway:8080
+          curl -fsS "$g/readyz"; echo
+          code=$(curl -s -o /dev/null -w '%{http_code}' -X POST "$g/v1/search" -d '{"query":"x"}')
+          [ "$code" = 401 ] || { echo "no key: $code, want 401"; exit 1; }
+          key=${ZJ_API_KEYS%%,*}
+          curl -fsS -H "X-API-Key: $key" -H 'Content-Type: application/json' \
+            -d '{"query":"Getriebe läuft heiß","k":3}' "$g/v1/search" | head -c 400; echo
+      securityContext:
+        {{- include "zj.containerSecurity" . | nindent 8 }}
+      resources:
+        requests: {cpu: 10m, memory: 16Mi}
+        limits: {memory: 64Mi}

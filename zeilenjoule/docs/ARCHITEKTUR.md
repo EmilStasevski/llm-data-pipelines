@@ -1,6 +1,6 @@
 # ZeilenJoule: Vorschlag Produktionsarchitektur (Gate 2)
 
-> **Status: Vorschlag, wartet auf Bestätigung (Gate 2).** Grundlage: `reports/WINNER.md` und `reports/REPORT.de.md`
+> **Status: an Gate 2 bestätigt (2026-11-11), Umsetzung in Phase 9.** Grundlage: `reports/WINNER.md` und `reports/REPORT.de.md`
 > (generiert aus `results/zj.duckdb`). Zahlen unten sind Mediane aus 3 gemessenen Läufen (Session `444b1e05`,
 > 2026-11-11, 1 000 000 Zeilen) bzw. aus den in WINNER.md genannten Track-Sessions. Entscheidung: ADR 0021.
 

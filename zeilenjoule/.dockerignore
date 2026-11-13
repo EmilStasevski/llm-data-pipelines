@@ -1,0 +1,10 @@
+# build context = repo root; send only what the images build from (deploy/docker/*.Dockerfile)
+*
+!services/
+!harness/
+!contestants/rust/
+!libs/rust/
+!spec/track_a_lexicon.json
+**/target/
+**/.venv/
+**/__pycache__/

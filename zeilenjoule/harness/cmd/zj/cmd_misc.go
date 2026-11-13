@@ -12,6 +12,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"strings"
 	"time"
 
 	"zeilenjoule/harness/internal/config"
@@ -136,6 +137,8 @@ func cmdExporter(ctx context.Context, args []string, _, stderr io.Writer) int {
 	fs.SetOutput(stderr)
 	listen := fs.String("listen", "127.0.0.1:9877", "listen address")
 	gpuIndex := fs.Int("gpu", 0, "GPU index")
+	// containers: Docker masks /sys/devices/virtual/powercap, so the zones are bind-mounted elsewhere (ADR 0023)
+	powercap := fs.String("powercap", "/sys/class/powercap", "directory holding the intel-rapl:* zones")
 	if err := fs.Parse(args); err != nil {
 		return 2
 	}
@@ -147,9 +150,12 @@ func cmdExporter(ctx context.Context, args []string, _, stderr io.Writer) int {
 		defer func() { _ = g.Close() }()
 		gpu = g
 	}
-	zones, unreadable, err := energy.DiscoverRAPL(os.ReadFile, filepath.Glob)
-	if err != nil || len(unreadable) > 0 {
-		fmt.Fprintln(stderr, "zj exporter: some RAPL zones unavailable:", err, unreadable)
+	glob := func(pattern string) ([]string, error) {
+		return filepath.Glob(strings.Replace(pattern, "/sys/class/powercap", *powercap, 1))
+	}
+	zones, unreadable, err := energy.DiscoverRAPL(os.ReadFile, glob)
+	if err != nil || len(unreadable) > 0 || len(zones) == 0 {
+		fmt.Fprintln(stderr, "zj exporter: some RAPL zones unavailable:", err, unreadable, "readable:", len(zones))
 	}
 	e := exporter.New(gpu, zones, os.ReadFile)
 	go e.Run(ctx, time.Second)

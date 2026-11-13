@@ -65,3 +65,7 @@ tasks:
     verify_cmd: ["uv", "run", "--frozen", "--project", ".", "python", "-m", "zj_eval.track_e", "verify",
                  "--output", "{output}", "--reference", "{reference}"]
     reference: "spec/questions_e.{scale}.jsonl"
+  e.load:                    # Phase 9: open-loop load curve of the production stack (PLAN §12.3, ADR 0026)
+    input: "data/synth/stoermeldungen/{scale}/stoermeldungen.cp1252.csv"
+    output: out.json
+    verifier: builtin:e.load

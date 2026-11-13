@@ -1,0 +1,19 @@
+# gitleaks dir mode (task scan:secrets): scans the working tree including uncommitted files.
+# Excluded: the gitignored .env (the one place secrets belong, rule 10), data/models (generated, synthetic or
+# downloaded), build/tool caches and the uv/cargo/go lockfiles (hashes look like keys).
+[extend]
+useDefault = true
+
+[[allowlists]]
+description = "generated, downloaded or secret-by-design paths"
+paths = [
+  '''(^|/)\.env$''',
+  '''(^|/)(data|models|logs|results)/''',
+  '''(^|/)(\.venv|target|node_modules|\.cache|\.ruff_cache|\.pytest_cache|__pycache__)/''',
+  '''(^|/)(uv\.lock|Cargo\.lock|go\.sum)$''',
+]
+
+[[allowlists]]
+description = "prose false positives (generic-api-key on spec sentences)"
+regexTarget = "line"
+regexes = ['''Settings: max \d+ tokens''']

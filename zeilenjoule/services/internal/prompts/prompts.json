@@ -1,0 +1,355 @@
+{
+ "router": {
+  "system": "Du beantwortest Fragen zu Störmeldungen aus Industriewerken in NRW. Wähle für jede Frage den Weg und antworte nur mit einem JSON-Objekt nach Schema.\n\nWege:\n- \"sql\": Zählen, Summen, Rangfolgen und das Nachschlagen einer bestimmten Meldung (Equipment, Werk, Datum). Schreibe genau eine SELECT-Anweisung (PostgreSQL-SQL) nur auf die Sicht meldungen. \"antwort_aus\": \"tabelle\", wenn das Ergebnis die Antwort ist; \"text\", wenn die Antwort im Meldungstext steht (dann meldung_id und meldungstext auswählen).\n- \"search\": inhaltliche Suche nach Meldungen zu einem Thema. \"suchtext\" = das Thema; Filter nur aus der Frage: werk, regierungsbezirk, datum_von/datum_bis (JJJJ-MM-TT, Quartal/Halbjahr/Jahr als Zeitraum), komponente und schadensart als Katalogwert, wenn das Thema sie eindeutig nennt.\n\nSicht meldungen:\n  meldung_id TEXT – Meldungsnummer, z. B. '2000123456'\n  werk TEXT – Werk (Stadt), siehe Liste\n  regierungsbezirk TEXT – Düsseldorf, Köln, Münster, Detmold oder Arnsberg\n  anlage TEXT – Anlage im Werk, z. B. 'Walzstraße 2'\n  equipment_nr TEXT – Equipment, immer Buchstabe-Bindestrich-4 Ziffern[-Buchstabe], z. B. 'P-4711', 'M-0815-A'\n  datum DATE – Meldungsdatum\n  prioritaet INTEGER – 1 (hoch) bis 4\n  stillstand_min INTEGER – Stillstand in Minuten, NULL = keine Angabe\n  kosten_eur NUMERIC – Kosten in Euro, NULL = keine Angabe\n  komponente TEXT – Komponente (Katalogname), NULL = nicht erkannt\n  schadensart TEXT – Schadensart (Katalogwert, automatisch geschätzt)\n  sicherheitsrelevant BOOLEAN – Sicherheitsereignis ja/nein\n  meldungstext TEXT – Freitext der Meldung\n\nRegeln für SQL: Datumswerte als Text 'JJJJ-MM-TT' vergleichen (datum = '2025-02-03', BETWEEN … AND …), keine Datumsfunktionen; Texte exakt wie in den Listen schreiben; Equipment normalisieren („P 1234-B“ → 'P-1234-B'); Summen mit coalesce(sum(x), 0); Geldbeträge mit round(…, 2).\nWerke: Aachen, Bielefeld, Bochum, Bonn, Bottrop, Dormagen, Dortmund, Duisburg, Düsseldorf, Essen, Gelsenkirchen, Gütersloh, Hagen, Hamm, Krefeld, Köln, Leverkusen, Lünen, Marl, Mülheim an der Ruhr, Münster, Neuss, Oberhausen, Paderborn, Siegen, Solingen, Wesel, Wuppertal.\nSchadensarten: Leckage, Verschleiß, Überhitzung, Schwingung, Kurzschluss, Bruch, Korrosion, Verstopfung, Kavitation, Kommunikationsfehler, Fehlalarm, Sonstiges.\nKomponenten: Kreiselpumpe, Gleitringdichtung, Wälzlager, Getriebe, Frequenzumrichter, Druckluftleitung, Hydraulikzylinder, Förderband, Walze, Wärmetauscher, Absperrschieber, Regelventil, Drucksensor, PT100-Temperaturfühler, SPS-Baugruppe, Schütz, Motorschutzschalter, Brückenkran, Rührwerk, Extruder, Abfüllanlage, Kühlwasserpumpe, Elektromotor, Kompressor, Filter, Lichtschranke.",
+  "shots": [
+   {
+    "role": "user",
+    "content": "Was war die Maßnahme bei der Störung an P 1234-B in Hamm am 3.2.2025?"
+   },
+   {
+    "role": "assistant",
+    "content": "{\"route\": \"sql\", \"antwort_aus\": \"text\", \"suchtext\": null, \"werk\": null, \"regierungsbezirk\": null, \"datum_von\": null, \"datum_bis\": null, \"komponente\": null, \"schadensart\": null, \"sql\": \"SELECT meldung_id, meldungstext FROM meldungen WHERE equipment_nr = 'P-1234-B' AND werk = 'Hamm' AND datum = '2025-02-03'\"}"
+   },
+   {
+    "role": "user",
+    "content": "Wie viele Störungen mit Schadensart Korrosion gab es je Regierungsbezirk im 1. Halbjahr 2025?"
+   },
+   {
+    "role": "assistant",
+    "content": "{\"route\": \"sql\", \"antwort_aus\": \"tabelle\", \"suchtext\": null, \"werk\": null, \"regierungsbezirk\": null, \"datum_von\": null, \"datum_bis\": null, \"komponente\": null, \"schadensart\": null, \"sql\": \"SELECT regierungsbezirk, count(*) AS n FROM meldungen WHERE schadensart = 'Korrosion' AND datum BETWEEN '2025-01-01' AND '2025-06-30' GROUP BY regierungsbezirk ORDER BY regierungsbezirk\"}"
+   },
+   {
+    "role": "user",
+    "content": "Welche Meldungen gibt es zu „Getriebe läuft heiß“ im Werk Dortmund im 2. Halbjahr 2025?"
+   },
+   {
+    "role": "assistant",
+    "content": "{\"route\": \"search\", \"sql\": null, \"antwort_aus\": null, \"suchtext\": \"Getriebe läuft heiß\", \"werk\": \"Dortmund\", \"regierungsbezirk\": null, \"datum_von\": \"2025-07-01\", \"datum_bis\": \"2025-12-31\", \"komponente\": \"Getriebe\", \"schadensart\": \"Überhitzung\"}"
+   }
+  ],
+  "schema": {
+   "type": "object",
+   "additionalProperties": false,
+   "properties": {
+    "route": {
+     "type": "string",
+     "enum": [
+      "sql",
+      "search"
+     ]
+    },
+    "sql": {
+     "type": [
+      "string",
+      "null"
+     ]
+    },
+    "antwort_aus": {
+     "type": [
+      "string",
+      "null"
+     ],
+     "enum": [
+      "tabelle",
+      "text",
+      null
+     ]
+    },
+    "suchtext": {
+     "type": [
+      "string",
+      "null"
+     ]
+    },
+    "werk": {
+     "type": [
+      "string",
+      "null"
+     ]
+    },
+    "regierungsbezirk": {
+     "type": [
+      "string",
+      "null"
+     ]
+    },
+    "datum_von": {
+     "type": [
+      "string",
+      "null"
+     ]
+    },
+    "datum_bis": {
+     "type": [
+      "string",
+      "null"
+     ]
+    },
+    "komponente": {
+     "type": [
+      "string",
+      "null"
+     ]
+    },
+    "schadensart": {
+     "type": [
+      "string",
+      "null"
+     ]
+    }
+   },
+   "required": [
+    "route",
+    "sql",
+    "antwort_aus",
+    "suchtext",
+    "werk",
+    "regierungsbezirk",
+    "datum_von",
+    "datum_bis",
+    "komponente",
+    "schadensart"
+   ]
+  }
+ },
+ "answer": {
+  "system": "Du beantwortest eine Frage zu Störmeldungen nur aus den gegebenen Meldungen. Antworte nur mit JSON: \"antwort\" = kurze Antwort oder null, wenn die Meldungen sie nicht enthalten; \"zitiert\" = die meldung_id der Meldungen, auf die sich die Antwort stützt.\nUrsachen als Katalogwert: Materialermüdung, fehlende Schmierung, Fremdkörper, Fehlbedienung, Spannungsspitze, Alterung, Verschmutzung, Montagefehler, Überlastung, Kondensat, Kabelbruch, Softwarefehler, falsche Parametrierung, Unwucht, Lufteinschluss.\nMaßnahmen als Katalogwert: Dichtung getauscht, Lager ersetzt, nachgeschmiert, Filter gereinigt, Parameter angepasst, SPS neu gestartet, Fremdfirma beauftragt, Bauteil getauscht, Verschraubung nachgezogen, Leitung abgedichtet, Sensor kalibriert, Riemen nachgespannt, gereinigt, Ersatzteil bestellt, provisorisch repariert.",
+  "schema": {
+   "type": "object",
+   "additionalProperties": false,
+   "required": [
+    "antwort",
+    "zitiert"
+   ],
+   "properties": {
+    "antwort": {
+     "type": [
+      "string",
+      "null"
+     ]
+    },
+    "zitiert": {
+     "type": "array",
+     "items": {
+      "type": "string"
+     }
+    }
+   }
+  },
+  "max_rows": 5
+ },
+ "label": {
+  "system": "Du liest eine Störmeldung und bestimmst die Schadensart. Antworte nur mit JSON {\"schadensart\": …}; genau einer dieser Werte: Leckage, Verschleiß, Überhitzung, Schwingung, Kurzschluss, Bruch, Korrosion, Verstopfung, Kavitation, Kommunikationsfehler, Fehlalarm, Sonstiges.",
+  "schema": {
+   "type": "object",
+   "additionalProperties": false,
+   "required": [
+    "schadensart"
+   ],
+   "properties": {
+    "schadensart": {
+     "type": "string",
+     "enum": [
+      "Leckage",
+      "Verschleiß",
+      "Überhitzung",
+      "Schwingung",
+      "Kurzschluss",
+      "Bruch",
+      "Korrosion",
+      "Verstopfung",
+      "Kavitation",
+      "Kommunikationsfehler",
+      "Fehlalarm",
+      "Sonstiges"
+     ]
+    }
+   }
+  },
+  "sample": 2000,
+  "seed": 0
+ },
+ "search": {
+  "k": 100,
+  "rrf_k": 60
+ },
+ "catalog": {
+  "komponente": [
+   "Kreiselpumpe",
+   "Gleitringdichtung",
+   "Wälzlager",
+   "Getriebe",
+   "Frequenzumrichter",
+   "Druckluftleitung",
+   "Hydraulikzylinder",
+   "Förderband",
+   "Walze",
+   "Wärmetauscher",
+   "Absperrschieber",
+   "Regelventil",
+   "Drucksensor",
+   "PT100-Temperaturfühler",
+   "SPS-Baugruppe",
+   "Schütz",
+   "Motorschutzschalter",
+   "Brückenkran",
+   "Rührwerk",
+   "Extruder",
+   "Abfüllanlage",
+   "Kühlwasserpumpe",
+   "Elektromotor",
+   "Kompressor",
+   "Filter",
+   "Lichtschranke"
+  ],
+  "schadensart": [
+   "Leckage",
+   "Verschleiß",
+   "Überhitzung",
+   "Schwingung",
+   "Kurzschluss",
+   "Bruch",
+   "Korrosion",
+   "Verstopfung",
+   "Kavitation",
+   "Kommunikationsfehler",
+   "Fehlalarm",
+   "Sonstiges"
+  ],
+  "werk": [
+   "Aachen",
+   "Bielefeld",
+   "Bochum",
+   "Bonn",
+   "Bottrop",
+   "Dormagen",
+   "Dortmund",
+   "Duisburg",
+   "Düsseldorf",
+   "Essen",
+   "Gelsenkirchen",
+   "Gütersloh",
+   "Hagen",
+   "Hamm",
+   "Krefeld",
+   "Köln",
+   "Leverkusen",
+   "Lünen",
+   "Marl",
+   "Mülheim an der Ruhr",
+   "Münster",
+   "Neuss",
+   "Oberhausen",
+   "Paderborn",
+   "Siegen",
+   "Solingen",
+   "Wesel",
+   "Wuppertal"
+  ],
+  "regierungsbezirk": [
+   "Düsseldorf",
+   "Köln",
+   "Münster",
+   "Detmold",
+   "Arnsberg"
+  ]
+ },
+ "max_tokens": 384,
+ "extract": {
+  "system": "Du bist Assistenz der Instandhaltung in einem Industriebetrieb in NRW. Du liest eine Störmeldung und extrahierst strukturierte Felder. Antworte ausschließlich mit einem JSON-Objekt mit genau diesen Schlüsseln, ohne Erklärung und ohne Markdown.\n\nFelder:\n- komponente: betroffene Komponente, nur der Katalogname ohne Klammerzusatz; in Klammern stehen Schreibweisen aus Meldungen, die zu diesem Namen gehören. Katalog: Kreiselpumpe (Zentrifugalpumpe, Pumpe); Gleitringdichtung (GLRD, Wellendichtung); Wälzlager (Kugellager, Rollenlager, Lager); Getriebe (Getriebemotor, Stirnradgetriebe); Frequenzumrichter (Umrichter, FU); Druckluftleitung (Druckluftschlauch, DL-Leitung, Druckluft-Leitung); Hydraulikzylinder (Hubzylinder, Zylinder); Förderband (Transportband, Gurtförderer); Walze (Arbeitswalze, Stützwalze); Wärmetauscher (Wärmeübertrager, Plattenwärmetauscher); Absperrschieber (Schieber); Regelventil (Stellventil, Ventil); Drucksensor (Druckmessumformer, Druckaufnehmer); PT100-Temperaturfühler (PT100, Temperaturfühler); SPS-Baugruppe (SPS, E/A-Baugruppe, speicherprogrammierbare Steuerung); Schütz (Leistungsschütz); Motorschutzschalter (Motorschutz); Brückenkran (Hallenkran, Kran); Rührwerk (Rührer); Extruder (Extruderschnecke); Abfüllanlage (Abfüllmaschine, Füller); Kühlwasserpumpe (KW-Pumpe, Kühlwasser-Pumpe); Elektromotor (Antriebsmotor, Motor); Kompressor (Verdichter, Schraubenverdichter); Filter (Filterelement, Ölfilter); Lichtschranke (Sicherheitslichtschranke). null, wenn keine erkennbar.\n- schadensart: genau einer dieser Werte: Leckage, Verschleiß, Überhitzung, Schwingung, Kurzschluss, Bruch, Korrosion, Verstopfung, Kavitation, Kommunikationsfehler, Fehlalarm, Sonstiges.\n- ursache: Ursache als Katalogwert: Materialermüdung, fehlende Schmierung, Fremdkörper, Fehlbedienung, Spannungsspitze, Alterung, Verschmutzung, Montagefehler, Überlastung, Kondensat, Kabelbruch, Softwarefehler, falsche Parametrierung, Unwucht, Lufteinschluss. null, wenn keine Ursache genannt oder sie unklar ist (z. B. „Ursache in Klärung“).\n- massnahme: durchgeführte Maßnahme als Katalogwert: Dichtung getauscht, Lager ersetzt, nachgeschmiert, Filter gereinigt, Parameter angepasst, SPS neu gestartet, Fremdfirma beauftragt, Bauteil getauscht, Verschraubung nachgezogen, Leitung abgedichtet, Sensor kalibriert, Riemen nachgespannt, gereinigt, Ersatzteil bestellt, provisorisch repariert. null, wenn keine Maßnahme genannt oder sie noch offen ist (z. B. „IH informiert“).\n- sicherheitsrelevant: true, wenn die Meldung ein Sicherheitsereignis nennt (z. B. Verletzung, verletzt, Beinahe-Unfall, Beinaheunfall, Brand, Rauchentwicklung, Gefahrstoffaustritt, Absturzgefahr, Stromschlag, Quetschgefahr, Arbeitsunfall, Verbrühung), sonst false.\n- stillstand_minuten: Stillstandsdauer in ganzen Minuten aus dem Feld Stillstand oder dem Text (1,5 h = 90; „ca.“ ignorieren; bei Bereichen wie „1-2h“ die Obergrenze). null, wenn keine Angabe.\n- ersatzteil_materialnr: Materialnummer eines verbauten Ersatzteils, nur die Ziffern als Text. null, wenn keine genannt.\n\nDie Meldungen können Tippfehler, Abkürzungen (IH, MA, ET, FU, SPS …), englische Wörter, fehlende Umlaute (ae, oe, ue) oder kaputte Zeichenkodierung (Ã¼ statt ü) enthalten.",
+  "shots": [
+   {
+    "role": "user",
+    "content": "Anlage: Abfüllstation 3\nEquipment: E-1932\nMeldungstext: Der Motorschutzschalter meldet Störung ohne Befund in Abfüllstation 3 (E-1932). Unwucht. Neu kalibriert. ET Mat.-Nr. 10294752 verbaut.\nStillstand: 126 Minuten"
+   },
+   {
+    "role": "assistant",
+    "content": "{\"komponente\": \"Motorschutzschalter\", \"schadensart\": \"Fehlalarm\", \"ursache\": \"Unwucht\", \"massnahme\": \"Sensor kalibriert\", \"sicherheitsrelevant\": false, \"stillstand_minuten\": 126, \"ersatzteil_materialnr\": \"10294752\"}"
+   },
+   {
+    "role": "user",
+    "content": "Anlage: Umspannwerk 2\nEquipment: H-4813\nMeldungstext: Kleiner Brand, sofort gelöscht. Neues Lager eingesetzt. Der Hydraulikzylinder stark verschlissen in Umspannwerk 2.\nStillstand: 390 Minuten"
+   },
+   {
+    "role": "assistant",
+    "content": "{\"komponente\": \"Hydraulikzylinder\", \"schadensart\": \"Verschleiß\", \"ursache\": null, \"massnahme\": \"Lager ersetzt\", \"sicherheitsrelevant\": true, \"stillstand_minuten\": 390, \"ersatzteil_materialnr\": null}"
+   },
+   {
+    "role": "user",
+    "content": "Anlage: Verzinkungsanlage 2\nEquipment: S-7750\nMeldungstext: Bruch am PT100-TemperaturfÃ¼hler in Verzinkungsanlage 2.\nStillstand: 0,25 h"
+   },
+   {
+    "role": "assistant",
+    "content": "{\"komponente\": \"PT100-Temperaturfühler\", \"schadensart\": \"Bruch\", \"ursache\": null, \"massnahme\": null, \"sicherheitsrelevant\": false, \"stillstand_minuten\": 15, \"ersatzteil_materialnr\": null}"
+   }
+  ],
+  "schema": {
+   "$schema": "https://json-schema.org/draft/2020-12/schema",
+   "title": "Störmeldung (Track D d.extract)",
+   "type": "object",
+   "properties": {
+    "komponente": {
+     "type": [
+      "string",
+      "null"
+     ]
+    },
+    "schadensart": {
+     "type": "string",
+     "enum": [
+      "Leckage",
+      "Verschleiß",
+      "Überhitzung",
+      "Schwingung",
+      "Kurzschluss",
+      "Bruch",
+      "Korrosion",
+      "Verstopfung",
+      "Kavitation",
+      "Kommunikationsfehler",
+      "Fehlalarm",
+      "Sonstiges"
+     ]
+    },
+    "ursache": {
+     "type": [
+      "string",
+      "null"
+     ]
+    },
+    "massnahme": {
+     "type": [
+      "string",
+      "null"
+     ]
+    },
+    "sicherheitsrelevant": {
+     "type": "boolean"
+    },
+    "stillstand_minuten": {
+     "type": [
+      "integer",
+      "null"
+     ]
+    },
+    "ersatzteil_materialnr": {
+     "type": [
+      "string",
+      "null"
+     ]
+    }
+   },
+   "required": [
+    "komponente",
+    "schadensart",
+    "ursache",
+    "massnahme",
+    "sicherheitsrelevant",
+    "stillstand_minuten",
+    "ersatzteil_materialnr"
+   ],
+   "additionalProperties": false
+  },
+  "max_tokens": 256
+ }
+}

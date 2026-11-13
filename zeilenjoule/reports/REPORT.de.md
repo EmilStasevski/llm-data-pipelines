@@ -342,14 +342,15 @@ Ein Lauf = Roh-CSV → Track-A-Kandidat (S1–S3) → Track-B-Kandidat (S4, bge-
 
 | Wettbewerber | n | Wall s (Median) | IQR s | Zeilen/s | E brutto J | E netto J | mJ/Zeile | €/1 Mio. Zeilen (Haushalt) | €/1 Mio. Zeilen (Industrie) | g CO₂/1 Mio. Zeilen | ZJ-Score | niedr. Konfidenz |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|
-| `e03_postgres_only` | 3 | 1 740,039 | 1 739,477–1 740,492 | 575 | 247 894,5 | 235 170,6 | 247,895 | 0,0257 | 0,0115 | 23,69 | 1,00 | 0 % |
-| `e02_modern_embedded` | 3 | 1 864,437 | 1 863,959–1 873,320 | 536 | 288 648,8 | 274 408,9 | 288,649 | 0,0299 | 0,0134 | 27,58 | 1,12 | 0 % |
-| `e05_best_of_tracks` | 3 | 1 953,578 | 1 950,434–1 954,159 | 512 | 261 518,7 | 246 746,5 | 261,519 | 0,0271 | 0,0121 | 24,99 | 1,09 | 0 % |
-| `e01_classic_python` | 3 | 5 330,080 | 5 329,734–5 331,609 | 188 | 957 824,8 | 918 620,0 | 957,825 | 0,0992 | 0,0444 | 91,53 | 3,44 | 0 % |
+| `e06_stack_go` | 3 | 1 719,384 | 1 718,869–1 719,801 | 582 | 244 378,1 | 231 193,6 | 244,378 | 0,0253 | 0,0113 | 23,35 | 1,00 | 0 % |
+| `e03_postgres_only` | 3 | 1 740,039 | 1 739,477–1 740,492 | 575 | 247 894,5 | 235 170,6 | 247,895 | 0,0257 | 0,0115 | 23,69 | 1,01 | 0 % |
+| `e02_modern_embedded` | 3 | 1 864,437 | 1 863,959–1 873,320 | 536 | 288 648,8 | 274 408,9 | 288,649 | 0,0299 | 0,0134 | 27,58 | 1,13 | 0 % |
+| `e05_best_of_tracks` | 3 | 1 953,578 | 1 950,434–1 954,159 | 512 | 261 518,7 | 246 746,5 | 261,519 | 0,0271 | 0,0121 | 24,99 | 1,10 | 0 % |
+| `e01_classic_python` | 3 | 5 330,080 | 5 329,734–5 331,609 | 188 | 957 824,8 | 918 620,0 | 957,825 | 0,0992 | 0,0444 | 91,53 | 3,49 | 0 % |
 
 ### Stufen, Latenz, Qualität (Mediane)
 
-Stufen in s; Time-to-RAG und Energy-to-RAG = ingest + embed + label + index (brutto, GPU + CPU); J/Frage = Energie der Stufe `answer` / 300; Latenz je Frage = Router + Ausführung + ggf. Antwortaufruf (Fragen laufen gebündelt, N gleichzeitig). Klassifikator = Übereinstimmung mit den LLM-Etiketten auf 10 % Rückhalt. lookup/Aggregation = Anteil richtig, semantic = Mengen-F1, rel. Fehler = mittlerer relativer Fehler der Aggregationen; Gesamt = Mittel der drei Typen. Gewinner-Gate: Gesamt ≥ 0,9 × bestes Gesamt.
+Stufen in s; Time-to-RAG und Energy-to-RAG = ingest + embed + label + index (brutto, GPU + CPU); J/Frage = Energie der Stufe `answer` / 300; Latenz je Frage = Router + Ausführung + ggf. Antwortaufruf (Fragen laufen gebündelt, N gleichzeitig). Klassifikator = Übereinstimmung mit den LLM-Etiketten auf 10 % Rückhalt. lookup/Aggregation = Anteil richtig, semantic = Mengen-F1, rel. Fehler = mittlerer relativer Fehler der Aggregationen; Gesamt = Mittel der drei Typen. Gewinner-Gate: Gesamt ≥ 0,9 × bestes Gesamt. Produktions-Stack `e06_stack_go` (Phase 9, ADR 0025): Der Worker erledigt Parsen, Einbetten, Etikettieren und Indexieren in einem Job, daher nur `ingest`; der Stack-Start (Stufe `load`, Modelle laden) zählt zur Wall-Zeit, nicht zu Time-to-RAG. Kein Gewinnerkandidat (er ist der Gewinner als Dienst).
 
 | Wettbewerber | Skala | ingest s | embed s | label s | index s | answer s | p50 ms | p95 ms | p99 ms | Time-to-RAG s | Energy-to-RAG Wh | J/Frage | Klassifikator | lookup | semantic F1 | Aggregation | rel. Fehler | Router | Zitat-P | Zitat-R | Gesamt | Gewinner-Gate |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
@@ -357,6 +358,7 @@ Stufen in s; Time-to-RAG und Energy-to-RAG = ingest + embed + label + index (bru
 | `e02_modern_embedded` | L | 4,3 | 1 103,3 | 324,6 | 212,9 | 214,4 | 7 131,00 | 18 620,10 | 20 537,60 | 1 646 | 74,7 | 65,2 | 0,880 | 0,830 | 0,809 | 0,600 | 0,234 | 1,000 | 0,744 | 0,728 | 0,745 | ✓ |
 | `e03_postgres_only` | L | 3,2 | 976,9 | 185,9 | 505,0 | 65,1 | 9 906,30 | 19 892,40 | 20 628,20 | 1 672 | 66,4 | 27,2 | 0,885 | 0,850 | 0,822 | 0,590 | 0,233 | 1,000 | 0,757 | 0,732 | 0,754 | ✓ |
 | `e05_best_of_tracks` | L | 1,6 | 979,0 | 182,9 | 729,3 | 58,5 | 9 908,00 | 19 954,00 | 20 677,20 | 1 892 | 70,5 | 26,1 | 0,885 | 0,850 | 0,822 | 0,590 | 0,234 | 1,000 | 0,757 | 0,731 | 0,757 | ✓ |
+| `e06_stack_go` | L | 1 591,7 | – | – | – | 61,2 | 11 033,29 | 19 440,16 | 20 854,03 | 1 592 | 64,8 | 28,2 | 0,885 | 0,840 | 0,815 | 0,600 | 0,261 | 1,000 | 0,753 | 0,733 | 0,751 | ✓ |
 
 ### Nicht gewertete Läufe (Regel 4: nicht versteckt)
 

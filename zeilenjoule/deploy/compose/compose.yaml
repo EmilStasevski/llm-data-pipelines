@@ -1,0 +1,182 @@
+# ZeilenJoule production stack (Phase 9, ADR 0021): `task up` / `task down` (repo root, reads ../../.env).
+#
+# Profiles
+#   (none)          postgres + migrate + gateway + worker — point ZJ_TEI_URL / ZJ_LLM_URL at running model servers
+#   gpu             + TEI (bge-m3) and vLLM (Qwen3.5-9B AWQ) sharing the one GPU (vLLM 0.70 of memory, addendum ADR 0021)
+#   observability   + Prometheus, Grafana and zj-energy-exporter (NVML + RAPL)
+#
+# Only the gateway (8080), Grafana (3000) and Prometheus (9091) are published, and only on 127.0.0.1.
+name: zeilenjoule
+
+x-images:
+  postgres: &postgres-image pgvector/pgvector:0.8.7-pg18-trixie@sha256:5895949dfcdf308eb0cd31c950c93c14895c77f33fbedfecf1fa511ab1d4bcd2
+  tei: &tei-image ghcr.io/huggingface/text-embeddings-inference:120-1.9.4@sha256:bd8e5b1954146f7fe8590b64b959bc194433c6c38c036592a84d736841ca9400
+  vllm: &vllm-image vllm/vllm-openai:v0.33.0@sha256:d825baf9ce4b1b6bfc5ecc7b79880c7e6748c65a72d697ce3d47607aafa84c6e
+
+x-gpu: &gpu
+  deploy:
+    resources:
+      reservations:
+        devices: [{driver: nvidia, count: all, capabilities: [gpu]}]
+
+x-service-env: &service-env
+  ZJ_DATABASE_URL: postgres://zeilenjoule:${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD in .env}@postgres:5432/zeilenjoule
+  ZJ_TEI_URL: ${ZJ_TEI_URL:-http://tei:8081}
+  ZJ_LLM_URL: ${ZJ_LLM_URL:-http://vllm:8000}
+  ZJ_LLM_MODEL: model
+  ZJ_LOG_LEVEL: ${ZJ_LOG_LEVEL:-info}
+  ZJ_UPLOAD_DIR: /var/lib/zj/uploads
+
+services:
+  postgres:
+    image: *postgres-image
+    environment:
+      POSTGRES_USER: zeilenjoule
+      POSTGRES_DB: zeilenjoule
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD in .env}
+      ZJ_READER_PASSWORD: ${ZJ_READER_PASSWORD:?set ZJ_READER_PASSWORD in .env}
+    # c03/e03 benchmark settings, scaled for a long-running service next to the model servers
+    command: [postgres, -c, shared_buffers=4GB, -c, maintenance_work_mem=2GB, -c, effective_cache_size=12GB,
+              -c, work_mem=64MB, -c, max_wal_size=8GB, -c, checkpoint_timeout=30min,
+              -c, max_parallel_maintenance_workers=4, -c, shared_preload_libraries=pg_stat_statements]
+    shm_size: 4g
+    volumes:
+      - pgdata:/var/lib/postgresql
+      - ./postgres-init:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: [CMD-SHELL, pg_isready -U zeilenjoule -d zeilenjoule]
+      interval: 5s
+      timeout: 3s
+      retries: 30
+    restart: unless-stopped
+
+  migrate:
+    image: zeilenjoule/worker:${ZJ_VERSION:-dev}
+    build: {context: ../.., dockerfile: deploy/docker/services.Dockerfile, target: worker, args: {VERSION: "${ZJ_VERSION:-dev}"}}
+    command: [migrate]
+    environment: *service-env
+    depends_on:
+      postgres: {condition: service_healthy}
+    restart: "no"
+
+  gateway:
+    image: zeilenjoule/gateway:${ZJ_VERSION:-dev}
+    build: {context: ../.., dockerfile: deploy/docker/services.Dockerfile, target: gateway, args: {VERSION: "${ZJ_VERSION:-dev}"}}
+    environment:
+      <<: *service-env
+      ZJ_READER_URL: postgres://zj_ask:${ZJ_READER_PASSWORD:?set ZJ_READER_PASSWORD in .env}@postgres:5432/zeilenjoule
+      ZJ_API_KEYS: ${ZJ_API_KEYS:?set ZJ_API_KEYS in .env}
+      ZJ_RATE_LIMIT: ${ZJ_RATE_LIMIT:-10}
+      ZJ_RATE_BURST: ${ZJ_RATE_BURST:-20}
+    ports: ["127.0.0.1:${ZJ_GATEWAY_PORT:-8080}:8080"]
+    volumes: [uploads:/var/lib/zj/uploads]
+    depends_on:
+      migrate: {condition: service_completed_successfully}
+    read_only: true
+    tmpfs: [/tmp]
+    security_opt: [no-new-privileges:true]
+    cap_drop: [ALL]
+    restart: unless-stopped
+
+  worker:
+    image: zeilenjoule/worker:${ZJ_VERSION:-dev}
+    environment:
+      <<: *service-env
+      ZJ_PARSER_THREADS: ${ZJ_PARSER_THREADS:-8}
+    volumes: [uploads:/var/lib/zj/uploads]
+    depends_on:
+      migrate: {condition: service_completed_successfully}
+    read_only: true
+    tmpfs: ["/tmp:size=8g"] # parser parquet output (≈ 0.5 GB per 1 M rows)
+    security_opt: [no-new-privileges:true]
+    cap_drop: [ALL]
+    restart: unless-stopped
+
+  # ---------------------------------------------------------------- profile gpu
+  tei:
+    <<: *gpu
+    profiles: [gpu]
+    image: *tei-image
+    user: "${ZJ_UID:-1000}:${ZJ_GID:-1000}"
+    command: [--model-id, /model, --port, "8081", --dtype, float16, --max-batch-tokens, "16384",
+              --max-client-batch-size, "256", --auto-truncate, "true"]
+    volumes: [../../models/derived/bge-m3/hf512:/model:ro]
+    healthcheck:
+      test: [CMD, curl, -fsS, http://127.0.0.1:8081/health]
+      interval: 5s
+      timeout: 3s
+      retries: 60
+    restart: unless-stopped
+
+  vllm:
+    <<: *gpu
+    profiles: [gpu]
+    image: *vllm-image
+    user: "${ZJ_UID:-1000}:${ZJ_GID:-1000}"
+    ipc: host
+    environment: {HOME: /cache, HF_HUB_OFFLINE: "1", VLLM_NO_USAGE_STATS: "1"}
+    command: [--model, /model, --served-model-name, model, --max-model-len, "4096", --max-num-seqs, "32",
+              --enable-prefix-caching, --gpu-memory-utilization, "0.70",
+              --limit-mm-per-prompt, '{"image": 0, "video": 0}', --host, 0.0.0.0, --port, "8000"]
+    volumes:
+      - ../../models/vllm/Qwen3.5-9B-AWQ-4bit:/model:ro
+      - ../../models/cache/vllm:/cache
+    depends_on:
+      tei: {condition: service_healthy} # vLLM sizes its KV cache from the memory left after TEI
+    healthcheck:
+      test: [CMD, curl, -fsS, http://127.0.0.1:8000/health]
+      interval: 10s
+      timeout: 3s
+      retries: 60
+      start_period: 120s
+    restart: unless-stopped
+
+  # ---------------------------------------------------------------- profile observability
+  energy-exporter:
+    <<: *gpu
+    profiles: [observability]
+    image: zeilenjoule/energy-exporter:${ZJ_VERSION:-dev}
+    build: {context: ../.., dockerfile: deploy/docker/exporter.Dockerfile}
+    # Docker masks /sys/devices/virtual/powercap (PLATYPUS, CVE-2020-8694); mount the package zone outside /sys.
+    # Single-socket machine: zone intel-rapl:0 = package-0 (its core/uncore sub-zones are nested inside).
+    command: [--powercap, /host/powercap]
+    volumes:
+      - /sys/devices/virtual/powercap/intel-rapl:/host/powercap:ro
+    read_only: true
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    restart: unless-stopped
+
+  prometheus:
+    profiles: [observability]
+    image: prom/prometheus:v3.15.1@sha256:fa3302279710be2f21a8301ec17a8b4f2301fd829bd113839b3b6b02b6f191a2
+    command: [--config.file=/etc/prometheus/prometheus.yml, --storage.tsdb.retention.time=30d,
+              --storage.tsdb.path=/prometheus]
+    volumes:
+      - ../monitoring/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - ../monitoring/rules:/etc/prometheus/rules:ro
+      - promdata:/prometheus
+    ports: ["127.0.0.1:9091:9090"]
+    restart: unless-stopped
+
+  grafana:
+    profiles: [observability]
+    image: grafana/grafana:13.3.0@sha256:488984b716c0862639f91a698adbe2862677a5a07bad42da5f03f3030883b205
+    environment:
+      GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_ADMIN_PASSWORD:-change-me-local-only}
+      GF_ANALYTICS_REPORTING_ENABLED: "false"
+      GF_ANALYTICS_CHECK_FOR_UPDATES: "false"
+      GF_DASHBOARDS_DEFAULT_HOME_DASHBOARD_PATH: /var/lib/grafana/dashboards/zeilenjoule.json
+    volumes:
+      - ../monitoring/grafana/provisioning:/etc/grafana/provisioning:ro
+      - ../monitoring/grafana/dashboards:/var/lib/grafana/dashboards:ro
+      - grafana:/var/lib/grafana
+    ports: ["127.0.0.1:3000:3000"]
+    depends_on: [prometheus]
+    restart: unless-stopped
+
+volumes:
+  pgdata:
+  uploads:
+  promdata:
+  grafana:

@@ -342,14 +342,15 @@ One run = raw CSV → Track A contestant (S1–S3) → Track B contestant (S4, b
 
 | Contestant | n | wall s (median) | IQR s | rows/s | E gross J | E net J | mJ/row | €/1M rows (household) | €/1M rows (industry) | g CO₂/1M rows | ZJ score | low confidence |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|
-| `e03_postgres_only` | 3 | 1 740.039 | 1 739.477–1 740.492 | 575 | 247 894.5 | 235 170.6 | 247.895 | 0.0257 | 0.0115 | 23.69 | 1.00 | 0 % |
-| `e02_modern_embedded` | 3 | 1 864.437 | 1 863.959–1 873.320 | 536 | 288 648.8 | 274 408.9 | 288.649 | 0.0299 | 0.0134 | 27.58 | 1.12 | 0 % |
-| `e05_best_of_tracks` | 3 | 1 953.578 | 1 950.434–1 954.159 | 512 | 261 518.7 | 246 746.5 | 261.519 | 0.0271 | 0.0121 | 24.99 | 1.09 | 0 % |
-| `e01_classic_python` | 3 | 5 330.080 | 5 329.734–5 331.609 | 188 | 957 824.8 | 918 620.0 | 957.825 | 0.0992 | 0.0444 | 91.53 | 3.44 | 0 % |
+| `e06_stack_go` | 3 | 1 719.384 | 1 718.869–1 719.801 | 582 | 244 378.1 | 231 193.6 | 244.378 | 0.0253 | 0.0113 | 23.35 | 1.00 | 0 % |
+| `e03_postgres_only` | 3 | 1 740.039 | 1 739.477–1 740.492 | 575 | 247 894.5 | 235 170.6 | 247.895 | 0.0257 | 0.0115 | 23.69 | 1.01 | 0 % |
+| `e02_modern_embedded` | 3 | 1 864.437 | 1 863.959–1 873.320 | 536 | 288 648.8 | 274 408.9 | 288.649 | 0.0299 | 0.0134 | 27.58 | 1.13 | 0 % |
+| `e05_best_of_tracks` | 3 | 1 953.578 | 1 950.434–1 954.159 | 512 | 261 518.7 | 246 746.5 | 261.519 | 0.0271 | 0.0121 | 24.99 | 1.10 | 0 % |
+| `e01_classic_python` | 3 | 5 330.080 | 5 329.734–5 331.609 | 188 | 957 824.8 | 918 620.0 | 957.825 | 0.0992 | 0.0444 | 91.53 | 3.49 | 0 % |
 
 ### Stages, latency, quality (medians)
 
-Stages in s; time-to-RAG and energy-to-RAG = ingest + embed + label + index (gross, GPU + CPU); J/question = energy of stage `answer` / 300; latency per question = router + execution + answer call where needed (questions run as a batch, N in flight). Classifier = agreement with the LLM labels on a 10 % hold-out. lookup/aggregation = share correct, semantic = set F1, rel. error = mean relative error of the aggregations; overall = mean of the three types. Winner gate: overall ≥ 0.9 × best overall.
+Stages in s; time-to-RAG and energy-to-RAG = ingest + embed + label + index (gross, GPU + CPU); J/question = energy of stage `answer` / 300; latency per question = router + execution + answer call where needed (questions run as a batch, N in flight). Classifier = agreement with the LLM labels on a 10 % hold-out. lookup/aggregation = share correct, semantic = set F1, rel. error = mean relative error of the aggregations; overall = mean of the three types. Winner gate: overall ≥ 0.9 × best overall. Production stack `e06_stack_go` (Phase 9, ADR 0025): its worker parses, embeds, labels and indexes in one job, hence only `ingest`; the stack start (stage `load`, model loading) counts towards wall time, not time-to-RAG. Not a winner candidate (it is the winner run as a service).
 
 | Contestant | Scale | ingest s | embed s | label s | index s | answer s | p50 ms | p95 ms | p99 ms | Time-to-RAG s | Energy-to-RAG Wh | J/question | classifier | lookup | semantic F1 | aggregation | rel. error | Router | citation P | citation R | overall | winner gate |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
@@ -357,6 +358,7 @@ Stages in s; time-to-RAG and energy-to-RAG = ingest + embed + label + index (gro
 | `e02_modern_embedded` | L | 4.3 | 1 103.3 | 324.6 | 212.9 | 214.4 | 7 131.00 | 18 620.10 | 20 537.60 | 1 646 | 74.7 | 65.2 | 0.880 | 0.830 | 0.809 | 0.600 | 0.234 | 1.000 | 0.744 | 0.728 | 0.745 | ✓ |
 | `e03_postgres_only` | L | 3.2 | 976.9 | 185.9 | 505.0 | 65.1 | 9 906.30 | 19 892.40 | 20 628.20 | 1 672 | 66.4 | 27.2 | 0.885 | 0.850 | 0.822 | 0.590 | 0.233 | 1.000 | 0.757 | 0.732 | 0.754 | ✓ |
 | `e05_best_of_tracks` | L | 1.6 | 979.0 | 182.9 | 729.3 | 58.5 | 9 908.00 | 19 954.00 | 20 677.20 | 1 892 | 70.5 | 26.1 | 0.885 | 0.850 | 0.822 | 0.590 | 0.234 | 1.000 | 0.757 | 0.731 | 0.757 | ✓ |
+| `e06_stack_go` | L | 1 591.7 | – | – | – | 61.2 | 11 033.29 | 19 440.16 | 20 854.03 | 1 592 | 64.8 | 28.2 | 0.885 | 0.840 | 0.815 | 0.600 | 0.261 | 1.000 | 0.753 | 0.733 | 0.751 | ✓ |
 
 ### Runs not counted (rule 4: not hidden)
 

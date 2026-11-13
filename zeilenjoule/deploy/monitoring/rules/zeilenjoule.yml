@@ -1,0 +1,50 @@
+groups:
+  - name: zeilenjoule-recording
+    rules:
+      # Joules per answered question: GPU board + CPU package energy rate / ask rate (gross, shared by all
+      # concurrent work — an approximation under mixed load). cpu_core/cpu_uncore are inside cpu_pkg: never add them.
+      - record: zj:energy_watts:rate1m
+        expr: sum(rate(zj_gpu_energy_joules_total[1m])) + sum(rate(zj_cpu_energy_joules_total{domain="cpu_pkg"}[1m]))
+      - record: zj:ask_rate:rate1m
+        expr: sum(rate(zj_http_request_duration_seconds_count{op="/v1/ask",code="200"}[1m]))
+      - record: zj:joules_per_ask:1m
+        expr: zj:energy_watts:rate1m / (zj:ask_rate:rate1m > 0)
+      - record: zj:joules_per_ingested_row:5m
+        expr: (sum(rate(zj_gpu_energy_joules_total[5m])) + sum(rate(zj_cpu_energy_joules_total{domain="cpu_pkg"}[5m])))
+          / (sum(rate(zj_ingest_rows_total[5m])) > 0)
+      - record: zj:http_p95_seconds:5m
+        expr: histogram_quantile(0.95, sum by (op, le) (rate(zj_http_request_duration_seconds_bucket[5m])))
+  - name: zeilenjoule-alerts
+    rules:
+      - alert: ZJGatewayDown
+        expr: up{job="gateway"} == 0
+        for: 1m
+        labels: {severity: critical}
+        annotations: {summary: "zj-gateway is not scraped"}
+      - alert: ZJModelServerDown
+        expr: up{job=~"vllm|tei"} == 0
+        for: 2m
+        labels: {severity: critical}
+        annotations: {summary: "{{ $labels.job }} is down"}
+      - alert: ZJAskLatencyHigh
+        expr: zj:http_p95_seconds:5m{op="/v1/ask"} > 20
+        for: 10m
+        labels: {severity: warning}
+        annotations: {summary: "p95 /v1/ask latency above 20 s"}
+      - alert: ZJHighErrorRate
+        expr: sum(rate(zj_http_request_duration_seconds_count{code=~"5.."}[5m]))
+          / sum(rate(zj_http_request_duration_seconds_count[5m])) > 0.05
+        for: 5m
+        labels: {severity: warning}
+        annotations: {summary: "more than 5 % of requests fail with 5xx"}
+      - alert: ZJRouterSQLFailing
+        expr: sum(rate(zj_router_sql_total{outcome=~"rejected|failed"}[15m]))
+          / sum(rate(zj_router_sql_total[15m])) > 0.1
+        for: 15m
+        labels: {severity: warning}
+        annotations: {summary: "more than 10 % of router SQL rejected or failed (benchmark: 0 of 2 400)"}
+      - alert: ZJGPUHot
+        expr: zj_gpu_temp_celsius > 83
+        for: 5m
+        labels: {severity: warning}
+        annotations: {summary: "GPU above 83 °C"}

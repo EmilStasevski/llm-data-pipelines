@@ -237,6 +237,10 @@ N_QUERIES = 1000  # spec/track_c.md
 STAGES_BY_TRACK = {"C": DETAIL_STAGES, "D": ("load", "extract", "ttft"),
                    "E": ("ingest", "embed", "label", "index", "answer")}  # fmt: skip
 RAG_STAGES = ("ingest", "embed", "label", "index")  # Track E time-to-RAG (spec/track_e.md §2)
+# Phase 9 production stacks measured as Track E contestants (ADR 0025): the deployed form of the winner, compared
+# with it in WINNER.md but never a winner candidate themselves. Their worker runs parse → embed → label → index
+# behind one asynchronous job, so only the top-level stage `ingest` exists.
+PRODUCTION_STACKS = frozenset({"e06_stack_go"})
 N_QUESTIONS_E = 300
 STAGE_ENERGY: dict[str, tuple[str, str, float]] = {
     "query": ("mj_query", "queries", 1e3), "query_c16": ("mj_query_c16", "queries", 1e3),
@@ -383,12 +387,18 @@ DETAIL_NOTE_E = {
     "J/Frage = Energie der Stufe `answer` / 300; Latenz je Frage = Router + Ausführung + ggf. Antwortaufruf "
     "(Fragen laufen gebündelt, N gleichzeitig). Klassifikator = Übereinstimmung mit den LLM-Etiketten auf 10 % "
     "Rückhalt. lookup/Aggregation = Anteil richtig, semantic = Mengen-F1, rel. Fehler = mittlerer relativer Fehler "
-    "der Aggregationen; Gesamt = Mittel der drei Typen. Gewinner-Gate: Gesamt ≥ 0,9 × bestes Gesamt.",
+    "der Aggregationen; Gesamt = Mittel der drei Typen. Gewinner-Gate: Gesamt ≥ 0,9 × bestes Gesamt. "
+    "Produktions-Stack `e06_stack_go` (Phase 9, ADR 0025): Der Worker erledigt Parsen, Einbetten, Etikettieren "
+    "und Indexieren in einem Job, daher nur `ingest`; der Stack-Start (Stufe `load`, Modelle laden) zählt "
+    "zur Wall-Zeit, nicht zu Time-to-RAG. Kein Gewinnerkandidat (er ist der Gewinner als Dienst).",
     "en": "Stages in s; time-to-RAG and energy-to-RAG = ingest + embed + label + index (gross, GPU + CPU); "
     "J/question = energy of stage `answer` / 300; latency per question = router + execution + answer call where "
     "needed (questions run as a batch, N in flight). Classifier = agreement with the LLM labels on a 10 % "
     "hold-out. lookup/aggregation = share correct, semantic = set F1, rel. error = mean relative error of the "
-    "aggregations; overall = mean of the three types. Winner gate: overall ≥ 0.9 × best overall.",
+    "aggregations; overall = mean of the three types. Winner gate: overall ≥ 0.9 × best overall. "
+    "Production stack `e06_stack_go` (Phase 9, ADR 0025): its worker parses, embeds, labels and indexes in one "
+    "job, hence only `ingest`; the stack start (stage `load`, model loading) counts towards wall time, not "
+    "time-to-RAG. Not a winner candidate (it is the winner run as a service).",
 }
 DETAIL_NOTE = {"c.dense": DETAIL_NOTE_C, "c.lexical": DETAIL_NOTE_C, "c.hybrid": DETAIL_NOTE_C,
                "d.extract": DETAIL_NOTE_D, "e.rag": DETAIL_NOTE_E}  # fmt: skip
@@ -418,10 +428,12 @@ def accumulate(d: dict[str, list[float]], st: Any, extra: Any, q: Any, rows: Any
             n = {"queries": N_QUERIES, "questions": N_QUESTIONS_E}.get(unit, int(rows or 0))
             if n:
                 d.setdefault(key, []).append(factor * sum(parts) / n)
-    if all(x in run_t for x in RAG_STAGES):  # Track E: raw CSV → queryable index
-        d.setdefault("time_to_rag_s", []).append(sum(run_t[x] for x in RAG_STAGES))
-        if all(x in run_e for x in RAG_STAGES):
-            d.setdefault("rag_wh", []).append(sum(run_e[x] for x in RAG_STAGES) / 3600)
+    # Track E (only track with `answer`): raw CSV → queryable index = the RAG stages a pipeline has
+    # (production stacks: all of them inside `ingest`)
+    if "answer" in run_t and (have := [x for x in RAG_STAGES if x in run_t]):
+        d.setdefault("time_to_rag_s", []).append(sum(run_t[x] for x in have))
+        if all(x in run_e for x in have):
+            d.setdefault("rag_wh", []).append(sum(run_e[x] for x in have) / 3600)
     ex = cast("dict[str, Any]", json.loads(extra) if extra else {})
     for k in ("throughput", "latency_ms"):
         _numbers(d, cast("dict[str, Any]", ex.get(k) or {}))
@@ -567,6 +579,10 @@ def render(repo: Path, lang: str) -> str:
             return any(p.startswith(f"{track}|") and (task == "%" or p == f"{track}|{task}") for p in present)
 
         body = "\n".join(track_section(con, t, prices, lang) for t in TRACKS if t == "A" or has(t))
+        if "E|e.load" in present:
+            from zj_analysis import load_curve  # noqa: PLC0415  (load_curve imports this module)
+
+            body += "\n" + load_curve.section_md(con, lang)
     else:
         body = f"## {TRACKS['A'][lang][0]}\n\n" + ("_Keine Daten._\n" if lang == "de" else "_No data._\n")
     con.close()

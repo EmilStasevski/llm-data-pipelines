@@ -1,0 +1,8 @@
+apiVersion: v2
+name: zeilenjoule
+description: ZeilenJoule production stack (Phase 9, ADR 0021/0024) — Go gateway + worker, PostgreSQL/pgvector, TEI, vLLM, optional Prometheus/Grafana with energy metrics
+type: application
+version: 0.9.0
+appVersion: "dev"
+kubeVersion: ">=1.30.0-0"
+keywords: [rag, pgvector, vllm, energy]

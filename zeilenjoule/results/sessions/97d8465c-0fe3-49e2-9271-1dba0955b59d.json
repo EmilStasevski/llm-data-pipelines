@@ -1,0 +1,45 @@
+{
+  "session_id": "97d8465c-0fe3-49e2-9271-1dba0955b59d",
+  "created": "2026-11-13T00:25:50Z",
+  "seed": 20261106,
+  "reps": 3,
+  "warmup": 0,
+  "interleave": true,
+  "threads": 0,
+  "scales": [
+    "L"
+  ],
+  "contestants": [
+    "e06_stack_go"
+  ],
+  "items": [
+    {
+      "contestant": "e06_stack_go",
+      "scale": "L",
+      "rep": 1,
+      "warmup": false
+    },
+    {
+      "contestant": "e06_stack_go",
+      "scale": "L",
+      "rep": 2,
+      "warmup": false
+    },
+    {
+      "contestant": "e06_stack_go",
+      "scale": "L",
+      "rep": 3,
+      "warmup": false
+    }
+  ],
+  "args": [
+    "--id",
+    "e06_stack_go",
+    "--scale",
+    "L",
+    "--reps",
+    "3",
+    "--warmup",
+    "0"
+  ]
+}

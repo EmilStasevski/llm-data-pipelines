@@ -1,0 +1,3 @@
+# hadolint (task lint:docker). Base images are pinned by digest (CLAUDE.md rule 9), so DL3007 "latest" cannot occur;
+# every rule stays on, exceptions are inline with a reason.
+failure-threshold: info

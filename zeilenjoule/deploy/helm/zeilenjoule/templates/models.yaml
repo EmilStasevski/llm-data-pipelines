@@ -1,0 +1,180 @@
+{{- if .Values.gpu.enabled }}
+{{- if and (not .Values.models.existingClaim) (not .Values.models.hostPath) }}
+{{- fail "gpu.enabled needs models.hostPath (host directory with the model weights) or models.existingClaim" }}
+{{- end }}
+{{- if not .Values.models.existingClaim }}
+# Static PV on the repo's models/ directory: the benchmark weights, byte for byte. Retain: uninstalling the chart
+# never touches the host files. Cluster-scoped, so the name carries the namespace.
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: zeilenjoule-models-{{ .Release.Namespace }}
+  labels: {{- include "zj.labels" . | nindent 4 }}
+spec:
+  capacity: {storage: {{ .Values.models.size }}}
+  accessModes: [ReadWriteOnce]
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: ""
+  claimRef: {namespace: {{ .Release.Namespace }}, name: zeilenjoule-models}
+  hostPath: {path: {{ .Values.models.hostPath }}, type: Directory}
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: zeilenjoule-models
+  labels: {{- include "zj.labels" . | nindent 4 }}
+spec:
+  accessModes: [ReadWriteOnce]
+  storageClassName: ""
+  volumeName: zeilenjoule-models-{{ .Release.Namespace }}
+  resources: {requests: {storage: {{ .Values.models.size }}}}
+---
+{{- end }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: tei
+  labels: {{- include "zj.labels" . | nindent 4 }}
+spec:
+  selector: {{- include "zj.selector" (dict "root" . "component" "tei") | nindent 4 }}
+  ports: [{name: http, port: 8081, targetPort: http}]
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: tei
+  labels: {{- include "zj.labels" . | nindent 4 }}
+    app.kubernetes.io/component: tei
+spec:
+  replicas: 1
+  strategy: {type: Recreate}   # one GPU slot each: a rolling update would need a third
+  selector:
+    matchLabels: {{- include "zj.selector" (dict "root" . "component" "tei") | nindent 6 }}
+  template:
+    metadata:
+      labels: {{- include "zj.selector" (dict "root" . "component" "tei") | nindent 8 }}
+        zeilenjoule.io/model-server: "true"
+    spec:
+      automountServiceAccountToken: false
+      runtimeClassName: {{ .Values.gpu.runtimeClassName }}
+      securityContext:
+        {{- include "zj.podSecurity" . | nindent 8 }}
+        runAsUser: {{ .Values.gpu.runAsUser }}
+        runAsGroup: {{ .Values.gpu.runAsGroup }}
+      containers:
+        - name: tei
+          image: {{ .Values.tei.image }}
+          args: [--model-id, /model, --port, "8081", {{- range .Values.tei.args }} {{ . | quote }},{{- end }}]
+          env:
+            - {name: HOME, value: /tmp}
+            - {name: HF_HUB_OFFLINE, value: "1"}
+          ports: [{name: http, containerPort: 8081}]
+          startupProbe:
+            httpGet: {path: /health, port: http}
+            periodSeconds: 5
+            failureThreshold: 60
+          readinessProbe:
+            httpGet: {path: /health, port: http}
+            periodSeconds: 10
+          securityContext:
+            {{- include "zj.containerSecurity" . | nindent 12 }}
+          resources:
+            {{- with .Values.tei.resources.requests }}
+            requests: {{- toYaml . | nindent 14 }}
+            {{- end }}
+            limits:
+              nvidia.com/gpu: 1
+              {{- with .Values.tei.resources.limits }}{{ toYaml . | nindent 14 }}{{ end }}
+          volumeMounts:
+            - {name: models, mountPath: /model, subPath: {{ .Values.models.embedPath }}, readOnly: true}
+            - {name: tmp, mountPath: /tmp}
+      volumes:
+        - name: models
+          persistentVolumeClaim: {claimName: {{ include "zj.modelsClaim" . }}}
+        - {name: tmp, emptyDir: {sizeLimit: 2Gi}}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: vllm
+  labels: {{- include "zj.labels" . | nindent 4 }}
+spec:
+  selector: {{- include "zj.selector" (dict "root" . "component" "vllm") | nindent 4 }}
+  ports: [{name: http, port: 8000, targetPort: http}]
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: vllm
+  labels: {{- include "zj.labels" . | nindent 4 }}
+    app.kubernetes.io/component: vllm
+spec:
+  replicas: 1
+  strategy: {type: Recreate}
+  selector:
+    matchLabels: {{- include "zj.selector" (dict "root" . "component" "vllm") | nindent 6 }}
+  template:
+    metadata:
+      labels: {{- include "zj.selector" (dict "root" . "component" "vllm") | nindent 8 }}
+        zeilenjoule.io/model-server: "true"
+    spec:
+      automountServiceAccountToken: false
+      runtimeClassName: {{ .Values.gpu.runtimeClassName }}
+      securityContext:
+        {{- include "zj.podSecurity" . | nindent 8 }}
+        runAsUser: {{ .Values.gpu.runAsUser }}
+        runAsGroup: {{ .Values.gpu.runAsGroup }}
+      initContainers:
+        # vLLM checks free GPU memory at start; loading next to a starting TEI races (same as compose depends_on)
+        - name: wait-for-tei
+          image: {{ .Values.llm.image }}
+          command: [sh, -c, "until curl -fsS http://tei:8081/health >/dev/null; do sleep 3; done"]
+          securityContext:
+            {{- include "zj.containerSecurity" . | nindent 12 }}
+          resources:
+            requests: {cpu: 10m, memory: 16Mi}
+            limits: {memory: 64Mi}
+      containers:
+        - name: vllm
+          image: {{ .Values.llm.image }}
+          args: [--model, /model, --served-model-name, model,
+                 --max-model-len, {{ .Values.llm.maxModelLen | quote }}, --max-num-seqs, {{ .Values.llm.maxNumSeqs | quote }},
+                 --enable-prefix-caching, --gpu-memory-utilization, {{ .Values.llm.gpuMemoryUtilization | quote }},
+                 --limit-mm-per-prompt, '{"image": 0, "video": 0}', --host, 0.0.0.0, --port, "8000"]
+          env:
+            - {name: HOME, value: /cache}
+            - {name: HF_HUB_OFFLINE, value: "1"}
+            - {name: VLLM_NO_USAGE_STATS, value: "1"}
+          ports: [{name: http, containerPort: 8000}]
+          startupProbe:
+            httpGet: {path: /health, port: http}
+            periodSeconds: 10
+            failureThreshold: 60   # up to 10 min: weights + CUDA graphs (torch.compile cache in /cache)
+          readinessProbe:
+            httpGet: {path: /health, port: http}
+            periodSeconds: 10
+          livenessProbe:
+            httpGet: {path: /health, port: http}
+            periodSeconds: 20
+            failureThreshold: 6
+          securityContext:
+            {{- include "zj.containerSecurity" . | nindent 12 }}
+          resources:
+            {{- with .Values.llm.resources.requests }}
+            requests: {{- toYaml . | nindent 14 }}
+            {{- end }}
+            limits:
+              nvidia.com/gpu: 1
+              {{- with .Values.llm.resources.limits }}{{ toYaml . | nindent 14 }}{{ end }}
+          volumeMounts:
+            - {name: models, mountPath: /model, subPath: {{ .Values.models.llmPath }}, readOnly: true}
+            - {name: models, mountPath: /cache, subPath: {{ .Values.models.llmCachePath }}}
+            - {name: tmp, mountPath: /tmp}
+            - {name: shm, mountPath: /dev/shm}
+      volumes:
+        - name: models
+          persistentVolumeClaim: {claimName: {{ include "zj.modelsClaim" . }}}
+        - {name: tmp, emptyDir: {sizeLimit: 4Gi}}
+        - name: shm
+          emptyDir: {medium: Memory, sizeLimit: {{ .Values.llm.shm }}}
+{{- end }}

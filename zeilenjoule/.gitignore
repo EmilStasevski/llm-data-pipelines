@@ -15,4 +15,7 @@ target/
 __pycache__/
 .pytest_cache/
 .ruff_cache/
+# kubeconform schemas, trivy DB, rendered chart, image tarballs (task ci / ci:release); SBOMs (task sbom)
+.cache/
+dist/
 *.egg-info/

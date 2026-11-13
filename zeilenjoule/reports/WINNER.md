@@ -90,3 +90,14 @@ _Nicht gebaut: e04_pure_rust (reines Rust, PLAN §11) – vor Gate 2 bewusst aus
 - ✓ keine Abwägung nötig
 
 Architekturvorschlag: `docs/ARCHITEKTUR.md`.
+
+## Phase 9: Produktions-Stack gegenüber dem Gewinner als Skript
+
+Gleiche CSV-Bytes, gleiche 300 Fragen, gleicher Prüfer; der Stack läuft als Dienst (Compose: Gateway, Worker, River, PostgreSQL, TEI, vLLM) und wird über seine HTTP-API bedient (ADR 0025). Δ = Stack ÷ Skript - 1.
+
+| Kennzahl | `e06_stack_go` | `e03_postgres_only` | Δ |
+|---|---|---|---|
+| Wall s | 1 719,4 | 1 740,0 | -1,2 % |
+| Energie J | 244 378 | 247 895 | -1,4 % |
+| Qualität | 0,751 | 0,754 | -0,3 % |
+| Gate | ✓ | ✓ | |

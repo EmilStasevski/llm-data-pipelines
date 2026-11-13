@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 820 184" width="820" height="184" role="img" aria-label="Wall-Zeit s (log) · Energie J brutto"><style>
+.bg{fill:#fcfcfb}.ink{fill:#0b0b0b}.sec{fill:#52514e}.mut{fill:#898781}.grid{stroke:#e1e0d9}
+.axis{stroke:#c3c2b7}.s1{fill:#2a78d6}.s2{fill:#eb6834}.anti{fill:#c3c2b7}
+@media (prefers-color-scheme:dark){.bg{fill:#1a1a19}.ink{fill:#f0efec}.sec{fill:#c3c2b7}
+.grid{stroke:#2c2c2a}.axis{stroke:#383835}.s1{fill:#3987e5}.s2{fill:#d95926}.anti{fill:#52514e}}
+text{font-family:ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;font-size:12px}
+.mono{font-family:ui-monospace,SFMono-Regular,Menlo,monospace}
+</style>
+<rect class="bg" width="820" height="184" rx="6"/>
+<text class="ink" x="16" y="20" font-weight="600">Wall-Zeit s (log) · Energie J brutto</text>
+<line class="grid" x1="200.0" x2="200.0" y1="30" y2="154"/>
+<text class="mut" x="200.0" y="170" text-anchor="middle">1000</text>
+<line class="grid" x1="341.5" x2="341.5" y1="30" y2="154"/>
+<text class="mut" x="341.5" y="170" text-anchor="middle">2000</text>
+<line class="grid" x1="528.5" x2="528.5" y1="30" y2="154"/>
+<text class="mut" x="528.5" y="170" text-anchor="middle">5000</text>
+<line class="grid" x1="670.0" x2="670.0" y1="30" y2="154"/>
+<text class="mut" x="670.0" y="170" text-anchor="middle">10k</text>
+<line class="axis" x1="200" x2="200" y1="30" y2="154"/>
+<text class="sec mono" x="192" y="49" text-anchor="end">e06_stack_go</text>
+<path class="s1" d="M200,38H306.6a4,4 0 0 1 4,4v6a4,4 0 0 1 -4,4H200Z"/>
+<text class="ink" x="316.6" y="49">1 719 s · 244 378 J</text>
+<text class="sec mono" x="192" y="73" text-anchor="end">e03_postgres_only</text>
+<path class="s1" d="M200,62H309.1a4,4 0 0 1 4,4v6a4,4 0 0 1 -4,4H200Z"/>
+<text class="ink" x="319.1" y="73">1 740 s · 247 895 J</text>
+<text class="sec mono" x="192" y="97" text-anchor="end">e02_modern_embedded</text>
+<path class="s1" d="M200,86H323.2a4,4 0 0 1 4,4v6a4,4 0 0 1 -4,4H200Z"/>
+<text class="ink" x="333.2" y="97">1 864 s · 288 649 J</text>
+<text class="sec mono" x="192" y="121" text-anchor="end">e05_best_of_tracks</text>
+<path class="s1" d="M200,110H332.7a4,4 0 0 1 4,4v6a4,4 0 0 1 -4,4H200Z"/>
+<text class="ink" x="342.7" y="121">1 954 s · 261 519 J</text>
+<text class="sec mono" x="192" y="145" text-anchor="end">e01_classic_python</text>
+<path class="s1" d="M200,134H537.6a4,4 0 0 1 4,4v6a4,4 0 0 1 -4,4H200Z"/>
+<text class="ink" x="547.6" y="145">5 330 s · 957 825 J</text>
+</svg>

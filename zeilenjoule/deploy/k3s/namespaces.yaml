@@ -1,0 +1,18 @@
+# Pod Security Admission per namespace (ADR 0024): the app runs under "restricted"; only the energy exporter
+# (host /sys/…/powercap, root for RAPL energy_uj) needs "privileged", so monitoring gets its own namespace.
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: zeilenjoule
+  labels:
+    pod-security.kubernetes.io/enforce: restricted
+    pod-security.kubernetes.io/enforce-version: latest
+    pod-security.kubernetes.io/warn: restricted
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: zeilenjoule-monitoring
+  labels:
+    pod-security.kubernetes.io/enforce: privileged
+    pod-security.kubernetes.io/warn: baseline

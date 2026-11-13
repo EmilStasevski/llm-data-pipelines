@@ -16,6 +16,27 @@ vars:
     sh: command -v govulncheck || echo "$(go env GOPATH)/bin/govulncheck"
   PY_ENVS: df gpu_df embed llm-clients db gpu_vs ner e2e
   RUST_DIRS: libs/rust/zjmark contestants/rust
+  GO_DIRS: harness services
+  COMPOSE: docker compose --project-directory deploy/compose -f deploy/compose/compose.yaml --env-file .env
+  # CI/scan tools as digest-pinned images (no host installs; ADR 0024). Versions ≥ 2 weeks old at pinning time.
+  HELM_IMAGE: alpine/helm:4.3.1@sha256:e3f8d5c462d75470fbb1fce79ad5c20063657096d1f98c0fcea869e2600e2e5e
+  KUBECONFORM_IMAGE: ghcr.io/yannh/kubeconform:v0.8.0@sha256:faffaf43f95aa6425306e1ab8d6fcad72acb9049158f38e574c085ea1ec0f64e
+  HADOLINT_IMAGE: hadolint/hadolint:v2.15.1@sha256:32dac94127fd60b7b7e3fbfc65e1383b9b5e25c9bfd7b8536de7a539fe68a12d
+  TRIVY_IMAGE: aquasec/trivy:0.76.1@sha256:790fd66d1697395d8693d1acaa1ea702406a20f109b6fc7bac8db623eca6c06c
+  SYFT_IMAGE: anchore/syft:v1.55.0@sha256:4cc92b64ca74ffca4c94d4c8fcc01f217731375300be14d0b6eeb2e82eaa110a
+  GITLEAKS_IMAGE: zricethezav/gitleaks:v8.30.1@sha256:c00b6bd0aeb3071cbcb79009cb16a60dd9e0a7c60e2be9ab65d25e6bc8abbb7f
+  REGISTRY_IMAGE: registry:3.1.1@sha256:325b4b29b041e82803abeb703e201655e4e23ab83264ec1a7c9ddb0a5b14a6e0
+  K8S_VERSION: 1.36.5
+  UIDGID:
+    sh: echo "$(id -u):$(id -g)"
+  # repo mounted read-only at /repo; tools run as the calling user
+  DRUN: docker run --rm -u {{.UIDGID}} -e HOME=/tmp -v {{.ROOT_DIR}}:/repo:ro -w /repo
+  TRIVY: docker run --rm -u {{.UIDGID}} -e HOME=/tmp -v {{.ROOT_DIR}}:/repo:ro -v {{.ROOT_DIR}}/.cache/trivy:/cache {{.TRIVY_IMAGE}} --cache-dir /cache -q
+  HELM_SET_CI: models.hostPath=/models,monitoring.enabled=true
+  SERVICE_IMAGES: gateway worker energy-exporter
+  K3S_NS: zeilenjoule
+  # helm with the user's kubeconfig (k3s API on 127.0.0.1:6443 → host network)
+  HELM_K: docker run --rm -u {{.UIDGID}} -e HOME=/tmp --network host -v {{.ROOT_DIR}}:/repo:ro -w /repo -v {{.HOME}}/.kube/config:/kubeconfig:ro -e KUBECONFIG=/kubeconfig
 
 tasks:
   default:
@@ -246,7 +267,8 @@ tasks:
       - uv run --locked ruff check --fix .
       - for: { var: RUST_DIRS, split: " " }
         cmd: cargo fmt --all --manifest-path {{.ITEM}}/Cargo.toml
-      - cd harness && gofmt -w .
+      - for: { var: GO_DIRS, split: " " }
+        cmd: cd {{.ITEM}} && gofmt -w .
 
   lint:py:
     cmds:
@@ -264,12 +286,15 @@ tasks:
         cmd: cargo clippy --locked --all-targets --manifest-path {{.ITEM}}/Cargo.toml -- -D warnings
 
   lint:go:
-    dir: harness
     cmds:
-      - 'test -z "$(gofmt -l .)" || (gofmt -l . && echo "gofmt - files above need formatting" && exit 1)'
-      - go vet ./...
-      - '{{.GOLANGCI_LINT}} run ./...'
-      - '{{.GOVULNCHECK}} ./...'
+      - for: { var: GO_DIRS, split: " " }
+        cmd: 'cd {{.ITEM}} && (test -z "$(gofmt -l .)" || (gofmt -l . && echo "gofmt - files above need formatting" && exit 1))'
+      - for: { var: GO_DIRS, split: " " }
+        cmd: cd {{.ITEM}} && go vet ./...
+      - for: { var: GO_DIRS, split: " " }
+        cmd: cd {{.ITEM}} && {{.GOLANGCI_LINT}} run ./...
+      - for: { var: GO_DIRS, split: " " }
+        cmd: cd {{.ITEM}} && {{.GOVULNCHECK}} ./...
 
   test:py:
     cmds:
@@ -283,34 +308,245 @@ tasks:
         cmd: cargo test --locked --manifest-path {{.ITEM}}/Cargo.toml
 
   test:go:
-    dir: harness
     cmds:
-      - go test -race ./...
+      - for: { var: GO_DIRS, split: " " }
+        cmd: cd {{.ITEM}} && go test -race ./...
+
+  test:services:int:
+    desc: Integration tests of the Go services against a throw-away pgvector container (fake TEI/LLM, no GPU)
+    dir: services
+    vars:
+      PG_IMAGE: pgvector/pgvector:0.8.7-pg18-trixie@sha256:5895949dfcdf308eb0cd31c950c93c14895c77f33fbedfecf1fa511ab1d4bcd2
+    cmds:
+      - defer: docker rm -f zj-p9-itest >/dev/null 2>&1 || true
+      - docker rm -f zj-p9-itest >/dev/null 2>&1 || true
+      - >-
+        docker run -d --name zj-p9-itest -p 127.0.0.1:15499:5432 -e POSTGRES_HOST_AUTH_METHOD=trust
+        {{.PG_IMAGE}} -c fsync=off >/dev/null
+      - for i in $(seq 60); do docker exec zj-p9-itest pg_isready -U postgres -h 127.0.0.1 >/dev/null 2>&1 && break; sleep 1; done
+      - ZJ_TEST_DATABASE_URL=postgres://postgres@127.0.0.1:15499/postgres go test -race -count=1 -v -tags integration ./internal/integration/
 
   fuzz:go:
     desc: Short fuzz run of the marker parser (FUZZTIME=30s)
     dir: harness
     cmds:
       - go test -run '^$' -fuzz FuzzParseMarker -fuzztime {{.FUZZTIME | default "30s"}} ./pkg/zjmark
+      - cd ../services && go test -run '^$' -fuzz FuzzCheckNeverPanics -fuzztime {{.FUZZTIME | default "30s"}} ./internal/sqlguard
 
   ci:
-    desc: Local CI (no GitHub) — lint + tests for Python, Rust, Go. Phase 9 adds docker/helm/scans.
+    desc: "Local CI (no GitHub, docs/CI.md) — lint, tests, Dockerfile/Helm checks, secret/config/dependency scans"
     cmds:
       - task: lint:py
       - task: lint:rs
       - task: lint:go
+      - task: lint:docker
+      - task: lint:helm
       - task: test:py
       - task: test:rs
       - task: test:go
+      - task: test:services:int
+      - task: scan:secrets
+      - task: scan:config
+      - task: scan:deps
+
+  ci:release:
+    desc: "Release gate: `task ci`, build the service images, trivy image scan, SBOMs (VERSION=… tags)"
+    cmds:
+      - task: ci
+      - task: images
+      - task: scan:images
+      - task: sbom
+
+  lint:docker:
+    desc: hadolint on every Dockerfile (.hadolint.yaml; exceptions inline with a reason)
+    cmds:
+      - for: { var: DOCKERFILES, split: " " }
+        cmd: docker run --rm -i -v {{.ROOT_DIR}}/.hadolint.yaml:/.config/hadolint.yaml:ro {{.HADOLINT_IMAGE}} hadolint --config /.config/hadolint.yaml - < {{.ITEM}}
+    vars:
+      DOCKERFILES:
+        sh: echo deploy/docker/*.Dockerfile
+
+  lint:helm:
+    desc: helm lint --strict (dev + prod values) and kubeconform -strict of the rendered chart and deploy/k3s
+    cmds:
+      - mkdir -p .cache/kubeconform .cache/helm
+      - '{{.DRUN}} {{.HELM_IMAGE}} lint --strict deploy/helm/zeilenjoule --set {{.HELM_SET_CI}} 2>&1 | grep -v "symbolic link"'
+      - '{{.DRUN}} {{.HELM_IMAGE}} lint --strict deploy/helm/zeilenjoule -f deploy/helm/zeilenjoule/values-prod.yaml 2>&1 | grep -v "symbolic link"'
+      - '{{.DRUN}} {{.HELM_IMAGE}} template zj deploy/helm/zeilenjoule -n {{.K3S_NS}} --set {{.HELM_SET_CI}} 2>/dev/null > .cache/helm/dev.yaml'
+      - '{{.DRUN}} {{.HELM_IMAGE}} template zj deploy/helm/zeilenjoule -n {{.K3S_NS}} -f deploy/helm/zeilenjoule/values-prod.yaml 2>/dev/null > .cache/helm/prod.yaml'
+      - >-
+        docker run --rm -u {{.UIDGID}} -v {{.ROOT_DIR}}:/repo:ro -v {{.ROOT_DIR}}/.cache/kubeconform:/cache -w /repo
+        {{.KUBECONFORM_IMAGE}} -strict -summary -kubernetes-version {{.K8S_VERSION}} -cache /cache -n 2
+        .cache/helm/dev.yaml .cache/helm/prod.yaml deploy/k3s/
+
+  scan:secrets:
+    desc: gitleaks dir mode over the working tree incl. uncommitted files (.gitleaks.toml)
+    cmds:
+      - '{{.DRUN}} {{.GITLEAKS_IMAGE}} dir /repo --config /repo/.gitleaks.toml --redact --no-banner'
+
+  scan:config:
+    desc: trivy misconfiguration scan of Dockerfiles, compose, the rendered Helm chart and deploy/k3s (MEDIUM+)
+    cmds:
+      - mkdir -p .cache/trivy
+      - >-
+        {{.TRIVY}} config --exit-code 1 --severity MEDIUM,HIGH,CRITICAL --ignorefile /repo/.trivyignore.yaml
+        --helm-set {{.HELM_SET_CI}} /repo/deploy
+
+  scan:deps:
+    desc: trivy vulnerability scan of every lockfile (uv.lock, Cargo.lock, go.mod) — replaces pip-audit/cargo audit
+    cmds:
+      - mkdir -p .cache/trivy
+      - >-
+        {{.TRIVY}} fs --scanners vuln --exit-code 1 --severity HIGH,CRITICAL --ignore-unfixed
+        --ignorefile /repo/.trivyignore.yaml
+        --skip-dirs '**/data,**/models,**/.venv,**/target,**/.cache,**/logs,**/results' /repo
+
+  scan:images:
+    desc: trivy scan of the built service images (HIGH/CRITICAL with a fix fail the build)
+    vars:
+      TAG: '{{.VERSION | default "dev"}}'
+    cmds:
+      - mkdir -p .cache/trivy .cache/images
+      - for: { var: SERVICE_IMAGES, split: " " }
+        cmd: >-
+          docker save zeilenjoule/{{.ITEM}}:{{.TAG}} -o .cache/images/{{.ITEM}}.tar &&
+          {{.TRIVY}} image --input /repo/.cache/images/{{.ITEM}}.tar --exit-code 1 --severity HIGH,CRITICAL
+          --ignore-unfixed --ignorefile /repo/.trivyignore.yaml
+
+  sbom:
+    desc: SPDX-JSON SBOM per service image (syft) → dist/sbom/
+    vars:
+      TAG: '{{.VERSION | default "dev"}}'
+    cmds:
+      - mkdir -p dist/sbom .cache/images
+      - for: { var: SERVICE_IMAGES, split: " " }
+        cmd: >-
+          test -f .cache/images/{{.ITEM}}.tar || docker save zeilenjoule/{{.ITEM}}:{{.TAG}} -o .cache/images/{{.ITEM}}.tar;
+          docker run --rm -u {{.UIDGID}} -e HOME=/tmp --tmpfs /tmp:mode=1777 -v {{.ROOT_DIR}}/.cache/images:/in:ro
+          -v {{.ROOT_DIR}}/dist/sbom:/out {{.SYFT_IMAGE}} -q
+          docker-archive:/in/{{.ITEM}}.tar -o spdx-json=/out/{{.ITEM}}-{{.TAG}}.spdx.json
+          && echo "dist/sbom/{{.ITEM}}-{{.TAG}}.spdx.json"
 
   # ---------- later phases: fail loudly until implemented ----------
   report:
     desc: Regenerate reports/REPORT.de.md + REPORT.md, the README results block and reports/figures/*.svg from results/ (rebuilds results/zj.duckdb first)
     cmds:
       - uv run --locked python -m zj_analysis.report
+
+  # ---------- Phase 9: production stack (ADR 0021, docs/RUNBOOK.md) ----------
+  services:prompts:
+    desc: Regenerate services/internal/prompts/prompts.json from the benchmark prompt builders (needs data/synth/d2k)
+    cmds:
+      - uv run --locked python -m zj_eval.service_prompts
+  services:api:
+    desc: Regenerate the Go server code from services/api/openapi.yaml (oapi-codegen, pinned in go.mod)
+    dir: services/internal/api
+    cmds:
+      - go generate ./...
+  images:
+    desc: Build the service images (gateway, worker incl. Rust parser, energy exporter); VERSION=… tags them. No .env needed
+    cmds:
+      - scripts/build_images.sh {{.VERSION | default "dev"}}
   up:
-    desc: "[Phase 9] production stack up"
-    cmds: ['echo "up is implemented in Phase 9" >&2; exit 2']
+    desc: "Production stack up: PROFILES='gpu observability' (default) — postgres, migrate, gateway, worker [+ TEI, vLLM] [+ Prometheus, Grafana, exporter]"
+    preconditions:
+      - sh: test -f .env
+        msg: "copy .env.example to .env and set POSTGRES_PASSWORD, ZJ_READER_PASSWORD, ZJ_API_KEYS"
+    cmds:
+      - '{{.COMPOSE}} {{range splitList " " (.PROFILES | default "gpu observability")}}--profile {{.}} {{end}}up -d --build --wait'
+      - '{{.COMPOSE}} ps'
   down:
-    desc: "[Phase 9] production stack down"
-    cmds: ['echo "down is implemented in Phase 9" >&2; exit 2']
+    desc: Stop the production stack (volumes stay; `task down:volumes` deletes the database)
+    cmds:
+      - '{{.COMPOSE}} --profile gpu --profile observability down'
+  down:volumes:
+    desc: Stop the stack AND delete its volumes (database, uploads, Prometheus, Grafana) — asks first
+    prompt: This deletes the production database volume. Continue?
+    cmds:
+      - '{{.COMPOSE}} --profile gpu --profile observability down -v'
+  logs:
+    desc: Follow the logs of the stack (S=gateway to filter)
+    cmds:
+      - '{{.COMPOSE}} --profile gpu --profile observability logs -f {{.S}}'
+  smoke:
+    desc: End-to-end smoke test against a running stack (health, auth, ingest a small CSV, search, ask)
+    cmds:
+      - scripts/smoke_stack.sh {{.CSV | default "data/synth/stoermeldungen/S/stoermeldungen.cp1252.csv"}}
+
+  # ---------- Phase 9: k3s + Helm (docs/RUNBOOK.md §7, ADR 0024) ----------
+  k3s:cluster-setup:
+    desc: "ONE-TIME, cluster-wide: namespaces with Pod Security labels + GPU time-slicing (2 × nvidia.com/gpu)"
+    prompt: Changes cluster-wide objects (namespaces, kube-system device plugin). Continue?
+    cmds:
+      - kubectl apply -f deploy/k3s/namespaces.yaml
+      - kubectl apply -f deploy/k3s/nvidia-device-plugin.yaml
+      - kubectl -n kube-system rollout status ds/nvidia-device-plugin-daemonset --timeout=180s
+      - for i in $(seq 30); do n=$(kubectl get nodes -o jsonpath='{.items[0].status.allocatable.nvidia\.com/gpu}'); [ "$n" = 2 ] && break; sleep 2; done; echo "nvidia.com/gpu allocatable = $n"
+
+  k3s:registry:
+    desc: Local image registry on 127.0.0.1:5000 (containerd pulls localhost over plain HTTP, no k3s config needed)
+    status:
+      - docker ps --format '{{"{{"}}.Names{{"}}"}}' | grep -qx zj-registry
+    cmds:
+      - docker rm -f zj-registry >/dev/null 2>&1 || true
+      - docker run -d --name zj-registry --restart unless-stopped -p 127.0.0.1:5000:5000 -v zj-registry:/var/lib/registry {{.REGISTRY_IMAGE}}
+
+  k3s:push:
+    desc: Push the service images to the local registry and record their digests (.cache/k3s/images.yaml)
+    deps: [k3s:registry]
+    vars:
+      TAG: '{{.VERSION | default "dev"}}'
+    cmds:
+      - mkdir -p .cache/k3s
+      - for: { var: SERVICE_IMAGES, split: " " }
+        cmd: docker tag zeilenjoule/{{.ITEM}}:{{.TAG}} localhost:5000/zeilenjoule/{{.ITEM}}:{{.TAG}} && docker push -q localhost:5000/zeilenjoule/{{.ITEM}}:{{.TAG}}
+      - |
+        d() { docker inspect --format '{{"{{"}}range .RepoDigests{{"}}"}}{{"{{"}}println .{{"}}"}}{{"{{"}}end{{"}}"}}' localhost:5000/zeilenjoule/$1:{{.TAG}} | grep "^localhost:5000/zeilenjoule/$1@" | cut -d@ -f2; }
+        printf 'image:\n  tag: %s\n  gatewayDigest: "%s"\n  workerDigest: "%s"\n  exporterDigest: "%s"\n' \
+          "{{.TAG}}" "$(d gateway)" "$(d worker)" "$(d energy-exporter)" > .cache/k3s/images.yaml
+        cat .cache/k3s/images.yaml
+
+  k3s:secrets:
+    desc: Create/update the Secrets from .env (POSTGRES_PASSWORD, ZJ_READER_PASSWORD, ZJ_API_KEYS; GRAFANA_ADMIN_PASSWORD)
+    preconditions:
+      - sh: test -f .env
+        msg: "copy .env.example to .env first"
+    cmds:
+      - |
+        set -eu; umask 077; t=$(mktemp); g=$(mktemp); trap 'rm -f "$t" "$g"' EXIT
+        grep -E '^(POSTGRES_PASSWORD|ZJ_READER_PASSWORD|ZJ_API_KEYS)=' .env > "$t"
+        grep -E '^GRAFANA_ADMIN_PASSWORD=' .env > "$g" || true
+        kubectl -n {{.K3S_NS}} create secret generic zeilenjoule-secrets --from-env-file="$t" --dry-run=client -o yaml | kubectl apply -f -
+        if [ -s "$g" ]; then
+          kubectl -n {{.K3S_NS}}-monitoring create secret generic zeilenjoule-grafana --from-env-file="$g" --dry-run=client -o yaml | kubectl apply -f -
+        fi
+
+  k3s:up:
+    desc: "helm upgrade --install into namespace zeilenjoule (MONITORING=true adds Prometheus/Grafana/exporter)"
+    deps: [k3s:push]
+    cmds:
+      - task: k3s:secrets
+      - >-
+        {{.HELM_K}} -v {{.ROOT_DIR}}/.cache/k3s/images.yaml:/images.yaml:ro {{.HELM_IMAGE}}
+        upgrade --install zeilenjoule deploy/helm/zeilenjoule -n {{.K3S_NS}}
+        -f /images.yaml --set models.hostPath={{.ROOT_DIR}}/models --set monitoring.enabled={{.MONITORING | default "false"}}
+        --wait --timeout 20m
+      - kubectl -n {{.K3S_NS}} get pods -o wide
+
+  k3s:test:
+    desc: helm test (readiness of DB + TEI + vLLM, auth, one search)
+    cmds:
+      - '{{.HELM_K}} {{.HELM_IMAGE}} test zeilenjoule -n {{.K3S_NS}} --logs'
+
+  k3s:smoke:
+    desc: Full smoke test (scripts/smoke_stack.sh) through a port-forward to the gateway on 127.0.0.1:18080
+    cmds:
+      - |
+        kubectl -n {{.K3S_NS}} port-forward svc/gateway 18080:8080 >/dev/null 2>&1 & pf=$!
+        trap 'kill $pf' EXIT; sleep 2
+        scripts/smoke_stack.sh {{.CSV | default "data/synth/stoermeldungen/S/stoermeldungen.cp1252.csv"}} http://127.0.0.1:18080
+
+  k3s:down:
+    desc: helm uninstall (PVCs of postgres/backups and the models PV stay; delete them by hand if wanted)
+    cmds:
+      - '{{.HELM_K}} {{.HELM_IMAGE}} uninstall zeilenjoule -n {{.K3S_NS}} --wait'

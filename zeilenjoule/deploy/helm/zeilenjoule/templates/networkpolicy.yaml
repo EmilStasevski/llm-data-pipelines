@@ -1,0 +1,158 @@
+{{- if .Values.networkPolicy.enabled }}
+{{- $sel := dict "app.kubernetes.io/name" "zeilenjoule" "app.kubernetes.io/instance" .Release.Name }}
+{{- $mon := .Values.monitoring.namespace }}
+# Default deny for every pod of the release, then only the edges of the architecture (ADR 0024).
+# k3s enforces NetworkPolicy with its embedded kube-router controller.
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: zj-default-deny
+  labels: {{- include "zj.labels" . | nindent 4 }}
+spec:
+  podSelector:
+    matchLabels: {{- toYaml $sel | nindent 6 }}
+  policyTypes: [Ingress, Egress]
+---
+# DNS for everyone in the release
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: zj-allow-dns
+  labels: {{- include "zj.labels" . | nindent 4 }}
+spec:
+  podSelector:
+    matchLabels: {{- toYaml $sel | nindent 6 }}
+  policyTypes: [Egress]
+  egress:
+    - to: [{namespaceSelector: {matchLabels: {kubernetes.io/metadata.name: kube-system}}, podSelector: {matchLabels: {k8s-app: kube-dns}}}]
+      ports: [{protocol: UDP, port: 53}, {protocol: TCP, port: 53}]
+---
+# gateway: API from the ingress controller, the release itself (helm test) and port-forward (kubelet → pod is not
+# subject to NetworkPolicy); metrics from the monitoring namespace
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: zj-gateway-ingress
+  labels: {{- include "zj.labels" . | nindent 4 }}
+spec:
+  podSelector:
+    matchLabels: {{- include "zj.selector" (dict "root" . "component" "gateway") | nindent 6 }}
+  policyTypes: [Ingress]
+  ingress:
+    - from:
+        {{- range .Values.networkPolicy.ingressNamespaces }}
+        - namespaceSelector: {matchLabels: {kubernetes.io/metadata.name: {{ . }}}}
+        {{- end }}
+        - podSelector: {matchLabels: {zeilenjoule.io/api-client: "true"}}
+      ports: [{port: 8080}]
+---
+# gateway + worker: egress to the database and the model servers
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: zj-clients-egress
+  labels: {{- include "zj.labels" . | nindent 4 }}
+spec:
+  podSelector:
+    matchLabels: {zeilenjoule.io/db-client: "true"}
+  policyTypes: [Egress]
+  egress:
+    {{- if .Values.postgres.enabled }}
+    - to:
+        - podSelector:
+            matchLabels: {{- include "zj.selector" (dict "root" . "component" "postgres") | nindent 14 }}
+      ports: [{port: 5432}]
+    {{- else }}
+    - ports: [{port: {{ .Values.externalDatabase.port }}}]   # external database: address not known to the chart
+    {{- end }}
+    {{- if .Values.gpu.enabled }}
+    - to: [{podSelector: {matchLabels: {zeilenjoule.io/model-server: "true"}}}]
+      ports: [{port: 8081}, {port: 8000}]
+    {{- else }}
+    - {}   # external model servers
+    {{- end }}
+---
+{{- if .Values.postgres.enabled }}
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: zj-postgres-ingress
+  labels: {{- include "zj.labels" . | nindent 4 }}
+spec:
+  podSelector:
+    matchLabels: {{- include "zj.selector" (dict "root" . "component" "postgres") | nindent 6 }}
+  policyTypes: [Ingress]
+  ingress:
+    - from:
+        - podSelector: {matchLabels: {zeilenjoule.io/db-client: "true"}}
+        - podSelector: {matchLabels: {zeilenjoule.io/backup: "true"}}
+      ports: [{port: 5432}]
+---
+# backup job → postgres
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: zj-backup-egress
+  labels: {{- include "zj.labels" . | nindent 4 }}
+spec:
+  podSelector:
+    matchLabels: {zeilenjoule.io/backup: "true"}
+  policyTypes: [Egress]
+  egress:
+    - to:
+        - podSelector:
+            matchLabels: {{- include "zj.selector" (dict "root" . "component" "postgres") | nindent 14 }}
+      ports: [{port: 5432}]
+---
+{{- end }}
+# model servers: only from gateway/worker (no egress at all besides DNS: weights are local, HF_HUB_OFFLINE=1);
+# vLLM's wait-for-tei init container needs TEI
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: zj-model-servers
+  labels: {{- include "zj.labels" . | nindent 4 }}
+spec:
+  podSelector:
+    matchLabels: {zeilenjoule.io/model-server: "true"}
+  policyTypes: [Ingress, Egress]
+  ingress:
+    - from:
+        - podSelector: {matchLabels: {zeilenjoule.io/model-client: "true"}}
+        - podSelector: {matchLabels: {zeilenjoule.io/model-server: "true"}}
+  egress:
+    - to: [{podSelector: {matchLabels: {zeilenjoule.io/model-server: "true"}}}]
+      ports: [{port: 8081}]
+---
+# helm test pod → gateway
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: zj-api-client-egress
+  labels: {{- include "zj.labels" . | nindent 4 }}
+spec:
+  podSelector:
+    matchLabels: {zeilenjoule.io/api-client: "true"}
+  policyTypes: [Egress]
+  egress:
+    - to:
+        - podSelector:
+            matchLabels: {{- include "zj.selector" (dict "root" . "component" "gateway") | nindent 14 }}
+      ports: [{port: 8080}]
+{{- if .Values.monitoring.enabled }}
+---
+# Prometheus (monitoring namespace) scrapes gateway/worker :9090, TEI :8081, vLLM :8000
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: zj-allow-scrape
+  labels: {{- include "zj.labels" . | nindent 4 }}
+spec:
+  podSelector:
+    matchLabels: {{- toYaml $sel | nindent 6 }}
+  policyTypes: [Ingress]
+  ingress:
+    - from: [{namespaceSelector: {matchLabels: {kubernetes.io/metadata.name: {{ $mon }}}}, podSelector: {matchLabels: {app.kubernetes.io/component: prometheus}}}]
+      ports: [{port: 9090}, {port: 8081}, {port: 8000}]
+{{- end }}
+{{- end }}

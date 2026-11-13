@@ -1,0 +1,235 @@
+{{- if .Values.monitoring.enabled }}
+{{- $m := .Values.monitoring }}
+{{- $ns := .Release.Namespace }}
+{{- $secret := $m.grafana.existingSecret }}
+# Monitoring lives in its own namespace (PodSecurity "privileged" for the exporter only, ADR 0024). Rules and the
+# dashboard are the same files as the compose stack (files/monitoring → deploy/monitoring).
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: prometheus
+  namespace: {{ $m.namespace }}
+  labels: {{- include "zj.labels" . | nindent 4 }}
+data:
+  prometheus.yml: |
+    global: {scrape_interval: 15s, evaluation_interval: 15s}
+    rule_files: [/etc/prometheus/rules/*.yml]
+    scrape_configs:
+      - job_name: gateway
+        dns_sd_configs: [{names: [gateway-metrics.{{ $ns }}.svc.cluster.local], type: A, port: 9090}]
+      - job_name: worker
+        dns_sd_configs: [{names: [worker-metrics.{{ $ns }}.svc.cluster.local], type: A, port: 9090}]
+      - job_name: energy
+        scrape_interval: 5s
+        dns_sd_configs: [{names: [energy-exporter.{{ $m.namespace }}.svc.cluster.local], type: A, port: 9877}]
+      - job_name: vllm
+        static_configs: [{targets: ["vllm.{{ $ns }}.svc.cluster.local:8000"]}]
+      - job_name: tei
+        static_configs: [{targets: ["tei.{{ $ns }}.svc.cluster.local:8081"]}]
+  zeilenjoule.yml: |-
+{{ .Files.Get "files/monitoring/rules/zeilenjoule.yml" | indent 4 }}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: grafana-provisioning
+  namespace: {{ $m.namespace }}
+  labels: {{- include "zj.labels" . | nindent 4 }}
+data:
+  datasources.yml: |-
+{{ .Files.Get "files/monitoring/grafana/provisioning/datasources/prometheus.yml" | indent 4 }}
+  dashboards.yml: |-
+{{ .Files.Get "files/monitoring/grafana/provisioning/dashboards/zeilenjoule.yml" | indent 4 }}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: grafana-dashboards
+  namespace: {{ $m.namespace }}
+  labels: {{- include "zj.labels" . | nindent 4 }}
+data:
+  zeilenjoule.json: |-
+{{ .Files.Get "files/monitoring/grafana/dashboards/zeilenjoule.json" | indent 4 }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: prometheus
+  namespace: {{ $m.namespace }}
+  labels: {{- include "zj.labels" . | nindent 4 }}
+spec:
+  selector: {app.kubernetes.io/name: zeilenjoule, app.kubernetes.io/component: prometheus}
+  ports: [{name: http, port: 9090, targetPort: http}]
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: prometheus
+  namespace: {{ $m.namespace }}
+  labels: {{- include "zj.labels" . | nindent 4 }}
+spec:
+  serviceName: prometheus
+  replicas: 1
+  selector:
+    matchLabels: {app.kubernetes.io/name: zeilenjoule, app.kubernetes.io/component: prometheus}
+  template:
+    metadata:
+      labels: {app.kubernetes.io/name: zeilenjoule, app.kubernetes.io/component: prometheus}
+      annotations:
+        checksum/config: {{ .Files.Get "files/monitoring/rules/zeilenjoule.yml" | sha256sum }}
+    spec:
+      automountServiceAccountToken: false
+      securityContext:
+        {{- include "zj.podSecurity" . | nindent 8 }}
+        runAsUser: 65534
+        runAsGroup: 65534
+        fsGroup: 65534
+      containers:
+        - name: prometheus
+          image: {{ $m.prometheus.image }}
+          args: [--config.file=/etc/prometheus/prometheus.yml, --storage.tsdb.path=/prometheus,
+                 --storage.tsdb.retention.time={{ $m.prometheus.retention }}]
+          ports: [{name: http, containerPort: 9090}]
+          readinessProbe:
+            httpGet: {path: /-/ready, port: http}
+          securityContext:
+            {{- include "zj.containerSecurity" . | nindent 12 }}
+          resources:
+            requests: {cpu: 100m, memory: 256Mi}
+            limits: {memory: 2Gi}
+          volumeMounts:
+            - {name: config, mountPath: /etc/prometheus/prometheus.yml, subPath: prometheus.yml}
+            - {name: config, mountPath: /etc/prometheus/rules/zeilenjoule.yml, subPath: zeilenjoule.yml}
+            - {name: data, mountPath: /prometheus}
+      volumes:
+        - name: config
+          configMap: {name: prometheus}
+  volumeClaimTemplates:
+    - metadata: {name: data}
+      spec:
+        accessModes: [ReadWriteOnce]
+        resources: {requests: {storage: {{ $m.prometheus.storage }}}}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: grafana
+  namespace: {{ $m.namespace }}
+  labels: {{- include "zj.labels" . | nindent 4 }}
+spec:
+  selector: {app.kubernetes.io/name: zeilenjoule, app.kubernetes.io/component: grafana}
+  ports: [{name: http, port: 3000, targetPort: http}]
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: grafana
+  namespace: {{ $m.namespace }}
+  labels: {{- include "zj.labels" . | nindent 4 }}
+spec:
+  serviceName: grafana
+  replicas: 1
+  selector:
+    matchLabels: {app.kubernetes.io/name: zeilenjoule, app.kubernetes.io/component: grafana}
+  template:
+    metadata:
+      labels: {app.kubernetes.io/name: zeilenjoule, app.kubernetes.io/component: grafana}
+      annotations:
+        checksum/dashboard: {{ .Files.Get "files/monitoring/grafana/dashboards/zeilenjoule.json" | sha256sum }}
+    spec:
+      automountServiceAccountToken: false
+      securityContext:
+        {{- include "zj.podSecurity" . | nindent 8 }}
+        runAsUser: 472
+        runAsGroup: 0
+        fsGroup: 472
+      containers:
+        - name: grafana
+          image: {{ $m.grafana.image }}
+          env:
+            - name: GF_SECURITY_ADMIN_PASSWORD
+              valueFrom: {secretKeyRef: {name: {{ $secret }}, key: GRAFANA_ADMIN_PASSWORD}}
+            - {name: GF_ANALYTICS_REPORTING_ENABLED, value: "false"}
+            - {name: GF_ANALYTICS_CHECK_FOR_UPDATES, value: "false"}
+            - {name: GF_PLUGINS_PREINSTALL_DISABLED, value: "true"}
+            - {name: GF_DASHBOARDS_DEFAULT_HOME_DASHBOARD_PATH, value: /var/lib/grafana/dashboards/zeilenjoule.json}
+          ports: [{name: http, containerPort: 3000}]
+          readinessProbe:
+            httpGet: {path: /api/health, port: http}
+          securityContext:
+            {{- include "zj.containerSecurity" . | nindent 12 }}
+          resources:
+            requests: {cpu: 50m, memory: 128Mi}
+            limits: {memory: 512Mi}
+          volumeMounts:
+            - {name: provisioning, mountPath: /etc/grafana/provisioning/datasources/prometheus.yml, subPath: datasources.yml}
+            - {name: provisioning, mountPath: /etc/grafana/provisioning/dashboards/zeilenjoule.yml, subPath: dashboards.yml}
+            - {name: dashboards, mountPath: /var/lib/grafana/dashboards}
+            - {name: data, mountPath: /var/lib/grafana}
+            - {name: tmp, mountPath: /tmp}
+      volumes:
+        - name: provisioning
+          configMap: {name: grafana-provisioning}
+        - name: dashboards
+          configMap: {name: grafana-dashboards}
+        - {name: tmp, emptyDir: {}}
+  volumeClaimTemplates:
+    - metadata: {name: data}
+      spec:
+        accessModes: [ReadWriteOnce]
+        resources: {requests: {storage: {{ $m.grafana.storage }}}}
+{{- if $m.exporter.enabled }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: energy-exporter
+  namespace: {{ $m.namespace }}
+  labels: {{- include "zj.labels" . | nindent 4 }}
+spec:
+  clusterIP: None
+  selector: {app.kubernetes.io/name: zeilenjoule, app.kubernetes.io/component: energy-exporter}
+  ports: [{name: metrics, port: 9877, targetPort: metrics}]
+---
+# NVML via the nvidia runtime without claiming a GPU slot (monitoring only, like dcgm-exporter); RAPL needs root
+# because energy_uj is root-only (PLATYPUS, CVE-2020-8694) — the reason for the separate privileged namespace.
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: energy-exporter
+  namespace: {{ $m.namespace }}
+  labels: {{- include "zj.labels" . | nindent 4 }}
+spec:
+  selector:
+    matchLabels: {app.kubernetes.io/name: zeilenjoule, app.kubernetes.io/component: energy-exporter}
+  template:
+    metadata:
+      labels: {app.kubernetes.io/name: zeilenjoule, app.kubernetes.io/component: energy-exporter}
+    spec:
+      automountServiceAccountToken: false
+      runtimeClassName: {{ .Values.gpu.runtimeClassName }}
+      securityContext:
+        seccompProfile: {type: RuntimeDefault}
+      containers:
+        - name: exporter
+          image: {{ include "zj.image" (dict "root" . "name" "exporter" "repo" "energy-exporter") }}
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          args: [--powercap, /host/powercap]
+          env:
+            - {name: NVIDIA_VISIBLE_DEVICES, value: all}
+            - {name: NVIDIA_DRIVER_CAPABILITIES, value: utility}
+          ports: [{name: metrics, containerPort: 9877}]
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities: {drop: [ALL]}
+          resources:
+            requests: {cpu: 20m, memory: 32Mi}
+            limits: {memory: 128Mi}
+          volumeMounts:
+            - {name: powercap, mountPath: /host/powercap, readOnly: true}
+      volumes:
+        - name: powercap
+          hostPath: {path: {{ $m.exporter.powercapHostPath }}, type: Directory}
+{{- end }}
+{{- end }}

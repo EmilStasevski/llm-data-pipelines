@@ -1,0 +1,143 @@
+# ZeilenJoule Helm chart — defaults = single-node k3s dev box (RTX 5060 Ti, ADR 0024).
+# One release per namespace: Services have fixed short names (postgres, gateway, tei, vllm) like the compose stack.
+# Secrets never go into values: create the Secret first (`task k3s:secrets` reads .env).
+
+# Secret with keys POSTGRES_PASSWORD, ZJ_READER_PASSWORD, ZJ_API_KEYS (in the release namespace).
+existingSecret: zeilenjoule-secrets
+
+image:
+  # `task k3s:push` pushes the locally built images to this registry (127.0.0.1:5000, plain HTTP is allowed for localhost)
+  registry: localhost:5000
+  tag: dev
+  # set by `task k3s:push` so pods run exactly the pushed bytes; empty = use the tag
+  gatewayDigest: ""
+  workerDigest: ""
+  exporterDigest: ""
+  pullPolicy: IfNotPresent
+
+logLevel: info
+
+gateway:
+  replicas: 1
+  rateLimit: 10      # requests/s per API key — per pod (token bucket in memory), see ADR 0024
+  rateBurst: 20
+  requestTimeout: 120s
+  resources:
+    requests: {cpu: 250m, memory: 128Mi}
+    limits: {memory: 512Mi}
+  autoscaling:
+    enabled: false
+    minReplicas: 2
+    maxReplicas: 4
+    targetCPUUtilization: 70
+  ingress:
+    enabled: false
+    className: traefik
+    host: zeilenjoule.localhost
+    tls: []          # [{secretName: zeilenjoule-tls, hosts: [zeilenjoule.example]}]
+    annotations: {}
+
+worker:
+  parserThreads: 8
+  # parser parquet output (≈ 0.5 GB per 1 M rows) — memory-backed like the compose tmpfs
+  tmpSize: 8Gi
+  resources:
+    requests: {cpu: "2", memory: 2Gi}
+    limits: {memory: 12Gi}
+
+uploads:
+  size: 20Gi
+  storageClass: ""   # "" = cluster default (k3s: local-path). Multi-node: needs ReadWriteMany (gateway and worker share it)
+  accessMode: ReadWriteOnce
+
+postgres:
+  enabled: true      # false = external database: set externalDatabase.*
+  image: pgvector/pgvector:0.8.7-pg18-trixie@sha256:5895949dfcdf308eb0cd31c950c93c14895c77f33fbedfecf1fa511ab1d4bcd2
+  storage: 50Gi
+  storageClass: ""
+  shm: 4Gi
+  # c03/e03 benchmark settings, scaled for a long-running service next to the model servers (same as compose)
+  args: [-c, shared_buffers=4GB, -c, maintenance_work_mem=2GB, -c, effective_cache_size=12GB, -c, work_mem=64MB,
+         -c, max_wal_size=8GB, -c, checkpoint_timeout=30min, -c, max_parallel_maintenance_workers=4,
+         -c, shared_preload_libraries=pg_stat_statements]
+  resources:
+    requests: {cpu: "1", memory: 6Gi}
+    limits: {memory: 10Gi}
+
+externalDatabase:
+  host: ""
+  port: 5432
+  database: zeilenjoule
+  user: zeilenjoule        # owner; the read-only login zj_ask must exist (deploy/compose/postgres-init/10-roles.sh)
+  sslmode: require
+
+backup:
+  enabled: true
+  schedule: "17 3 * * *"
+  keep: 7
+  storage: 50Gi
+  storageClass: ""
+
+# Model weights live on the host (models/ of the repo, same files as the benchmark). A hostPath PV keeps the pods
+# PodSecurity-"restricted" (only the PV, not the pod, names the host path).
+models:
+  hostPath: ""             # e.g. /home/<user>/llm-data-pipelines/zeilenjoule/models (set by `task k3s:up`)
+  existingClaim: ""        # alternative: a PVC that already holds the same directory layout
+  size: 100Gi
+  embedPath: derived/bge-m3/hf512
+  llmPath: vllm/Qwen3.5-9B-AWQ-4bit
+  llmCachePath: cache/vllm # must be writable by gpu.runAsUser
+
+gpu:
+  enabled: true            # false = no model servers; set modelServers.teiURL / llmURL to external ones
+  runtimeClassName: nvidia
+  # Both model servers request one nvidia.com/gpu. With one physical GPU this needs time-slicing (2 replicas,
+  # deploy/k3s/nvidia-device-plugin.yaml). Memory is NOT isolated: vLLM takes llm.gpuMemoryUtilization of the card.
+  runAsUser: 1000          # must read models/ and write models/<llmCachePath>
+  runAsGroup: 1000
+
+modelServers:
+  teiURL: ""               # only with gpu.enabled=false
+  llmURL: ""
+
+tei:
+  image: ghcr.io/huggingface/text-embeddings-inference:120-1.9.4@sha256:bd8e5b1954146f7fe8590b64b959bc194433c6c38c036592a84d736841ca9400
+  args: [--dtype, float16, --max-batch-tokens, "16384", --max-client-batch-size, "256", --auto-truncate, "true"]
+  resources:
+    requests: {cpu: 500m, memory: 2Gi}
+    limits: {memory: 6Gi}
+
+llm:
+  image: vllm/vllm-openai:v0.33.0@sha256:d825baf9ce4b1b6bfc5ecc7b79880c7e6748c65a72d697ce3d47607aafa84c6e
+  gpuMemoryUtilization: "0.70"
+  maxModelLen: 4096
+  maxNumSeqs: 32
+  shm: 8Gi
+  resources:
+    requests: {cpu: "2", memory: 8Gi}
+    limits: {memory: 24Gi}
+
+networkPolicy:
+  enabled: true
+  # namespaces allowed to reach the gateway API (k3s: traefik runs in kube-system)
+  ingressNamespaces: [kube-system]
+
+monitoring:
+  enabled: false
+  # separate namespace: the energy exporter needs host /sys and NVML (PodSecurity "privileged"), the app namespace
+  # stays "restricted". Created and labelled by `task k3s:namespaces`.
+  namespace: zeilenjoule-monitoring
+  exporter:
+    enabled: true
+    powercapHostPath: /sys/devices/virtual/powercap/intel-rapl
+  prometheus:
+    image: prom/prometheus:v3.15.1@sha256:fa3302279710be2f21a8301ec17a8b4f2301fd829bd113839b3b6b02b6f191a2
+    retention: 30d
+    storage: 20Gi
+  grafana:
+    image: grafana/grafana:13.3.0@sha256:488984b716c0862639f91a698adbe2862677a5a07bad42da5f03f3030883b205
+    storage: 2Gi
+    existingSecret: zeilenjoule-grafana   # key GRAFANA_ADMIN_PASSWORD, in the monitoring namespace
+
+tests:
+  image: curlimages/curl:8.22.0@sha256:58adaa4e8dca9c988bae2aba4ab3434a0bb2da16bbe3f92dec39ec7785166777

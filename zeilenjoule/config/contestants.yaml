@@ -1027,3 +1027,33 @@ contestants:
     servers: []
     scales: [L]
     anti_pattern: false
+
+  - id: e06_stack_go
+    track: E
+    task: e.rag
+    # Phase 9 production stack (deploy/compose, profile gpu) through its HTTP API: same CSV, same 300 questions
+    # (ADR 0025). Builds the images and the Go client before the measured window.
+    build: ["sh", "-c", "scripts/build_images.sh dev && cd services && go build -trimpath -o bin/zj-e2e ./cmd/zj-e2e"]
+    versions_cmd: ["services/bin/zj-e2e", "--versions"]
+    cmd: ["services/bin/zj-e2e"]
+    args: ["--input", "{input}", "--output", "{output}", "--threads", "{threads}", "--concurrency", "64"]
+    timeout_s: 10800
+    needs_gpu: true
+    servers: []
+    scales: [L]
+    anti_pattern: false
+
+  - id: e07_stack_load
+    track: E
+    task: e.load
+    # Phase 9 load curve (PLAN §12.3, ADR 0026): the e06 stack, ingest of the scale, then open-loop steps
+    # /v1/search 5…160 req/s (60 s each) and /v1/ask 0.5…8 req/s (90 s each); one ZJMARK stage per step.
+    build: ["sh", "-c", "scripts/build_images.sh dev && cd services && go build -trimpath -o bin/zj-load ./cmd/zj-load"]
+    versions_cmd: ["services/bin/zj-load", "--versions"]
+    cmd: ["services/bin/zj-load"]
+    args: ["--input", "{input}", "--output", "{output}", "--threads", "{threads}"]
+    timeout_s: 10800
+    needs_gpu: true
+    servers: []
+    scales: [M, L]
+    anti_pattern: false

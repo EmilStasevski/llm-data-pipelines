@@ -488,3 +488,102 @@ Open questions:
 - Bericht: Klassifikator-Spalte liest jetzt `result.extra` (Verifier künftig auch aus `ingest.json.label`).
 - `reports/WINNER.md` (Regel 5: e03, keine Abwägung nötig), `docs/ARCHITEKTUR.md`, ADR 0021 (vorgeschlagen).
 - **Gate 2: warten auf Bestätigung der Produktionsarchitektur vor Phase 9.**
+- 2026-11-11: **Gate 2 bestätigt** (Architektur e03, ADR 0021 angenommen) → Phase 9.
+
+## 2026-11-11 — Phase 9 Teil 1: GPU-Teilung geprüft, Go-Modul `services` angelegt
+- GPU-Teilung TEI + vLLM (ungemessen): 12,8/16,3 GB, KV 38 550 Token bei vLLM 0,70; LLM 401 → 343 Tok/s während
+  gleichzeitigen Einbettens; TEI-Grenze ≈ 512 gleichzeitige Eingaben (HTTP 429). Nachtrag in ADR 0021.
+- `services/` (Go-Modul `zeilenjoule/services`, Abhängigkeiten ≥ 2 Wochen alt gepinnt): `internal/sqlguard`
+  (pg_query_go, ADR 0022, Tests + Fuzz), `api/openapi.yaml` (ingest, jobs, extract, search, ask mit SSE, healthz,
+  readyz) → `internal/api` per oapi-codegen v2.8.1 (`go tool`, strict std-http server).
+- Nächstes: Clients (TEI, vLLM), Postgres-Schema + Migrationen, RAG-Kern (Router → SQL/Suche → Antwort),
+  Gateway-Handler + Middleware, Worker (River-Jobs: Rust-Parser → Einbetten → COPY → Schadensart), Compose.
+
+## 2026-11-11 — Phase 9 Teil 2: Dienste lauffähig, Compose-Stack, Beobachtung (alles ungemessen)
+- Go-Dienste: Clients TEI (geteilte Drossel 4 × 128, Retry bei 429/5xx) und vLLM (JSON-Schema, Denken aus, Semaphore
+  32); Schema-Migrationen (`docs` halfvec-HNSW + GIN, Sicht `meldungen`, Rollen `zj_reader`/`zj_ask`, `ingest_jobs`,
+  `classifier`) + River-Migrationen; RAG-Kern = Port von `answer_all`/`PostgresStore.search`; Klassifikator-Port
+  (Softmax/Adam); Ingest-River-Job (Rust a16 → Parquet via arrow-go → TEI → Schadensart → COPY/Upsert);
+  Gateway (strict OpenAPI-Handler, SSE, API-Key, Rate-Limit je Schlüssel, Body-/Zeitlimits, RFC-9457, /metrics).
+- Prompts: `task services:prompts` erzeugt `services/internal/prompts/prompts.json` aus den Benchmark-Buildern
+  (Benchmark-Prompt byte-gleich geprüft; Produktions-Router nennt PostgreSQL statt DuckDB, ADR 0023).
+- Images (distroless/cc, nonroot, Digests): gateway 101 MB, worker 118 MB (inkl. Rust-Parser), exporter 59 MB.
+  `deploy/compose` mit Profilen `gpu`/`observability`, Prometheus (Recording-Rules J/Frage, J/Zeile, Alarme),
+  Grafana-Dashboard (15 Panels, alle Abfragen gegen den laufenden Stack geprüft).
+- Ergebnis Smoke-Test (`task smoke`, S = 10 000 Zeilen, ungemessen): alle Endpunkte ok; Erst-Import 175 s
+  (davon 132 s LLM-Etiketten für 2 000 Zeilen, Klassifikator-Holdout 0,89), Folge-Import mit gespeichertem
+  Klassifikator 19 s.
+- Gefunden + behoben: Docker maskiert `/sys/devices/virtual/powercap` → `zj exporter --powercap` + Mount außerhalb
+  /sys; CPU-Energie nur Domäne `cpu_pkg` (core/uncore sind enthalten); TEI-Metriken auf dem API-Port; Re-Import
+  überschrieb LLM-Etiketten → Upsert behält sie bei gleichem Text (Integrationstest); govulncheck fand 9 erreichbare
+  Schwachstellen (x/net, brotli, compress, kin-openapi) → auf behobene Versionen (alle ≥ 2 Wochen alt).
+- Tests: Unit (sqlguard, classifier, httpapi), Integration gegen pgvector-Container (`task test:services:int`:
+  Migration idempotent, Upsert, Rollen-Grenzen, statement_timeout, Suche, Router-Pfade). `task ci` grün.
+- ADR 0023, `docs/RUNBOOK.md`. Nächstes: Lasttest (300 Track-E-Fragen gegen den Stack, Latenz/J je Frage, gemessen
+  über quiet_box), Qualitätsprüfung des PostgreSQL-Routers auf L, Helm/k3s, CI-Scans (hadolint, trivy, syft,
+  kubeconform, gitleaks), `docs/CI.md`.
+
+## 2026-11-13 — Phase 9 Teil 3: k3s/Helm, lokale CI/CD mit Scannern, e06 als Track-E-Teilnehmer (ungemessen)
+- **Helm-Chart** `deploy/helm/zeilenjoule` (ADR 0024): Postgres-StatefulSet (+ Init-Skript und Monitoring-Dateien
+  per Symlink aus Compose, keine Kopien), Gateway/Worker (Migration als Init-Container), TEI/vLLM mit
+  `RuntimeClass nvidia` und je einem `nvidia.com/gpu` (Time-Slicing ×2, `deploy/k3s/nvidia-device-plugin.yaml`),
+  Modelle über statisches hostPath-PV (Pods bleiben PodSecurity „restricted“), NetworkPolicies (Default-Deny,
+  9 Policies), Backup-CronJob (`pg_dump -Fc`, 7 Stände), optionales Monitoring (Prometheus/Grafana/Exporter) im
+  eigenen Namespace, `helm test`, `values-prod.yaml` (HPA, PDB, Ingress/TLS, RWX). helm lint/kubeconform
+  (77 Ressourcen, 1.36.5 strict) und Server-Dry-Run gegen k3s: gültig.
+- **Nicht ausgerollt:** Namespaces + Time-Slicing sind clusterweite Änderungen; der Auto-Modus hat sie blockiert →
+  Nutzer entscheidet (`task k3s:cluster-setup`). Lokale Registry `127.0.0.1:5000` getestet: k3s zieht ohne
+  Konfiguration (kein sudo). Sicherung des ursprünglichen Device-Plugin-DaemonSets im Scratchpad.
+- **CI** (`docs/CI.md`): `task ci` = Lint/Tests + hadolint, helm lint + kubeconform, gitleaks (dir), trivy config
+  (MEDIUM+), trivy fs auf alle Lockfiles (ersetzt pip-audit/cargo audit); `task ci:release` = + Images, trivy image,
+  syft-SBOM (SPDX 2.3 nach `dist/sbom/`). Alle Werkzeuge als digest-gepinnte Container, Versionen ≥ 2 Wochen alt.
+  Befunde behoben: numerisches `USER 65532:65532`, seccomp für Exporter/Device-Plugin; trivy fs fand 3 HIGH in
+  `services/go.mod` (kin-openapi, x/net; govulncheck: nicht erreichbar) → v0.149.0 / v0.62.0 (≥ 2 Wochen alt).
+  Images: 0 HIGH/CRITICAL. Ausnahmen begründet in `.trivyignore.yaml` (Exporter root/hostPath, NVIDIA-Plugin).
+  `task images` baut ohne `.env` (`scripts/build_images.sh`, OCI-Labels).
+- **e06_stack_go** (ADR 0025): Go-Client `services/cmd/zj-e2e` misst den Compose-Stack als Track-E-Teilnehmer (gleiche
+  CSV, gleiche 300 Fragen, gleicher Prüfer; Stufen load/ingest/answer/write; eigenes Compose-Projekt, frische Volumes).
+  Dabei gefunden und behoben:
+  - Erst-Import ließ HNSW zeilenweise wachsen → bei leerer Tabelle Indizes verwerfen und danach parallel bauen
+    (e03-Verfahren; Integrationstest: Definition byte-gleich zur Migration).
+  - API meldete unbrauchbare Router-Antworten als `search` (hätte Router-Genauigkeit geschönt) → `route: "none"`.
+  - Tabellen verloren die Spaltenreihenfolge (Go-Map) → `columns` + Zeilen als Arrays.
+  - Neues Feld `sql_status`.
+- **Funktionsprüfung auf M, ungemessen** (nicht über das Harness, Zahlen nur als Plausibilität):
+  - e06 läuft vollständig durch (Ingest 100 000 Zeilen über den Bulk-Pfad, 300 Fragen, Stack abgebaut). Ausgaben:
+    `logs/p9_e06_func/`.
+  - Vergleich mit einem ungemessenen e03-Lauf auf denselben M-Fragen (`logs/p9_e03_M_func/`): Gesamt 0,727 vs. 0,744,
+    300/300 gleiche Routen, 184/200 SQL zeichengleich (Rest gleichwertig). Die Differenz liegt bei Aggregationen über
+    die geschätzte Spalte `schadensart`: gleiche SQL, andere Summen, weil die 2 000-Zeilen-Stichprobe für die
+    LLM-Etiketten in Go (math/rand) anders gezogen wird als in numpy.
+  - **Der PostgreSQL-Router ist damit gleichwertig** (offener Punkt aus ADR 0023).
+- **Nächstes (Nutzer):**
+  1. Gemessene e06-Session auf L:
+     `scripts/quiet_box.sh measure run --id e06_stack_go --scale L --reps 3 --warmup 0`.
+     Dauer ungemessen geschätzt 1,5–2 h (e03: 1 740 s je Lauf).
+  2. Optional `task k3s:cluster-setup` und `task images && task k3s:up`, dann `task k3s:test` und `task k3s:smoke`.
+- **Danach:** Bericht um e06 ergänzen (`task report`), Lastkurve (Latenz gegen Parallelität), README-Abschnitt
+  Phase 9.
+
+## 2026-11-13 — Phase 9 Teil 4: e06 gemessen, Bericht, Lastkurve
+
+**Erledigt**
+- Gemessene Session e06_stack_go (Skala L, 3 Wiederholungen, Nutzer via quiet_box): alle 3 `ok`, Prüfung bestanden,
+  Energie-Konfidenz hoch; Gegenprobe des NVML-Zählers −12…−19 % = bekannte Eigenschaft der Karte (METHODIK, ADR 0006).
+  Zahlen nur im generierten Bericht (`reports/WINNER.md`, Abschnitt Phase 9; `reports/REPORT*.md`).
+- Analyse: Produktions-Stacks (`PRODUCTION_STACKS`) sind kein Gewinnerkandidat mehr (sonst hätte sich der Stack
+  selbst zum Gewinner erklärt); neuer WINNER-Abschnitt „Produktions-Stack gegenüber dem Gewinner als Skript“.
+  Time-to-RAG für Pipelines ohne Einzelstufen (e06: alles in `ingest`). README-Ergebnisblock enthält jetzt Track E.
+- README: Phase-9-Abschnitt (de/en), Status ehrlich „gebaut, Lastkurve offen“.
+- Lastkurve (ADR 0026): `services/internal/benchstack` (aus zj-e2e herausgelöst), `services/cmd/zj-load`
+  (offene Last, Stufe je Rate, SSE „erstes Ereignis“), Task `e.load` + Prüfer `builtin:e.load` (Harness, Tests),
+  Teilnehmer `e07_stack_load`, Auswertung `analysis/…/load_curve.py` (Knie, SLOs, J/Anfrage) im Bericht.
+- Funktionstest (ungemessen, M) fand einen echten Fehler: generic plan der lexikalischen Suche (≈ 3× langsamer).
+  Korrigiert mit `plan_cache_mode = force_custom_plan` (identische Treffer). Images neu gebaut.
+
+**Als Nächstes**
+- Nutzer: `scripts/quiet_box.sh measure run --id e07_stack_load --scale L --reps 3 --warmup 0` (≈ 2¼ h), dann `task report`.
+- Danach: Entscheidung zur lexikalischen Stufe auf L (siehe ADR 0026, offen), Phase 10.
+
+**Offene Fragen**
+- Suche-SLO auf L: Rangfolge der lexikalischen Stufe ändern (Qualität/Vergleichbarkeit) oder Ziel anpassen?

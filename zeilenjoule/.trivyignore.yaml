@@ -1,0 +1,28 @@
+# trivy exceptions (task scan:config / scan:images). Every entry needs a statement; ADR 0024.
+misconfigurations:
+  - id: KSV-0125
+    statement: >-
+      "untrusted registry" assumes a registry allowlist admission policy; every image is pinned by digest from its
+      publisher (docker.io library/pgvector/prom/grafana, ghcr.io/huggingface, own images via localhost registry).
+  - id: DS-0002
+    paths: ["**/exporter.Dockerfile"]
+    statement: RAPL energy_uj is root-only since kernel 5.10 (PLATYPUS, CVE-2020-8694); read-only, no capabilities.
+  - id: KSV-0012
+    paths: ["**/monitoring.yaml", "**/nvidia-device-plugin.yaml"]
+    statement: energy exporter needs root for RAPL (isolated in the privileged monitoring namespace); device plugin see KSV-0118.
+  - id: KSV-0118
+    paths: ["**/monitoring.yaml", "**/nvidia-device-plugin.yaml"]
+    statement: >-
+      energy exporter (RAPL, root) and the NVIDIA device plugin (writes kubelet's device-plugin socket dir) run as
+      root by design; the device plugin manifest mirrors NVIDIA's static v0.17.0 manifest.
+  - id: KSV-0023
+    paths: ["**/monitoring.yaml", "**/nvidia-device-plugin.yaml"]
+    statement: >-
+      exporter reads /sys/devices/virtual/powercap/intel-rapl (read-only hostPath); the device plugin must write
+      /var/lib/kubelet/device-plugins.
+  - id: KSV-0037
+    paths: ["**/nvidia-device-plugin.yaml"]
+    statement: the device plugin is cluster infrastructure and lives in kube-system like NVIDIA's manifest.
+  - id: KSV-0014
+    paths: ["**/nvidia-device-plugin.yaml"]
+    statement: kept identical to NVIDIA's upstream manifest (untested with a read-only root filesystem).

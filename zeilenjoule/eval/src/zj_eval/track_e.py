@@ -134,9 +134,12 @@ def router_schema() -> dict[str, Any]:
     }
 
 
-def router_prompt(repo: Path) -> str:
+def router_prompt(repo: Path, dialect: str = "duckdb") -> str:
+    """dialect "duckdb" = the benchmark prompt (sqlglot transpiles); "postgres" = the production prompt (Phase 9,
+    ADR 0022: the Go guard checks but does not transpile)."""
     c = td.catalog()
-    cols = "\n".join(f"  {n} {t} – {d}" for n, t, d in VIEW_COLUMNS)
+    pg = dialect == "postgres"
+    cols = "\n".join(f"  {n} {'NUMERIC' if pg and t == 'DOUBLE' else t} – {d}" for n, t, d in VIEW_COLUMNS)
     return "\n".join(
         [
             "Du beantwortest Fragen zu Störmeldungen aus Industriewerken in NRW. Wähle für jede Frage den Weg und "
@@ -144,7 +147,8 @@ def router_prompt(repo: Path) -> str:
             "",
             "Wege:",
             '- "sql": Zählen, Summen, Rangfolgen und das Nachschlagen einer bestimmten Meldung (Equipment, Werk, '
-            "Datum). Schreibe genau eine SELECT-Anweisung (DuckDB-SQL) nur auf die Sicht meldungen. "
+            f"Datum). Schreibe genau eine SELECT-Anweisung ({'PostgreSQL' if pg else 'DuckDB'}-SQL) nur auf die Sicht "
+            "meldungen. "
             '"antwort_aus": "tabelle", wenn das Ergebnis die Antwort ist; "text", wenn die Antwort im '
             "Meldungstext steht (dann meldung_id und meldungstext auswählen).",
             '- "search": inhaltliche Suche nach Meldungen zu einem Thema. "suchtext" = das Thema; Filter nur aus '
@@ -219,14 +223,20 @@ def prepare(scale: str = SCALE, repo: Path = REPO) -> dict[str, Any]:
         "".join(json.dumps({"qid": q["qid"], "text": q["text"]}, ensure_ascii=False) + "\n" for q in qs),
         "utf-8",
     )
+    prompts = prompt_set(repo)
+    (out / "prompts.json").write_text(json.dumps(prompts, ensure_ascii=False, indent=1) + "\n", "utf-8")
+    return {"questions": len(qs), "router_prompt_chars": len(router_prompt(repo))}
+
+
+def prompt_set(repo: Path, dialect: str = "duckdb") -> dict[str, Any]:
     shots: list[dict[str, str]] = []
     for text, ans in EXAMPLES:
         shots += [
             {"role": "user", "content": text},
             {"role": "assistant", "content": json.dumps(ans, ensure_ascii=False)},
         ]
-    prompts: dict[str, Any] = {
-        "router": {"system": router_prompt(repo), "shots": shots, "schema": router_schema()},
+    return {
+        "router": {"system": router_prompt(repo, dialect), "shots": shots, "schema": router_schema()},
         "answer": {"system": answer_prompt(), "schema": answer_schema(), "max_rows": 5},
         "label": {"system": label_prompt(), "schema": label_schema(), "sample": 2000, "seed": 0},
         "search": {"k": K_SEARCH, "rrf_k": 60},
@@ -238,8 +248,6 @@ def prepare(scale: str = SCALE, repo: Path = REPO) -> dict[str, Any]:
         },
         "max_tokens": 384,
     }
-    (out / "prompts.json").write_text(json.dumps(prompts, ensure_ascii=False, indent=1) + "\n", "utf-8")
-    return {"questions": len(qs), "router_prompt_chars": len(router_prompt(repo))}
 
 
 # ---------------------------------------------------------------- scoring

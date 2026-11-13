@@ -4,6 +4,7 @@ import (
 	"context"
 	"os"
 	"path/filepath"
+	"strconv"
 	"strings"
 	"testing"
 	"time"
@@ -95,5 +96,40 @@ func TestRunCmdQuality(t *testing.T) {
 	}
 	if _, _, q := RunCmdQuality(ctx, t.TempDir(), []string{"sh", "-c", `echo '{"passed": true, "detail": "x"}'`}, 10*time.Second); q != nil {
 		t.Fatalf("no quality object should give nil, got %v", q)
+	}
+}
+
+func TestLoad(t *testing.T) {
+	step := func(stage, ep string, rate float64, planned, ok int, errs string) string {
+		return `{"stage":"` + stage + `","endpoint":"` + ep + `","rate_rps":` + strings.TrimRight(strings.TrimRight(
+			strconv.FormatFloat(rate, 'f', 2, 64), "0"), ".") + `,"planned":` + strconv.Itoa(planned) + `,"sent":` +
+			strconv.Itoa(planned) + `,"ok":` + strconv.Itoa(ok) + `,"errors":{` + errs + `}}`
+	}
+	doc := func(rows int, steps ...string) string {
+		return `{"rows":` + strconv.Itoa(rows) + `,"steps":[` + strings.Join(steps, ",") + `]}`
+	}
+	good := []string{step("search_5", "search", 5, 300, 300, ""), step("search_160", "search", 160, 100, 40, `"timeout":50,"overload":10`),
+		step("ask_0p5", "ask", 0.5, 45, 45, ""), step("ask_8", "ask", 8, 720, 500, `"http_5xx":220`)}
+	cases := []struct {
+		name string
+		out  string
+		rows int64
+		pass bool
+	}{
+		{"overload errors are results", doc(1000, good...), 1000, true},
+		{"incomplete ingest", doc(999, good...), 999, false},
+		{"result rows differ", doc(1000, good...), 999, false},
+		{"wrong shape", doc(1000, append([]string{step("search_1", "search", 1, 60, 59, `"invalid":1`)}, good...)...), 1000, false},
+		{"client error", doc(1000, append([]string{step("ask_9", "ask", 9, 10, 9, `"http_4xx":1`)}, good...)...), 1000, false},
+		{"counts do not add up", doc(1000, append([]string{step("ask_9", "ask", 9, 10, 5, `"timeout":1`)}, good...)...), 1000, false},
+		{"no ask step", doc(1000, good[:2]...), 1000, false},
+		{"nothing right at the lowest rate", doc(1000, step("search_5", "search", 5, 300, 0, `"http_5xx":300`), good[2]), 1000, false},
+		{"not json", "x", 1000, false},
+	}
+	for _, c := range cases {
+		ok, detail := Run("builtin:e.load", Input{OutputPath: write(t, c.out), ExpectedRows: 1000, ResultRows: c.rows})
+		if ok != c.pass {
+			t.Errorf("%s: passed=%v (%s), want %v", c.name, ok, detail, c.pass)
+		}
 	}
 }

@@ -25,3 +25,14 @@ def test_production_rule_flags_energy_and_services() -> None:
         [_e("fast", 10, 100, ["DB", "Embed", "LLM", "Queue"]), _e("slow", 20, 100, ["LLM"])], "en"
     )
     assert "decision needed" in "\n".join(heavy)  # 3 more services
+
+
+def test_stack_compared_with_candidate_not_ranked() -> None:
+    s = report.Summary("e06_stack_go", "L", 1000, False, 3, 99, 99, 99, 0.0, 110, 110, 0.0, False)
+    stack = winner.Entry(s, True, 0.75, [])
+    md = "\n".join(winner.stack_md([stack], _e("e03", 100, 100, []), "en"))
+    assert "`e06_stack_go` | `e03`" in md
+    assert "-1.0 %" in md
+    assert "+10.0 %" in md
+    assert "e06_stack_go" in report.PRODUCTION_STACKS
+    assert "No counted run" in "\n".join(winner.stack_md([], None, "en"))
