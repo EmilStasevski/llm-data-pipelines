@@ -366,3 +366,34 @@ Stages in s; time-to-RAG and energy-to-RAG = ingest + embed + label + index (gro
 |---|---|---|---|---|
 | `e01_classic_python` | L | dnf | 1 | timeout after 1800 s |
 | `e02_modern_embedded` | L | dnf | 1 | timeout after 1800 s |
+
+## Phase 9: load curve of the production stack (`e.load`)
+
+Open-loop load (ADR 0026): request i is due at t0 + i/r whether or not earlier ones returned; latency counts from the due time (no coordinated omission). Queries = the 300 Track E questions (search: question text as query, k = 10). Every step is a ZJMARK stage; J/request = stage energy (GPU + CPU, gross or minus idle) / offered requests; ok/s = correct answers / stage time (incl. draining the backlog). Error rate = timeouts, 5xx, aborted streams, generator overload. `/v1/ask` streams the router decision as the first SSE event and then the whole answer (no token stream), so "first event" stands in for the TTFT of PLAN §12.3.
+
+### `e07_stack_load` – scale L (3 runs)
+
+| endpoint | offered req/s | requests | ok/s | errors | p50 ms | p95 ms | p99 ms | first event p95 ms | J/request | J/request net |
+|---|---|---|---|---|---|---|---|---|---|---|
+| `/v1/search` | 5 | 300 | 5.0 | 0.0 % | 374 | 563 | 570 | not measured | 15.24 | 13.71 |
+| `/v1/search` | 10 | 600 | 9.8 | 0.0 % | 769 | 2 223 | 2 595 | not measured | 10.38 | 9.60 |
+| `/v1/search` | 20 | 1 200 | 11.0 | 0.0 % | 53 455 | 71 761 | 73 327 | not measured | 9.36 | 8.66 |
+| `/v1/search` | 40 | 2 400 | 2.4 | 82.4 % | 62 490 | 116 525 | 119 560 | not measured | 7.32 | 6.75 |
+| `/v1/search` | 80 | 4 800 | 1.5 | 95.1 % | 67 566 | 115 329 | 119 427 | not measured | 3.16 | 2.91 |
+| `/v1/search` | 160 | 9 600 | 1.0 | 98.5 % | 79 305 | 116 826 | 118 973 | not measured | 1.45 | 1.34 |
+| `/v1/ask` | 0.5 | 45 | 0.5 | 0.0 % | 2 741 | 2 940 | 8 907 | 2 023 | 244.83 | 229.47 |
+| `/v1/ask` | 1 | 90 | 1.0 | 0.0 % | 2 795 | 3 347 | 10 492 | 2 430 | 122.42 | 114.56 |
+| `/v1/ask` | 2 | 180 | 2.0 | 0.0 % | 2 679 | 4 691 | 4 763 | 3 345 | 61.02 | 57.21 |
+| `/v1/ask` | 4 | 360 | 3.6 | 0.0 % | 5 622 | 11 547 | 12 998 | 8 800 | 36.60 | 34.47 |
+| `/v1/ask` | 8 | 720 | 4.5 | 0.0 % | 36 173 | 77 769 | 85 214 | 59 438 | 30.43 | 28.75 |
+
+- knee `/v1/search`: stable up to 5 req/s, beyond 10 req/s
+- knee `/v1/ask`: stable up to 2 req/s, beyond 4 req/s
+
+**SLOs (PLAN §12.3):**
+
+| SLO | measured | |
+|---|---|---|
+| `/v1/search` p95 < 100 ms at 20 req/s | p95 71 761 ms, 0.0 % | ✗ |
+| `/v1/ask` first event p95 < 1.5 s | met at no rate | ✗ |
+| ingest ≥ 0.8 × rows/s of the Track E winner | 628 rows/s (`e06_stack_go`, stage ingest) vs 0.8 × 575 = 460 rows/s (`e03_postgres_only`, wall time) | ✓ |

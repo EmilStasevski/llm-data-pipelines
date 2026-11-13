@@ -366,3 +366,34 @@ Stufen in s; Time-to-RAG und Energy-to-RAG = ingest + embed + label + index (bru
 |---|---|---|---|---|
 | `e01_classic_python` | L | dnf | 1 | timeout after 1800 s |
 | `e02_modern_embedded` | L | dnf | 1 | timeout after 1800 s |
+
+## Phase 9: Lastkurve des Produktions-Stacks (`e.load`)
+
+Offene Last (ADR 0026): Anfrage i ist zum Zeitpunkt t0 + i/r fällig, egal ob frühere beantwortet sind; Latenz ab Fälligkeit (kein *coordinated omission*). Fragen = die 300 Track-E-Fragen (Suche: Fragetext als Suchtext, k = 10). Jede Stufe ist eine ZJMARK-Stufe; J/Anfrage = Energie der Stufe (GPU + CPU, brutto bzw. minus Leerlauf) / angebotene Anfragen; ok/s = richtige Antworten / Stufendauer (inkl. Abarbeiten des Rückstaus). Fehlerquote = Zeitüberschreitung, 5xx, Abbruch, Überlast des Generators. `/v1/ask` streamt die Router-Entscheidung als erstes SSE-Ereignis und dann die ganze Antwort (keine Token-Ströme): „erstes Ereignis“ ersetzt deshalb die TTFT aus PLAN §12.3.
+
+### `e07_stack_load` – Skala L (3 Läufe)
+
+| Endpunkt | Angebot req/s | Anfragen | ok/s | Fehler | p50 ms | p95 ms | p99 ms | erstes Ereignis p95 ms | J/Anfrage | J/Anfrage netto |
+|---|---|---|---|---|---|---|---|---|---|---|
+| `/v1/search` | 5 | 300 | 5,0 | 0,0 % | 374 | 563 | 570 | nicht gemessen | 15,24 | 13,71 |
+| `/v1/search` | 10 | 600 | 9,8 | 0,0 % | 769 | 2 223 | 2 595 | nicht gemessen | 10,38 | 9,60 |
+| `/v1/search` | 20 | 1 200 | 11,0 | 0,0 % | 53 455 | 71 761 | 73 327 | nicht gemessen | 9,36 | 8,66 |
+| `/v1/search` | 40 | 2 400 | 2,4 | 82,4 % | 62 490 | 116 525 | 119 560 | nicht gemessen | 7,32 | 6,75 |
+| `/v1/search` | 80 | 4 800 | 1,5 | 95,1 % | 67 566 | 115 329 | 119 427 | nicht gemessen | 3,16 | 2,91 |
+| `/v1/search` | 160 | 9 600 | 1,0 | 98,5 % | 79 305 | 116 826 | 118 973 | nicht gemessen | 1,45 | 1,34 |
+| `/v1/ask` | 0,5 | 45 | 0,5 | 0,0 % | 2 741 | 2 940 | 8 907 | 2 023 | 244,83 | 229,47 |
+| `/v1/ask` | 1 | 90 | 1,0 | 0,0 % | 2 795 | 3 347 | 10 492 | 2 430 | 122,42 | 114,56 |
+| `/v1/ask` | 2 | 180 | 2,0 | 0,0 % | 2 679 | 4 691 | 4 763 | 3 345 | 61,02 | 57,21 |
+| `/v1/ask` | 4 | 360 | 3,6 | 0,0 % | 5 622 | 11 547 | 12 998 | 8 800 | 36,60 | 34,47 |
+| `/v1/ask` | 8 | 720 | 4,5 | 0,0 % | 36 173 | 77 769 | 85 214 | 59 438 | 30,43 | 28,75 |
+
+- Knie `/v1/search`: stabil bis 5 req/s, darüber 10 req/s
+- Knie `/v1/ask`: stabil bis 2 req/s, darüber 4 req/s
+
+**SLOs (PLAN §12.3):**
+
+| SLO | gemessen | |
+|---|---|---|
+| `/v1/search` p95 < 100 ms bei 20 req/s | p95 71 761 ms, 0,0 % | ✗ |
+| `/v1/ask` erstes Ereignis p95 < 1,5 s | bei keiner Rate erfüllt | ✗ |
+| Ingest ≥ 0,8 × Zeilen/s des Track-E-Gewinners | 628 Zeilen/s (`e06_stack_go`, Stufe ingest) gegen 0,8 × 575 = 460 Zeilen/s (`e03_postgres_only`, Wall-Zeit) | ✓ |

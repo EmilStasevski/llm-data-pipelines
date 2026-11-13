@@ -37,3 +37,14 @@ neben das Harness stellen und die Energie nur über den Exporter liefern.
 - e06 wurde mit dem Gateway *vor* der Plan-Korrektur gemessen; e07 misst das korrigierte Gateway. Die Fragen-Stufe
   von e06 (64 parallele Fragen, Suche nur ein Teil davon) ist davon kaum betroffen; nicht neu gemessen.
 - Ein gemessener L-Lauf dauert ≈ 45 min (Stack-Start + Ingest ≈ 28 min + Stufen ≈ 15 min).
+
+## Ergebnis (gemessen, Skala L, 3 Läufe, Sitzung 356d44ab; Zahlen aus `results/`, Tabelle im Bericht)
+- Alle 3 Läufe `ok` und geprüft. Knie `/v1/search` bei 5 req/s (p95 563 ms), Sättigung ≈ 11 ok/s; `/v1/ask` stabil
+  bis 2 req/s (erstes Ereignis p95 3,3 s), Sättigung ≈ 4,5 ok/s.
+- SLOs: Suche ✗ (p95 72 s bei 20 req/s, Rückstau), erstes Ereignis ✗ (p95 ≥ 2,0 s bei jeder Rate – das erste
+  Ereignis ist die Router-LLM-Antwort), Ingest ✓ (628 gegen 460 Zeilen/s).
+- Deutung: Mit 8 Leser-Verbindungen und ≈ 11 req/s Sättigung auf 16 Kernen kostet eine Suche ≈ 1,4 Kern-s
+  (abgeleitet, nicht einzeln gemessen) – die lexikalische Stufe über ≈ 40 % von 1 M Zeilen. Größerer Pool hilft
+  nicht; nur eine andere lexikalische Rangfolge. Für die erste-Ereignis-SLO müsste die Router-Entscheidung schneller
+  werden (kleineres Router-Modell/Regeln) – ein früheres „Platzhalter“-Ereignis wäre Schönfärberei und ist
+  ausgeschlossen. Beides ist eine Entscheidung des Nutzers (Qualität/Vergleichbarkeit mit e03).

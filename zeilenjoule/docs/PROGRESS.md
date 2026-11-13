@@ -587,3 +587,11 @@ Open questions:
 
 **Offene Fragen**
 - Suche-SLO auf L: Rangfolge der lexikalischen Stufe ändern (Qualität/Vergleichbarkeit) oder Ziel anpassen?
+
+## 2026-11-13 — Phase 9 Teil 5: Lastkurve gemessen, Phase 9 abgeschlossen
+- Nutzer hat `e07_stack_load` auf L gemessen (Sitzung 356d44ab, 3 Läufe, je ≈ 2 890 s): alle `ok` und geprüft
+  (20 295 Anfragen je Lauf, 1 M Zeilen ingestiert). `task report` neu erzeugt; Lastkurve + SLO-Tabelle im Bericht.
+- Ergebnis: Knie Suche 5 req/s (Sättigung ≈ 11 ok/s), Fragen 2 req/s (≈ 4,5 ok/s). SLO Ingest ✓, Suche ✗,
+  erstes Ereignis ✗. Deutung und Optionen als Nachtrag in ADR 0026. README: Phase 9 ✅ mit verfehlten SLOs offen benannt.
+- Nächstes: Entscheidung des Nutzers, ob die SLOs nachgebessert werden (lexikalische Rangfolge, schnellerer Router),
+  sonst Phase 10 (Portfolio: Abbildungen, Blog-Entwurf, `docs/BEWERBUNG.md`, `task demo`, Demo-Seite).

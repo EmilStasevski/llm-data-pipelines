@@ -8,7 +8,7 @@ Gemessen werden **Laufzeit und Energie (Joule)** auf einem Rechner mit NVIDIA RT
 Der schnellste Stack, der alle Qualitätsprüfungen besteht, bekommt anschließend ein Go-basiertes Produktions-Setup.
 
 ## Status
-**Phasen 0–8 abgeschlossen, Phase 9 gebaut**: Track A–E sind gemessen (Dataframes, Embeddings, Speicherung/Suche, LLM-Extraktion, End-to-End-RAG); der Gewinner `e03_postgres_only` läuft als Go-Produktions-Stack und ist selbst als `e06_stack_go` gemessen. Offen: gemessene Lastkurve `e07_stack_load` (PLAN §12.3), dann Phase 10 (Portfolio).
+**Phasen 0–9 abgeschlossen**: Track A–E sind gemessen (Dataframes, Embeddings, Speicherung/Suche, LLM-Extraktion, End-to-End-RAG); der Gewinner `e03_postgres_only` läuft als Go-Produktions-Stack und ist selbst als `e06_stack_go` gemessen. Lastkurve `e07_stack_load` gemessen: Ingest-SLO erfüllt, Such- und Erstes-Ereignis-SLO verfehlt (ADR 0026). Offen: Phase 10 (Portfolio).
 Ergebnisse: [`reports/REPORT.de.md`](reports/REPORT.de.md) (English: [`reports/REPORT.md`](reports/REPORT.md)). Alle Zahlen dort stammen ausschließlich aus `results/` (Harness-Ausgabe) und werden von `task report` erzeugt. Ein Lauf zählt nur, wenn er die Prüfung gegen die Referenzimplementierung besteht.
 
 | Phase | Inhalt | Status |
@@ -22,7 +22,7 @@ Ergebnisse: [`reports/REPORT.de.md`](reports/REPORT.de.md) (English: [`reports/R
 | 6 | Track C: Speicherung, Index, Suche (FAISS, cuVS, pgvector, DuckDB, SQLite, LanceDB, Qdrant, Tantivy; Konkurrenz 1/16, Hybrid-RRF) | ✅ gemessen |
 | 7 | Track D: LLM-Extraktion (Ollama, llama.cpp, vLLM; Qwen 3.5, Gemma 4, Ministral, gpt-oss, EuroLLM, Teuken) | ✅ gemessen (inkl. GLiNER und Regeln+LLM-Kaskade) |
 | 8 | Track E: End-to-End-RAG (4 Pipelines auf 1 Mio. Zeilen), Gewinneranalyse | ✅ gemessen · Gate 2: `reports/WINNER.md`, `docs/ARCHITEKTUR.md` |
-| 9 | Produktion: Go-Gateway + Worker, Compose, k3s/Helm, Monitoring mit Energie, lokale CI/CD | 🔶 `docs/RUNBOOK.md`, `docs/CI.md`, gemessen als `e06_stack_go`; Lastkurve `e07_stack_load` offen |
+| 9 | Produktion: Go-Gateway + Worker, Compose, k3s/Helm, Monitoring mit Energie, lokale CI/CD | ✅ `docs/RUNBOOK.md`, `docs/CI.md`, gemessen als `e06_stack_go` und `e07_stack_load` (2 von 3 SLOs verfehlt, ADR 0026) |
 | 10 | Portfolio | offen |
 
 <!-- zj:results:begin -->
