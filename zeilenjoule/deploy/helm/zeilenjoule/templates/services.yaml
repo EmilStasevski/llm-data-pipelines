@@ -76,6 +76,9 @@ spec:
             - {name: ZJ_RATE_LIMIT, value: {{ .Values.gateway.rateLimit | quote }}}
             - {name: ZJ_RATE_BURST, value: {{ .Values.gateway.rateBurst | quote }}}
             - {name: ZJ_REQUEST_TIMEOUT, value: {{ .Values.gateway.requestTimeout | quote }}}
+            {{- if .Values.monitoring.enabled }}
+            - {name: ZJ_PROMETHEUS_URL, value: "http://prometheus.{{ .Values.monitoring.namespace }}.svc:9090"}   # GET /v1/energy
+            {{- end }}
           ports:
             - {name: http, containerPort: 8080}
             - {name: metrics, containerPort: 9090}

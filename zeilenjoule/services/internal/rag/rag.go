@@ -10,6 +10,7 @@ import (
 	"errors"
 	"fmt"
 	"math/big"
+	"regexp"
 	"sort"
 	"strings"
 	"time"
@@ -89,7 +90,8 @@ type Answer struct {
 	Value     any      // table rows ([][]any, in Columns order), text, or nil
 	Columns   []string // column names of a table answer
 	CitedIDs  []string
-	Estimated bool // depends on the estimated column schadensart
+	Hits      []Hit // route search: the cited rows with their display columns
+	Estimated bool  // depends on the estimated column schadensart
 }
 
 func str(p *string) string {
@@ -99,28 +101,64 @@ func str(p *string) string {
 	return *p
 }
 
-// Route runs the router call.
-func (e *Engine) Route(ctx context.Context, question string) (Routed, error) {
+// StreamLLM is implemented by clients that report the constrained JSON while it is generated (llm.Client).
+type StreamLLM interface {
+	JSONStream(ctx context.Context, op string, msgs []prompts.Message, schema json.RawMessage, maxTokens int,
+		onText func(string)) (llm.Result, error)
+}
+
+// Progress receives an answer's intermediate steps. Route fires once with sql | search | invalid as soon as the
+// route is decided – with a streaming LLM while the router is still generating the rest of its JSON, because
+// "route" is the schema's first property (ADR 0027). Plan fires with the complete router output.
+type Progress struct {
+	Route func(route string)
+	Plan  func(Routed)
+}
+
+// routePrefix matches the router's route once it is complete in the generated JSON prefix.
+var routePrefix = regexp.MustCompile(`^\s*\{\s*"route"\s*:\s*"(sql|search)"`)
+
+// Route runs the router call; onRoute (optional) gets the route as soon as the generated prefix fixes it.
+func (e *Engine) Route(ctx context.Context, question string, onRoute func(string)) (Routed, error) {
 	r := e.P.Router
-	res, err := e.LLM.JSON(ctx, "router", r.Messages(question), r.Schema, r.MaxTokens)
+	var res llm.Result
+	var err error
+	sent := false
+	if s, ok := e.LLM.(StreamLLM); ok && onRoute != nil {
+		res, err = s.JSONStream(ctx, "router", r.Messages(question), r.Schema, r.MaxTokens, func(prefix string) {
+			if m := routePrefix.FindStringSubmatch(prefix); m != nil && !sent {
+				sent = true
+				onRoute(m[1])
+			}
+		})
+	} else {
+		res, err = e.LLM.JSON(ctx, "router", r.Messages(question), r.Schema, r.MaxTokens)
+	}
 	if err != nil {
 		return Routed{}, err
 	}
 	var o Routed
-	if err := json.Unmarshal([]byte(res.Text), &o); err != nil {
-		return Routed{Route: "invalid"}, nil //nolint:nilerr // an unparsable route is a wrong answer, not an outage
+	if json.Unmarshal([]byte(res.Text), &o) != nil || (o.Route != "sql" && o.Route != "search") {
+		o = Routed{Route: "invalid"} // an unparsable route is a wrong answer, not an outage
+	}
+	if onRoute != nil && !sent {
+		onRoute(o.Route)
 	}
 	return o, nil
 }
 
-// Ask answers one question. Progress events (route chosen) go to onRoute when non-nil.
-func (e *Engine) Ask(ctx context.Context, question string, onRoute func(Routed)) (Answer, error) {
-	o, err := e.Route(ctx, question)
+// Ask answers one question; p (optional) receives the route and the router plan as soon as they are known.
+func (e *Engine) Ask(ctx context.Context, question string, p *Progress) (Answer, error) {
+	var onRoute func(string)
+	if p != nil {
+		onRoute = p.Route
+	}
+	o, err := e.Route(ctx, question, onRoute)
 	if err != nil {
 		return Answer{}, err
 	}
-	if onRoute != nil {
-		onRoute(o)
+	if p != nil && p.Plan != nil {
+		p.Plan(o)
 	}
 	switch {
 	case o.Route == "sql" && str(o.SQL) != "":
@@ -141,7 +179,7 @@ func (e *Engine) Ask(ctx context.Context, question string, onRoute func(Routed))
 		for i, h := range hits {
 			ids[i] = h.MeldungID
 		}
-		return Answer{Route: "search", CitedIDs: ids, Estimated: f.Schadensart != ""}, nil
+		return Answer{Route: "search", CitedIDs: ids, Hits: hits, Estimated: f.Schadensart != ""}, nil
 	default:
 		metrics.Routes.WithLabelValues("invalid").Inc()
 		return Answer{Route: "invalid", CitedIDs: []string{}}, nil
@@ -362,6 +400,19 @@ func RRF(k int, legs ...[]string) ([]string, map[string]float64) {
 
 const tsQuery = "replace(plainto_tsquery('german', $1)::text, '&', '|')::tsquery"
 
+// CommonCutoff is the document share above which a query lexeme counts as common (ADR 0027).
+const CommonCutoff = 0.01
+
+// MatchQuery is the lexical leg's match condition, in the spirit of Lucene/Elasticsearch's common-terms query: the
+// OR of the query lexemes that occur in the data and are rare (document frequency ≤ CommonCutoff × rows, lex_df).
+// Without a rare lexeme the leg has no candidates and the dense leg answers alone – ts_rank has no IDF, so a ranking
+// over common words only (field labels such as "meldung" stand in every row) carries little signal and costs up to a
+// scan of the whole table. Ranking still uses the whole OR query (tsQuery), so a row matching rare terms gains from
+// the common ones too. Candidates are bounded by CommonCutoff × rows per rare lexeme.
+const MatchQuery = `SELECT coalesce(string_agg(quote_literal(w), ' | ' ORDER BY w), '')
+FROM unnest(tsvector_to_array(to_tsvector('german', $1))) w JOIN lex_df d ON d.word = w
+WHERE d.ndoc <= $2::float8 * d.nrows`
+
 // Search runs the filtered hybrid search and returns the top k hits with their display columns.
 func (e *Engine) Search(ctx context.Context, text string, f Filters, k int) ([]Hit, error) {
 	if strings.TrimSpace(text) == "" {
@@ -392,8 +443,16 @@ func (e *Engine) Search(ctx context.Context, text string, f Filters, k int) ([]H
 		if err != nil {
 			return err
 		}
-		lex, err = ids(ctx, tx, fmt.Sprintf("SELECT meldung_id FROM docs, (SELECT %s AS q) t WHERE %s AND tsv @@ t.q "+
-			"ORDER BY ts_rank(tsv, t.q) DESC, meldung_id LIMIT %d", tsQuery, w, Depth), append([]any{text}, args...)...)
+		var match string
+		if err := tx.QueryRow(ctx, MatchQuery, text, CommonCutoff).Scan(&match); err != nil {
+			return err
+		}
+		if match == "" {
+			return nil // no rare lexeme that occurs in the data: no lexical candidates
+		}
+		lex, err = ids(ctx, tx, fmt.Sprintf("SELECT meldung_id FROM docs, (SELECT %s AS q) t WHERE %s AND tsv @@ $%d::tsquery "+
+			"ORDER BY ts_rank(tsv, t.q) DESC, meldung_id LIMIT %d", tsQuery, w, 2+len(args), Depth),
+			append(append([]any{text}, args...), match)...)
 		return err
 	})
 	if err != nil {

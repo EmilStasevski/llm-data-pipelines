@@ -5,6 +5,7 @@
 package llm
 
 import (
+	"bufio"
 	"bytes"
 	"context"
 	"encoding/json"
@@ -12,6 +13,7 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"strings"
 	"time"
 
 	"zeilenjoule/services/internal/metrics"
@@ -48,6 +50,8 @@ type chatRequest struct {
 	MaxTokens      int               `json:"max_tokens"`
 	ResponseFormat map[string]any    `json:"response_format,omitempty"`
 	ChatTemplate   map[string]any    `json:"chat_template_kwargs"`
+	Stream         bool              `json:"stream,omitempty"`
+	StreamOptions  map[string]any    `json:"stream_options,omitempty"`
 }
 
 type chatResponse struct {
@@ -79,12 +83,31 @@ func retryable(err error) bool {
 
 // JSON runs one chat completion constrained to schema. op labels the metrics (router, answer, label, extract).
 func (c *Client) JSON(ctx context.Context, op string, msgs []prompts.Message, schema json.RawMessage, maxTokens int) (Result, error) {
-	body, err := json.Marshal(chatRequest{
+	return c.run(ctx, op, msgs, schema, maxTokens, nil)
+}
+
+// JSONStream is JSON with a streamed completion: onText sees the generated text so far after every chunk (same
+// request settings, so the same tokens as JSON). The router uses it to report its route before the rest of the
+// JSON is generated (ADR 0027). onText may see a prefix again when a failed attempt is retried.
+func (c *Client) JSONStream(ctx context.Context, op string, msgs []prompts.Message, schema json.RawMessage, maxTokens int,
+	onText func(string),
+) (Result, error) {
+	return c.run(ctx, op, msgs, schema, maxTokens, onText)
+}
+
+func (c *Client) run(ctx context.Context, op string, msgs []prompts.Message, schema json.RawMessage, maxTokens int,
+	onText func(string),
+) (Result, error) {
+	cr := chatRequest{
 		Model: c.model, Messages: msgs, Temperature: 0, Seed: 0, MaxTokens: maxTokens,
 		ResponseFormat: map[string]any{"type": "json_schema",
 			"json_schema": map[string]any{"name": op, "schema": schema, "strict": true}},
 		ChatTemplate: map[string]any{"enable_thinking": false},
-	})
+	}
+	if onText != nil {
+		cr.Stream, cr.StreamOptions = true, map[string]any{"include_usage": true}
+	}
+	body, err := json.Marshal(cr)
 	if err != nil {
 		return Result{}, err
 	}
@@ -97,7 +120,7 @@ func (c *Client) JSON(ctx context.Context, op string, msgs []prompts.Message, sc
 	var res Result
 	for attempt := 0; ; attempt++ {
 		t0 := time.Now()
-		res, err = c.once(ctx, body)
+		res, err = c.once(ctx, body, onText)
 		outcome := "ok"
 		if err != nil {
 			outcome = "error"
@@ -120,7 +143,7 @@ func (c *Client) JSON(ctx context.Context, op string, msgs []prompts.Message, sc
 	return res, nil
 }
 
-func (c *Client) once(ctx context.Context, body []byte) (Result, error) {
+func (c *Client) once(ctx context.Context, body []byte, onText func(string)) (Result, error) {
 	req, err := http.NewRequestWithContext(ctx, http.MethodPost, c.base+"/v1/chat/completions", bytes.NewReader(body))
 	if err != nil {
 		return Result{}, err
@@ -131,6 +154,9 @@ func (c *Client) once(ctx context.Context, body []byte) (Result, error) {
 		return Result{}, err
 	}
 	defer func() { _ = resp.Body.Close() }()
+	if resp.StatusCode/100 == 2 && onText != nil {
+		return readStream(resp.Body, onText)
+	}
 	raw, err := io.ReadAll(io.LimitReader(resp.Body, 4<<20))
 	if err != nil {
 		return Result{}, err
@@ -147,6 +173,55 @@ func (c *Client) once(ctx context.Context, body []byte) (Result, error) {
 	}
 	return Result{Text: cr.Choices[0].Message.Content, PromptTokens: cr.Usage.PromptTokens,
 		CompletionTokens: cr.Usage.CompletionTokens, Finish: cr.Choices[0].FinishReason}, nil
+}
+
+type streamChunk struct {
+	Choices []struct {
+		Delta        struct{ Content string } `json:"delta"`
+		FinishReason *string                  `json:"finish_reason"`
+	} `json:"choices"`
+	Usage *struct {
+		PromptTokens     int `json:"prompt_tokens"`
+		CompletionTokens int `json:"completion_tokens"`
+	} `json:"usage"`
+}
+
+// readStream reads an OpenAI-style SSE completion ("data: {chunk}" lines, "data: [DONE]").
+func readStream(r io.Reader, onText func(string)) (Result, error) {
+	var res Result
+	var text strings.Builder
+	sc := bufio.NewScanner(r)
+	sc.Buffer(make([]byte, 0, 64<<10), 4<<20)
+	for sc.Scan() {
+		data, ok := strings.CutPrefix(sc.Text(), "data: ")
+		if !ok {
+			continue
+		}
+		if data == "[DONE]" {
+			res.Text = text.String()
+			return res, nil
+		}
+		var ch streamChunk
+		if err := json.Unmarshal([]byte(data), &ch); err != nil {
+			return Result{}, fmt.Errorf("llm: decode chunk: %w", err)
+		}
+		if ch.Usage != nil {
+			res.PromptTokens, res.CompletionTokens = ch.Usage.PromptTokens, ch.Usage.CompletionTokens
+		}
+		for _, c := range ch.Choices {
+			if c.FinishReason != nil {
+				res.Finish = *c.FinishReason
+			}
+			if c.Delta.Content != "" {
+				text.WriteString(c.Delta.Content)
+				onText(text.String())
+			}
+		}
+	}
+	if err := sc.Err(); err != nil {
+		return Result{}, err
+	}
+	return Result{}, errors.New("llm: stream ended without [DONE]")
 }
 
 // Ready checks GET /health.

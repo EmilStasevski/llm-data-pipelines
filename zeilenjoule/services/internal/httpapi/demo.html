@@ -1,0 +1,178 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ZeilenJoule Demo</title>
+<style>
+:root{--bg:#fcfcfb;--surface:#ffffff;--ink:#0b0b0b;--sec:#52514e;--mut:#898781;--line:#e1e0d9;--accent:#2a78d6;
+  --accent-ink:#ffffff;--chip:#eef4fc;--warn:#9a5b00;--mono:ui-monospace,SFMono-Regular,Menlo,monospace}
+@media (prefers-color-scheme:dark){:root{--bg:#1a1a19;--surface:#222221;--ink:#f0efec;--sec:#c3c2b7;--mut:#898781;
+  --line:#383835;--accent:#3987e5;--chip:#1f2c3d;--warn:#e0a640}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif}
+main{max-width:860px;margin:0 auto;padding:24px 16px 48px}
+h1{font-size:22px;margin:0 0 4px}
+.sub{color:var(--sec);margin:0 0 20px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:16px;margin-bottom:16px}
+label{display:block;font-size:13px;color:var(--sec);margin-bottom:4px}
+input,textarea{width:100%;font:inherit;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:6px;padding:8px 10px}
+textarea{min-height:64px;resize:vertical}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:10px}
+button{font:inherit;text-align:left;border-radius:6px;border:1px solid var(--line);background:var(--bg);color:var(--ink);padding:6px 12px;cursor:pointer}
+button.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-ink);font-weight:600}
+button:disabled{opacity:.5;cursor:default}
+.chip{display:inline-block;background:var(--chip);border-radius:999px;padding:2px 10px;font-size:13px;margin-right:6px}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px}
+.stat .v{font-size:22px;font-weight:600;font-variant-numeric:tabular-nums}
+.stat .k{font-size:12px;color:var(--sec)}
+pre{font-family:var(--mono);font-size:12.5px;background:var(--bg);border:1px solid var(--line);border-radius:6px;padding:8px;
+  white-space:pre-wrap;overflow-wrap:anywhere;margin:8px 0}
+table{border-collapse:collapse;width:100%;font-size:13.5px}
+th,td{border-bottom:1px solid var(--line);padding:6px 8px;text-align:left;vertical-align:top}
+th{color:var(--sec);font-weight:600}
+td.num{text-align:right;font-variant-numeric:tabular-nums}
+.tablewrap{overflow-x:auto}
+.mut{color:var(--mut);font-size:13px}
+.warn{color:var(--warn)}
+.answer{font-size:17px;margin:8px 0}
+</style>
+</head>
+<body>
+<main>
+<h1>ZeilenJoule – Demo</h1>
+<p class="sub">Fragen an synthetische Störmeldungen (NRW): Router-LLM wählt SQL oder hybride Suche, Antwort mit zitierten Zeilen und Energie je Frage.</p>
+
+<div class="card">
+  <label for="key">API-Schlüssel (<code>X-API-Key</code>, bleibt in diesem Tab)</label>
+  <input id="key" type="password" autocomplete="off">
+  <label for="q" style="margin-top:12px">Frage</label>
+  <textarea id="q">Wie hoch waren die Gesamtkosten in Euro für Störungen mit Schadensart Leckage in Köln im Jahr 2025?</textarea>
+  <div class="row" id="examples"></div>
+  <div class="row"><button class="primary" id="ask">Fragen</button><span class="mut" id="status"></span></div>
+</div>
+
+<div class="card" id="result" hidden>
+  <div id="route"></div>
+  <div id="plan"></div>
+  <div id="answer"></div>
+</div>
+
+<div class="card">
+  <div class="stats">
+    <div class="stat"><div class="v" id="t-first">–</div><div class="k">erstes Ereignis (Route)</div></div>
+    <div class="stat"><div class="v" id="t-total">–</div><div class="k">Antwort komplett</div></div>
+    <div class="stat"><div class="v" id="jpa">–</div><div class="k">J je Frage (1-min-Mittel, brutto)</div></div>
+    <div class="stat"><div class="v" id="watts">–</div><div class="k">Leistung GPU + CPU</div></div>
+  </div>
+  <p class="mut" id="esrc">Energie aus Prometheus (<code>zj:joules_per_ask:1m</code>), geteilt durch alle Arbeit auf der Maschine.</p>
+</div>
+</main>
+<script>
+"use strict";
+const $ = (id) => document.getElementById(id);
+const EXAMPLES = [
+  "Wie hoch waren die Gesamtkosten in Euro für Störungen mit Schadensart Leckage in Köln im Jahr 2025?",
+  "Welche Meldungen gibt es zu „Lager läuft heiß“ in Dortmund im 2. Quartal 2025?",
+  "Welches Werk hatte 2024 die höchsten Stillstandskosten?",
+];
+try { $("key").value = sessionStorage.getItem("zj-key") || ""; } catch (_) {}
+for (const ex of EXAMPLES) {
+  const b = document.createElement("button");
+  b.textContent = ex;
+  b.onclick = () => { $("q").value = ex; };
+  $("examples").appendChild(b);
+}
+const fmt = (v, d) => v.toLocaleString("de-DE", { maximumFractionDigits: d, minimumFractionDigits: d });
+function el(tag, text, cls) { const e = document.createElement(tag); if (text !== undefined) e.textContent = text; if (cls) e.className = cls; return e; }
+function table(cols, rows) {
+  const w = el("div", undefined, "tablewrap"), t = el("table"), hr = el("tr");
+  for (const c of cols) hr.appendChild(el("th", c));
+  t.appendChild(hr);
+  for (const r of rows) {
+    const tr = el("tr");
+    for (const v of r) tr.appendChild(el("td", v === null ? "–" : String(v), typeof v === "number" ? "num" : ""));
+    t.appendChild(tr);
+  }
+  w.appendChild(t);
+  return w;
+}
+function showAnswer(a) {
+  const box = $("answer");
+  box.replaceChildren();
+  if (a.route === "none") { box.appendChild(el("p", "Der Router hat keine verwertbare Antwort geliefert.", "warn")); return; }
+  if (a.sql_status && a.sql_status !== "executed") box.appendChild(el("p", "SQL nicht ausgeführt (" + a.sql_status + ").", "warn"));
+  if (typeof a.answer === "string") box.appendChild(el("p", a.answer, "answer"));
+  else if (Array.isArray(a.answer) && a.columns) box.appendChild(table(a.columns, a.answer));
+  else if (a.answer !== null && a.answer !== undefined) box.appendChild(el("p", String(a.answer), "answer"));
+  if (a.cited_rows && a.cited_rows.length) {
+    box.appendChild(el("p", "Zitierte Meldungen (beste zuerst):", "mut"));
+    box.appendChild(table(["Meldung", "Werk", "Datum", "Text"],
+      a.cited_rows.map((h) => [h.meldung_id, h.werk ?? null, h.datum ?? null, h.meldungstext ?? null])));
+  } else if (a.cited_ids && a.cited_ids.length) {
+    box.appendChild(el("p", "Zitiert: " + a.cited_ids.join(", "), "mut"));
+  }
+  if (a.estimated) box.appendChild(el("p", "Hängt von der geschätzten Spalte „schadensart“ ab.", "mut"));
+}
+async function ask() {
+  const key = $("key").value.trim(), q = $("q").value.trim();
+  if (!key || !q) { $("status").textContent = "API-Schlüssel und Frage angeben."; return; }
+  try { sessionStorage.setItem("zj-key", key); } catch (_) {}
+  $("ask").disabled = true; $("status").textContent = "…";
+  $("result").hidden = false; $("route").replaceChildren(); $("plan").replaceChildren(); $("answer").replaceChildren();
+  $("t-first").textContent = "–"; $("t-total").textContent = "–";
+  const t0 = performance.now();
+  let first = false;
+  try {
+    const r = await fetch("/v1/ask", { method: "POST", headers: { "X-API-Key": key, "Content-Type": "application/json",
+      "Accept": "text/event-stream" }, body: JSON.stringify({ question: q }) });
+    if (!r.ok) { const p = await r.json().catch(() => ({})); throw new Error(p.title || ("HTTP " + r.status)); }
+    const reader = r.body.getReader(), dec = new TextDecoder();
+    let buf = "", event = "";
+    for (;;) {
+      const { value, done } = await reader.read();
+      if (done) break;
+      buf += dec.decode(value, { stream: true });
+      let i;
+      while ((i = buf.indexOf("\n")) >= 0) {
+        const line = buf.slice(0, i); buf = buf.slice(i + 1);
+        if (line.startsWith("event: ")) {
+          event = line.slice(7);
+          if (!first) { first = true; $("t-first").textContent = fmt(performance.now() - t0, 0) + " ms"; }
+        } else if (line.startsWith("data: ")) {
+          const d = JSON.parse(line.slice(6));
+          if (event === "route") $("route").replaceChildren(el("span", "Route: " + d.route, "chip"));
+          else if (event === "plan") {
+            if (d.sql) $("plan").replaceChildren(el("pre", d.sql));
+            else if (d.suchtext) $("plan").replaceChildren(el("p", "Suchtext: " + d.suchtext, "mut"));
+          } else if (event === "answer") showAnswer(d);
+          else if (event === "error") throw new Error(d.detail || d.title || "Fehler");
+        }
+      }
+    }
+    $("t-total").textContent = fmt((performance.now() - t0) / 1000, 1) + " s";
+    $("status").textContent = "";
+  } catch (e) {
+    $("status").textContent = "Fehler: " + e.message;
+  } finally {
+    $("ask").disabled = false;
+  }
+}
+async function energy() {
+  const key = $("key").value.trim();
+  if (!key) return;
+  try {
+    const r = await fetch("/v1/energy", { headers: { "X-API-Key": key } });
+    if (!r.ok) return;
+    const e = await r.json();
+    $("jpa").textContent = e.joules_per_ask == null ? "nicht gemessen" : fmt(e.joules_per_ask, 0) + " J";
+    $("watts").textContent = e.watts == null ? "nicht gemessen" : fmt(e.watts, 0) + " W";
+    if (e.source !== "prometheus") $("esrc").textContent = "Energie: " + e.source + ".";
+  } catch (_) {}
+}
+$("ask").onclick = ask;
+energy();
+setInterval(energy, 5000);
+</script>
+</body>
+</html>

@@ -81,25 +81,25 @@ class Bar:
     anti: bool = False
 
 
-def _esc(s: str) -> str:
+def esc(s: str) -> str:
     return s.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
 
 
-def _ticks_log(lo: float, hi: float) -> list[float]:
+def ticks_log(lo: float, hi: float) -> list[float]:
     out: list[float] = []
     for e in range(math.floor(math.log10(lo)), math.ceil(math.log10(hi)) + 1):
         out += [m * 10.0**e for m in (1, 2, 5) if lo <= m * 10.0**e <= hi]
     return out
 
 
-def _nice(v: float, *, down: bool) -> float:
+def nice(v: float, *, down: bool) -> float:
     """Nearest 1-2-5 step at or below (down) / at or above v."""
     e = math.floor(math.log10(v))
     steps = [m * 10.0**k for k in (e - 1, e, e + 1) for m in (1, 2, 5)]
     return max(s for s in steps if s <= v) if down else min(s for s in steps if s >= v)
 
 
-def _tick_label(v: float) -> str:
+def tick_label(v: float) -> str:
     return f"{v:g}" if v < 1e4 else f"{v / 1e3:g}k"
 
 
@@ -109,24 +109,24 @@ def svg_bars(title: str, bars: list[Bar], *, log: bool = True) -> str:
     h = top + row * len(bars) + 30
     plot = w - left - right
     vals = [b.value for b in bars]
-    lo = _nice(min(vals), down=True) if log else 0.0
-    hi = _nice(max(vals), down=False) if log else max(vals) * 1.05
+    lo = nice(min(vals), down=True) if log else 0.0
+    hi = nice(max(vals), down=False) if log else max(vals) * 1.05
 
     def x(v: float) -> float:
         if log:
             return left + plot * (math.log10(v) - math.log10(lo)) / (math.log10(hi) - math.log10(lo))
         return left + plot * v / hi
 
-    ticks = _ticks_log(lo, hi) if log else [hi / 4 * i for i in range(5)]
+    ticks = ticks_log(lo, hi) if log else [hi / 4 * i for i in range(5)]
     out = [f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {w} {h}" width="{w}" height="{h}" '
-           f'role="img" aria-label="{_esc(title)}"><style>{CSS}</style>',
+           f'role="img" aria-label="{esc(title)}"><style>{CSS}</style>',
            f'<rect class="bg" width="{w}" height="{h}" rx="6"/>',
-           f'<text class="ink" x="16" y="20" font-weight="600">{_esc(title)}</text>']  # fmt: skip
+           f'<text class="ink" x="16" y="20" font-weight="600">{esc(title)}</text>']  # fmt: skip
     yb = top + row * len(bars)
     for t in ticks:
         out.append(f'<line class="grid" x1="{x(t):.1f}" x2="{x(t):.1f}" y1="{top - 4}" y2="{yb}"/>')
         out.append(
-            f'<text class="mut" x="{x(t):.1f}" y="{yb + 16}" text-anchor="middle">{_tick_label(t)}</text>'
+            f'<text class="mut" x="{x(t):.1f}" y="{yb + 16}" text-anchor="middle">{tick_label(t)}</text>'
         )
     out.append(f'<line class="axis" x1="{left}" x2="{left}" y1="{top - 4}" y2="{yb}"/>')
     for i, b in enumerate(bars):
@@ -134,12 +134,12 @@ def svg_bars(title: str, bars: list[Bar], *, log: bool = True) -> str:
         x1 = max(x(b.value), left + 4)
         cls = "anti" if b.anti else "s1"
         out.append(
-            f'<text class="sec mono" x="{left - 8}" y="{y + 15}" text-anchor="end">{_esc(b.label)}</text>'
+            f'<text class="sec mono" x="{left - 8}" y="{y + 15}" text-anchor="end">{esc(b.label)}</text>'
         )
         out.append(
             f'<path class="{cls}" d="M{left},{y + 4}H{x1 - 4:.1f}a4,4 0 0 1 4,4v6a4,4 0 0 1 -4,4H{left}Z"/>'
         )
-        out.append(f'<text class="ink" x="{x1 + 6:.1f}" y="{y + 15}">{_esc(b.text)}</text>')
+        out.append(f'<text class="ink" x="{x1 + 6:.1f}" y="{y + 15}">{esc(b.text)}</text>')
     out.append("</svg>")
     return "\n".join(out) + "\n"
 
@@ -160,13 +160,13 @@ def svg_grouped(
         return left + plot * v / hi
 
     out = [f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {w} {h}" width="{w}" height="{h}" '
-           f'role="img" aria-label="{_esc(title)}"><style>{CSS}</style>',
+           f'role="img" aria-label="{esc(title)}"><style>{CSS}</style>',
            f'<rect class="bg" width="{w}" height="{h}" rx="6"/>',
-           f'<text class="ink" x="16" y="20" font-weight="600">{_esc(title)}</text>',
+           f'<text class="ink" x="16" y="20" font-weight="600">{esc(title)}</text>',
            f'<rect class="s1" x="16" y="30" width="10" height="10" rx="2"/>'
-           f'<text class="sec" x="32" y="39">{_esc(names[0])}</text>',
+           f'<text class="sec" x="32" y="39">{esc(names[0])}</text>',
            f'<rect class="s2" x="130" y="30" width="10" height="10" rx="2"/>'
-           f'<text class="sec" x="146" y="39">{_esc(names[1])}</text>']  # fmt: skip
+           f'<text class="sec" x="146" y="39">{esc(names[1])}</text>']  # fmt: skip
     yb = top + row * len(labels)
     t = 0.0
     while t <= hi:
@@ -176,7 +176,7 @@ def svg_grouped(
     out.append(f'<line class="axis" x1="{left}" x2="{left}" y1="{top - 4}" y2="{yb}"/>')
     for i, lab in enumerate(labels):
         y = top + i * row
-        out.append(f'<text class="sec mono" x="{left - 8}" y="{y + 18}" text-anchor="end">{_esc(lab)}</text>')
+        out.append(f'<text class="sec mono" x="{left - 8}" y="{y + 18}" text-anchor="end">{esc(lab)}</text>')
         for j, (v, cls) in enumerate(((a[i], "s1"), (b[i], "s2"))):
             yy = y + 3 + j * 12  # 10 px bars, 2 px surface gap
             x1 = max(x(v), left + 3)
@@ -216,7 +216,7 @@ def _quality_e(con: duckdb.DuckDBPyConnection, scale: str) -> dict[str, float]:
     return {c: v for c, d in acc.items() if (v := median_of(d.get("overall", []))) is not None}
 
 
-def _quality_d(con: duckdb.DuckDBPyConnection, scale: str) -> dict[str, tuple[float, float]]:
+def quality_d(con: duckdb.DuckDBPyConnection, scale: str) -> dict[str, tuple[float, float]]:
     """Median macro-F1 and JSON validity per Track D contestant at `scale`."""
     acc: dict[str, dict[str, list[float]]] = {}
     for c, sc, st, ex, q, rows in con.execute(DETAIL_SQL, list(section_filter("D"))).fetchall():
@@ -248,7 +248,7 @@ def block(con: duckdb.DuckDBPyConnection, figs: Path, lang: str) -> str:
         if stem and len(rows) > 1:
             bars = [Bar(s.contestant, s.wall, _value_text(s, lang), s.anti) for s in rows]
             (figs / f"{stem}.{lang}.svg").write_text(svg_bars(t["wall"], bars), encoding="utf-8")
-            out += [f"![{_esc(head)}](reports/figures/{stem}.{lang}.svg)", ""]
+            out += [f"![{esc(head)}](reports/figures/{stem}.{lang}.svg)", ""]
         body: list[list[str]] = []
         for i, s in enumerate(rows, 1):
             ratio = s.wall / rows[0].wall
@@ -258,7 +258,7 @@ def block(con: duckdb.DuckDBPyConnection, figs: Path, lang: str) -> str:
             body.append([str(i), name, fmt_num(s.wall, 2, lang), fmt_num(ratio, 2 if ratio < 10 else 0, lang),
                          fmt_num(s.e_gross, 1, lang)])  # fmt: skip
         head_cells = HEAD[lang]
-        if section == "D" and (q := _quality_d(con, scale)):  # Track D: quality decides as much as speed
+        if section == "D" and (q := quality_d(con, scale)):  # Track D: quality decides as much as speed
             best = max(f1 for f1, _ in q.values())
             head_cells = [*head_cells, "macro-F1", t["gate"]]
             for r, s in zip(body, rows, strict=True):

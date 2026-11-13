@@ -1,0 +1,50 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 820 440" width="820" height="440" role="img" aria-label="Track D: quality vs. energy per row, scale D2k"><style>.bg{fill:#fcfcfb}.ink{fill:#0b0b0b}.sec{fill:#52514e}.mut{fill:#898781}.grid{stroke:#e1e0d9}.axis{stroke:#c3c2b7}.dom{fill:#c3c2b7}.ref{stroke:#898781;stroke-dasharray:4 4}.c0{fill:#2a78d6}.l0{stroke:#2a78d6}.c1{fill:#eb6834}.l1{stroke:#eb6834}.c2{fill:#1baf7a}.l2{stroke:#1baf7a}.c3{fill:#eda100}.l3{stroke:#eda100}.c4{fill:#e87ba4}.l4{stroke:#e87ba4}@media (prefers-color-scheme:dark){.bg{fill:#1a1a19}.ink{fill:#f0efec}.sec{fill:#c3c2b7}.grid{stroke:#2c2c2a}.axis{stroke:#383835}.dom{fill:#52514e}.c0{fill:#3987e5}.l0{stroke:#3987e5}.c1{fill:#d95926}.l1{stroke:#d95926}.c2{fill:#199e70}.l2{stroke:#199e70}.c3{fill:#c98500}.l3{stroke:#c98500}.c4{fill:#d55181}.l4{stroke:#d55181}}text{font-family:ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;font-size:12px}.mono{font-family:ui-monospace,SFMono-Regular,Menlo,monospace}</style>
+<rect class="bg" width="820" height="440" rx="6"/>
+<text class="ink" x="16" y="22" font-weight="600">Track D: quality vs. energy per row, scale D2k</text>
+<line class="grid" x1="80.0" x2="80.0" y1="58" y2="390"/>
+<text class="mut" x="80.0" y="406" text-anchor="middle">0.5</text>
+<line class="grid" x1="172.9" x2="172.9" y1="58" y2="390"/>
+<text class="mut" x="172.9" y="406" text-anchor="middle">1</text>
+<line class="grid" x1="265.8" x2="265.8" y1="58" y2="390"/>
+<text class="mut" x="265.8" y="406" text-anchor="middle">2</text>
+<line class="grid" x1="388.6" x2="388.6" y1="58" y2="390"/>
+<text class="mut" x="388.6" y="406" text-anchor="middle">5</text>
+<line class="grid" x1="481.4" x2="481.4" y1="58" y2="390"/>
+<text class="mut" x="481.4" y="406" text-anchor="middle">10</text>
+<line class="grid" x1="574.3" x2="574.3" y1="58" y2="390"/>
+<text class="mut" x="574.3" y="406" text-anchor="middle">20</text>
+<line class="grid" x1="697.1" x2="697.1" y1="58" y2="390"/>
+<text class="mut" x="697.1" y="406" text-anchor="middle">50</text>
+<line class="grid" x1="790.0" x2="790.0" y1="58" y2="390"/>
+<text class="mut" x="790.0" y="406" text-anchor="middle">100</text>
+<line class="grid" x1="80" x2="790" y1="336.7" y2="336.7"/>
+<text class="mut" x="74" y="340.7" text-anchor="end">0.8</text>
+<line class="grid" x1="80" x2="790" y1="259.7" y2="259.7"/>
+<text class="mut" x="74" y="263.7" text-anchor="end">0.85</text>
+<line class="grid" x1="80" x2="790" y1="182.7" y2="182.7"/>
+<text class="mut" x="74" y="186.7" text-anchor="end">0.9</text>
+<line class="grid" x1="80" x2="790" y1="105.7" y2="105.7"/>
+<text class="mut" x="74" y="109.7" text-anchor="end">0.95</text>
+<line class="axis" x1="80" x2="790" y1="390" y2="390"/>
+<line class="axis" x1="80" x2="80" y1="58" y2="390"/>
+<text class="sec" x="435.0" y="428" text-anchor="middle">J/row gross (log)</text>
+<text class="sec" x="16" y="224.0" transform="rotate(-90 16 224.0)" text-anchor="middle">macro-F1</text>
+<text class="sec mono" x="16" y="42" font-size="11">1 d10_gliner  ·  2 d11_cascade  ·  3 d02_llamacpp_qwen35_9b_q4_3shot</text>
+<circle class="dom" cx="607.4" cy="127.4" r="4"><title>d02_llamacpp_qwen35_4b_q4: 25.60 J/row · F1 0.936</title></circle>
+<circle class="dom" cx="689.2" cy="123.8" r="4"><title>d02_llamacpp_ministral3_14b_q4: 47.14 J/row · F1 0.938</title></circle>
+<circle class="dom" cx="690.1" cy="111.7" r="4"><title>d01_ollama_qwen35_9b_q4: 47.46 J/row · F1 0.946</title></circle>
+<circle class="dom" cx="664.3" cy="100.7" r="4"><title>d02_llamacpp_qwen35_9b_q4: 39.15 J/row · F1 0.953</title></circle>
+<circle class="dom" cx="625.8" cy="111.4" r="4"><title>d03_vllm_qwen35_9b_fp8: 29.36 J/row · F1 0.946</title></circle>
+<circle class="dom" cx="594.7" cy="89.6" r="4"><title>d02_llamacpp_gemma4_e4b_q4: 23.29 J/row · F1 0.961</title></circle>
+<circle class="dom" cx="594.5" cy="88.0" r="4"><title>d02_llamacpp_gemma4_e4b_q4_3shot: 23.26 J/row · F1 0.962</title></circle>
+<circle class="dom" cx="602.3" cy="84.2" r="4"><title>d03_vllm_qwen35_9b_awq_3shot: 24.65 J/row · F1 0.964</title></circle>
+<circle class="dom" cx="639.0" cy="128.5" r="4"><title>d03_vllm_qwen35_9b_awq: 32.41 J/row · F1 0.935</title></circle>
+<circle class="dom" cx="682.7" cy="107.1" r="4"><title>d02_llamacpp_qwen35_9b_q8: 44.89 J/row · F1 0.949</title></circle>
+<circle class="dom" cx="755.6" cy="154.1" r="4"><title>d02_llamacpp_gemma4_12b_q4: 77.36 J/row · F1 0.919</title></circle>
+<circle class="c0" cx="556.1" cy="81.6" r="5"><title>d11_cascade: 17.46 J/row · F1 0.966</title></circle>
+<text class="ink" x="564.1" y="75.6" font-weight="600" font-size="11">2</text>
+<circle class="c0" cx="653.7" cy="73.1" r="5"><title>d02_llamacpp_qwen35_9b_q4_3shot: 36.17 J/row · F1 0.971</title></circle>
+<text class="ink" x="661.7" y="67.1" font-weight="600" font-size="11">3</text>
+<circle class="c0" cx="115.1" cy="374.9" r="5"><title>d10_gliner: 0.65 J/row · F1 0.775</title></circle>
+<text class="ink" x="123.1" y="368.9" font-weight="600" font-size="11">1</text>
+</svg>

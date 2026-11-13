@@ -73,8 +73,9 @@ func run() error {
 	ec := embed.New(cfg.TEIURL, cfg.EmbedInFlight, cfg.EmbedBatch)
 	srv := &httpapi.Server{
 		Pool: pool, River: rc, UploadDir: cfg.UploadDir, MaxUpload: cfg.MaxUpload, Log: log,
-		Engine:    &rag.Engine{Owner: pool, Reader: reader, LLM: lc, Emb: ec, P: p, SQLTimeout: cfg.SQLTimeout},
-		Upstreams: map[string]httpapi.Pinger{"tei": ec, "llm": lc},
+		Engine:     &rag.Engine{Owner: pool, Reader: reader, LLM: lc, Emb: ec, P: p, SQLTimeout: cfg.SQLTimeout},
+		Upstreams:  map[string]httpapi.Pinger{"tei": ec, "llm": lc},
+		Prometheus: cfg.PrometheusURL,
 	}
 	h := httpapi.Handler(srv, httpapi.Options{APIKeys: cfg.APIKeys, RateLimit: cfg.RateLimit, RateBurst: cfg.RateBurst,
 		JSONLimit: 4 << 20, Timeout: cfg.RequestTO, Log: log})

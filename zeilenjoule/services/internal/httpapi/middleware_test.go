@@ -42,7 +42,8 @@ func TestAuth(t *testing.T) {
 		path, key string
 		want      int
 	}{
-		{"/healthz", "", 200}, {"/readyz", "", 200}, {"/v1/openapi.json", "", 200},
+		{"/healthz", "", 200}, {"/readyz", "", 200}, {"/v1/openapi.json", "", 200}, {"/demo", "", 200},
+		{"/v1/energy", "", 401},
 		{"/v1/ask", "", 401}, {"/v1/ask", "wrong", 401}, {"/v1/ask", "k1", 200}, {"/v1/search", "k2", 200},
 	} {
 		if got := do(h, c.path, c.key); got.Code != c.want {

@@ -42,3 +42,12 @@ func EnsureSearchIndexes(ctx context.Context, pool *pgxpool.Pool) error {
 	}
 	return nil
 }
+
+// RefreshLexDF recomputes the lexeme document frequencies of the lexical search leg (migration 0002, ADR 0027).
+// CONCURRENTLY keeps searches running on the old counts meanwhile.
+func RefreshLexDF(ctx context.Context, pool *pgxpool.Pool) error {
+	if _, err := pool.Exec(ctx, "REFRESH MATERIALIZED VIEW CONCURRENTLY lex_df"); err != nil {
+		return fmt.Errorf("refresh lex_df: %w", err)
+	}
+	return nil
+}

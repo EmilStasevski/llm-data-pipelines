@@ -42,6 +42,8 @@ type Server struct {
 	UploadDir string
 	MaxUpload int64
 	Log       *slog.Logger
+	// Prometheus is the base URL for GET /v1/energy (ZJ_PROMETHEUS_URL); empty: energy not available
+	Prometheus string
 }
 
 var _ api.StrictServerInterface = (*Server)(nil)
@@ -194,12 +196,17 @@ func (s *Server) Search(ctx context.Context, req api.SearchRequestObject) (api.S
 	}
 	out := api.SearchResponse{Hits: make([]api.Hit, len(hits))}
 	for i, h := range hits {
-		out.Hits[i] = api.Hit{MeldungId: h.MeldungID, Score: float32(h.Score), Werk: &h.Werk, Meldungstext: &h.Meldungstext}
-		if h.Datum != nil {
-			out.Hits[i].Datum = &openapi_types.Date{Time: *h.Datum}
-		}
+		out.Hits[i] = hitOf(h)
 	}
 	return api.Search200JSONResponse(out), nil
+}
+
+func hitOf(h rag.Hit) api.Hit {
+	out := api.Hit{MeldungId: h.MeldungID, Score: float32(h.Score), Werk: &h.Werk, Meldungstext: &h.Meldungstext}
+	if h.Datum != nil {
+		out.Datum = &openapi_types.Date{Time: *h.Datum}
+	}
+	return out
 }
 
 type acceptKey struct{}
@@ -223,6 +230,13 @@ func toResponse(a rag.Answer) api.AskResponse {
 	if a.SQL != "" {
 		out.Sql = &a.SQL
 	}
+	if len(a.Hits) > 0 {
+		rows := make([]api.Hit, len(a.Hits))
+		for i, h := range a.Hits {
+			rows[i] = hitOf(h)
+		}
+		out.CitedRows = &rows
+	}
 	if a.Columns != nil {
 		out.Columns = &a.Columns
 	}
@@ -232,7 +246,7 @@ func toResponse(a rag.Answer) api.AskResponse {
 	return out
 }
 
-// Ask answers a question as JSON, or as Server-Sent Events (route, answer, done) when the client asks for them.
+// Ask answers a question as JSON, or as Server-Sent Events (route, plan, answer, done) when the client asks for them.
 func (s *Server) Ask(ctx context.Context, req api.AskRequestObject) (api.AskResponseObject, error) {
 	if req.Body == nil || strings.TrimSpace(req.Body.Question) == "" || runes(req.Body.Question) > 2000 {
 		return api.Ask400ApplicationProblemPlusJSONResponse{ProblemApplicationProblemPlusJSONResponse: api.ProblemApplicationProblemPlusJSONResponse(
@@ -252,7 +266,8 @@ func (s *Server) Ask(ctx context.Context, req api.AskRequestObject) (api.AskResp
 	return api.Ask200JSONResponse(toResponse(a)), nil
 }
 
-// sseAsk streams the router decision as soon as it is known, then the answer.
+// sseAsk streams the route as soon as the router has generated it, the router plan (SQL or search text), then the
+// answer (ADR 0027).
 type sseAsk struct {
 	ctx context.Context //nolint:containedctx // the strict interface visits the response after the handler returns
 	s   *Server
@@ -275,12 +290,15 @@ func (r sseAsk) VisitAskResponse(w http.ResponseWriter) error {
 			fl.Flush()
 		}
 	}
-	a, err := r.s.Engine.Ask(r.ctx, r.q, func(o rag.Routed) {
-		route := api.AskResponseRoute(o.Route)
-		if !route.Valid() {
-			route = api.None
-		}
-		emit("route", map[string]any{"route": route, "sql": o.SQL, "suchtext": o.Suchtext})
+	a, err := r.s.Engine.Ask(r.ctx, r.q, &rag.Progress{
+		Route: func(rt string) {
+			route := api.AskResponseRoute(rt)
+			if !route.Valid() {
+				route = api.None
+			}
+			emit("route", map[string]any{"route": route})
+		},
+		Plan: func(o rag.Routed) { emit("plan", map[string]any{"sql": o.SQL, "suchtext": o.Suchtext}) },
 	})
 	if err != nil {
 		emit("error", problem(http.StatusBadGateway, "ask failed", err.Error()))

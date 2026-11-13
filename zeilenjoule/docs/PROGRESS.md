@@ -595,3 +595,34 @@ Open questions:
   erstes Ereignis ✗. Deutung und Optionen als Nachtrag in ADR 0026. README: Phase 9 ✅ mit verfehlten SLOs offen benannt.
 - Nächstes: Entscheidung des Nutzers, ob die SLOs nachgebessert werden (lexikalische Rangfolge, schnellerer Router),
   sonst Phase 10 (Portfolio: Abbildungen, Blog-Entwurf, `docs/BEWERBUNG.md`, `task demo`, Demo-Seite).
+
+## 2026-11-13 — Phase 9 Teil 6: SLO-Korrektur (ADR 0027) · Phase 10 Portfolio
+- **Nutzerentscheidung:** SLOs korrigieren, dann Phase 10 Punkte 1–4.
+- **Suche:** Common-Terms-Treffer-Bedingung.
+  - Ursache: `doc_text` enthält Feldbezeichnungen, die in jeder Zeile stehen.
+  - Neue Materialized View `lex_df` (Migration 0002), Refresh nach jedem Ingest.
+  - Integrationstest dazu; er hat einen `bigint`-Cast-Fehler gefunden.
+  - Zwei Varianten verworfen (UND-Rückfall zu langsam; unbekannte Wörter als selten). Begründung in ADR 0027.
+- **Erstes Ereignis:** Router-LLM gestreamt (`llm.JSONStream`).
+  - Das SSE-Ereignis `route` kommt, sobald das erste JSON-Feld fertig ist; danach `plan`, `answer`, `done`.
+- **Entwicklungsprüfung** auf L (ungemessen, `logs/p9_fix/`): Qualität der 300 Fragen unverändert, beide SLO-Grenzen
+  eingehalten. Maßgeblich ist die Neumessung.
+- **Lastkurve:** Suchstufen jetzt bis 640 req/s.
+- **Phase 10:**
+  - Abbildungen im Bericht (`figures.py`): Pareto-Fronten A/B/C/E, Track D F1 vs. J/Zeile, Track-E-Stufen, Lastkurve
+  - Bewerbungs-Kit `docs/BEWERBUNG.md` mit generierten Blöcken (Kennzahlen `facts.py`, BA-Anzeigen `skills.py`)
+  - Blog-Entwurf `docs/blog/`; Aussagen gegen `results/` geprüft und korrigiert (GPU schlägt CPU in Track A bis L nicht)
+  - `task demo` + Demo-Seite `GET /demo`, `GET /v1/energy`, `cited_rows`
+  - README: Mermaid-Architektur, „Nachmessen in drei Befehlen“
+- **Nächstes (Nutzer):** Neumessung `e06_stack_go` und `e07_stack_load` (L, je 3 Läufe), dann `task report`; Phase 9/10
+  danach auf ✅.
+
+## 2026-11-13 — Phase 9 Teil 7: Neumessung nach ADR 0027 · Phase 9 und 10 abgeschlossen
+- Nutzer hat gemessen: `e06_stack_go` (Sitzung 842ffdfa, 3 × ≈ 1 724 s) und `e07_stack_load` (Sitzung 535a4a88,
+  3 × ≈ 2 676 s), alle `ok` und geprüft. `task report` neu erzeugt (Bericht, WINNER, READMEs, Kennzahlen-Blöcke).
+- **Ergebnis:** alle drei SLOs erfüllt (Suche p95 bei 20 req/s, erstes Ereignis, Ingest); Such-Knie jetzt bei
+  320 req/s statt 5 req/s, Fragen weiter LLM-begrenzt (Knie 2 req/s). `e06` gegen `e03`: Qualitäts-Gate ✓,
+  Zeit/Energie im Rahmen (WINNER.md). Nachtrag in ADR 0027.
+- READMEs: Phase 9 und 10 ✅. Blog-Abschnitt 5 um das Ergebnis der Neumessung ergänzt.
+- Optional offen: k3s-Rollout durch den Nutzer (`task k3s:cluster-setup`, `task images && task k3s:up`,
+  `task k3s:smoke`).

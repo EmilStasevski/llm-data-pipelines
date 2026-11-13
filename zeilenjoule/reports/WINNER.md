@@ -93,11 +93,11 @@ Architekturvorschlag: `docs/ARCHITEKTUR.md`.
 
 ## Phase 9: Produktions-Stack gegenüber dem Gewinner als Skript
 
-Gleiche CSV-Bytes, gleiche 300 Fragen, gleicher Prüfer; der Stack läuft als Dienst (Compose: Gateway, Worker, River, PostgreSQL, TEI, vLLM) und wird über seine HTTP-API bedient (ADR 0025). Δ = Stack ÷ Skript - 1.
+Gleiche CSV-Bytes, gleiche 300 Fragen, gleicher Prüfer; der Stack läuft als Dienst (Compose: Gateway, Worker, River, PostgreSQL, TEI, vLLM) und wird über seine HTTP-API bedient (ADR 0025). Seit ADR 0027 (Common-Terms-Volltext) weicht die lexikalische Kandidatenmenge des Stacks vom Skript ab; die Tabelle zeigt die neueste Sitzung. Δ = Stack ÷ Skript - 1.
 
 | Kennzahl | `e06_stack_go` | `e03_postgres_only` | Δ |
 |---|---|---|---|
-| Wall s | 1 719,4 | 1 740,0 | -1,2 % |
-| Energie J | 244 378 | 247 895 | -1,4 % |
-| Qualität | 0,751 | 0,754 | -0,3 % |
+| Wall s | 1 723,6 | 1 740,0 | -0,9 % |
+| Energie J | 245 009 | 247 895 | -1,2 % |
+| Qualität | 0,756 | 0,754 | +0,2 % |
 | Gate | ✓ | ✓ | |

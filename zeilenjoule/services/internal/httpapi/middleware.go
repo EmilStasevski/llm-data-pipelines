@@ -27,7 +27,7 @@ type Options struct {
 	Log       *slog.Logger
 }
 
-var public = map[string]bool{"/healthz": true, "/readyz": true, "/v1/openapi.json": true}
+var public = map[string]bool{"/healthz": true, "/readyz": true, "/v1/openapi.json": true, "/demo": true}
 
 // statusWriter records the status code and keeps http.Flusher working (SSE).
 type statusWriter struct {
@@ -148,6 +148,7 @@ func Handler(s *Server, o Options) http.Handler {
 		})
 	h := api.HandlerWithOptions(strict, api.StdHTTPServerOptions{BaseRouter: mux,
 		ErrorHandlerFunc: ProblemHandler(o.Log, http.StatusBadRequest)})
+	mux.HandleFunc("GET /demo", serveDemo)
 	mux.HandleFunc("GET /v1/openapi.json", func(w http.ResponseWriter, _ *http.Request) {
 		spec, err := api.GetSwagger()
 		if err != nil {

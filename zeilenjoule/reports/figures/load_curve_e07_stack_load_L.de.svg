@@ -1,0 +1,80 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 820 440" width="820" height="440" role="img" aria-label="Lastkurve e07_stack_load, Skala L: p95-Latenz je Angebotsrate"><style>.bg{fill:#fcfcfb}.ink{fill:#0b0b0b}.sec{fill:#52514e}.mut{fill:#898781}.grid{stroke:#e1e0d9}.axis{stroke:#c3c2b7}.dom{fill:#c3c2b7}.ref{stroke:#898781;stroke-dasharray:4 4}.c0{fill:#2a78d6}.l0{stroke:#2a78d6}.c1{fill:#eb6834}.l1{stroke:#eb6834}.c2{fill:#1baf7a}.l2{stroke:#1baf7a}.c3{fill:#eda100}.l3{stroke:#eda100}.c4{fill:#e87ba4}.l4{stroke:#e87ba4}@media (prefers-color-scheme:dark){.bg{fill:#1a1a19}.ink{fill:#f0efec}.sec{fill:#c3c2b7}.grid{stroke:#2c2c2a}.axis{stroke:#383835}.dom{fill:#52514e}.c0{fill:#3987e5}.l0{stroke:#3987e5}.c1{fill:#d95926}.l1{stroke:#d95926}.c2{fill:#199e70}.l2{stroke:#199e70}.c3{fill:#c98500}.l3{stroke:#c98500}.c4{fill:#d55181}.l4{stroke:#d55181}}text{font-family:ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;font-size:12px}.mono{font-family:ui-monospace,SFMono-Regular,Menlo,monospace}</style>
+<rect class="bg" width="820" height="440" rx="6"/>
+<text class="ink" x="16" y="22" font-weight="600">Lastkurve e07_stack_load, Skala L: p95-Latenz je Angebotsrate</text>
+<line class="grid" x1="80.0" x2="80.0" y1="58" y2="390"/>
+<text class="mut" x="80.0" y="406" text-anchor="middle">0.5</text>
+<line class="grid" x1="144.7" x2="144.7" y1="58" y2="390"/>
+<text class="mut" x="144.7" y="406" text-anchor="middle">1</text>
+<line class="grid" x1="209.5" x2="209.5" y1="58" y2="390"/>
+<text class="mut" x="209.5" y="406" text-anchor="middle">2</text>
+<line class="grid" x1="295.1" x2="295.1" y1="58" y2="390"/>
+<text class="mut" x="295.1" y="406" text-anchor="middle">5</text>
+<line class="grid" x1="359.8" x2="359.8" y1="58" y2="390"/>
+<text class="mut" x="359.8" y="406" text-anchor="middle">10</text>
+<line class="grid" x1="424.6" x2="424.6" y1="58" y2="390"/>
+<text class="mut" x="424.6" y="406" text-anchor="middle">20</text>
+<line class="grid" x1="510.2" x2="510.2" y1="58" y2="390"/>
+<text class="mut" x="510.2" y="406" text-anchor="middle">50</text>
+<line class="grid" x1="574.9" x2="574.9" y1="58" y2="390"/>
+<text class="mut" x="574.9" y="406" text-anchor="middle">100</text>
+<line class="grid" x1="639.7" x2="639.7" y1="58" y2="390"/>
+<text class="mut" x="639.7" y="406" text-anchor="middle">200</text>
+<line class="grid" x1="725.3" x2="725.3" y1="58" y2="390"/>
+<text class="mut" x="725.3" y="406" text-anchor="middle">500</text>
+<line class="grid" x1="790.0" x2="790.0" y1="58" y2="390"/>
+<text class="mut" x="790.0" y="406" text-anchor="middle">1000</text>
+<line class="grid" x1="80" x2="790" y1="390.0" y2="390.0"/>
+<text class="mut" x="74" y="394.0" text-anchor="end">50</text>
+<line class="grid" x1="80" x2="790" y1="359.7" y2="359.7"/>
+<text class="mut" x="74" y="363.7" text-anchor="end">100</text>
+<line class="grid" x1="80" x2="790" y1="329.4" y2="329.4"/>
+<text class="mut" x="74" y="333.4" text-anchor="end">200</text>
+<line class="grid" x1="80" x2="790" y1="289.4" y2="289.4"/>
+<text class="mut" x="74" y="293.4" text-anchor="end">500</text>
+<line class="grid" x1="80" x2="790" y1="259.1" y2="259.1"/>
+<text class="mut" x="74" y="263.1" text-anchor="end">1000</text>
+<line class="grid" x1="80" x2="790" y1="228.9" y2="228.9"/>
+<text class="mut" x="74" y="232.9" text-anchor="end">2000</text>
+<line class="grid" x1="80" x2="790" y1="188.9" y2="188.9"/>
+<text class="mut" x="74" y="192.9" text-anchor="end">5000</text>
+<line class="grid" x1="80" x2="790" y1="158.6" y2="158.6"/>
+<text class="mut" x="74" y="162.6" text-anchor="end">10k</text>
+<line class="grid" x1="80" x2="790" y1="128.3" y2="128.3"/>
+<text class="mut" x="74" y="132.3" text-anchor="end">20k</text>
+<line class="grid" x1="80" x2="790" y1="88.3" y2="88.3"/>
+<text class="mut" x="74" y="92.3" text-anchor="end">50k</text>
+<line class="grid" x1="80" x2="790" y1="58.0" y2="58.0"/>
+<text class="mut" x="74" y="62.0" text-anchor="end">100k</text>
+<line class="axis" x1="80" x2="790" y1="390" y2="390"/>
+<line class="axis" x1="80" x2="80" y1="58" y2="390"/>
+<text class="sec" x="435.0" y="428" text-anchor="middle">Angebot req/s (log)</text>
+<text class="sec" x="16" y="224.0" transform="rotate(-90 16 224.0)" text-anchor="middle">p95 ms (log)</text>
+<line class="ref" x1="80" x2="790" y1="359.7" y2="359.7"/>
+<text class="mut" x="786" y="355.7" text-anchor="end">SLO /v1/search 100 ms</text>
+<line class="ref" x1="80" x2="790" y1="241.4" y2="241.4"/>
+<text class="mut" x="786" y="237.4" text-anchor="end">SLO /v1/ask erstes Ereignis p95 1500 ms</text>
+<rect class="c0" x="16.0" y="30" width="10" height="10" rx="2"/><text class="sec" x="31.0" y="39">/v1/search p95</text>
+<path class="l0" d="M295.1,364.2 L359.8,370.7 L424.6,372.9 L489.3,371.7 L554.1,371.6 L618.8,375.7 L683.6,360.3 L748.3,191.6" fill="none" stroke-width="2"/>
+<circle class="c0" cx="295.1" cy="364.2" r="4"><title>/v1/search p95: 5 req/s → 90 ms</title></circle>
+<circle class="c0" cx="359.8" cy="370.7" r="4"><title>/v1/search p95: 10 req/s → 78 ms</title></circle>
+<circle class="c0" cx="424.6" cy="372.9" r="4"><title>/v1/search p95: 20 req/s → 74 ms</title></circle>
+<circle class="c0" cx="489.3" cy="371.7" r="4"><title>/v1/search p95: 40 req/s → 76 ms</title></circle>
+<circle class="c0" cx="554.1" cy="371.6" r="4"><title>/v1/search p95: 80 req/s → 76 ms</title></circle>
+<circle class="c0" cx="618.8" cy="375.7" r="4"><title>/v1/search p95: 160 req/s → 69 ms</title></circle>
+<circle class="c0" cx="683.6" cy="360.3" r="4"><title>/v1/search p95: 320 req/s → 99 ms</title></circle>
+<circle class="c0" cx="748.3" cy="191.6" r="4"><title>/v1/search p95: 640 req/s → 4,699 ms</title></circle>
+<rect class="c1" x="144.0" y="30" width="10" height="10" rx="2"/><text class="sec" x="159.0" y="39">/v1/ask erstes Ereignis p95</text>
+<path class="l1" d="M80.0,314.7 L144.7,306.1 L209.5,310.6 L274.2,226.5 L339.0,86.8" fill="none" stroke-width="2"/>
+<circle class="c1" cx="80.0" cy="314.7" r="4"><title>/v1/ask erstes Ereignis p95: 0.5 req/s → 281 ms</title></circle>
+<circle class="c1" cx="144.7" cy="306.1" r="4"><title>/v1/ask erstes Ereignis p95: 1 req/s → 341 ms</title></circle>
+<circle class="c1" cx="209.5" cy="310.6" r="4"><title>/v1/ask erstes Ereignis p95: 2 req/s → 308 ms</title></circle>
+<circle class="c1" cx="274.2" cy="226.5" r="4"><title>/v1/ask erstes Ereignis p95: 4 req/s → 2,110 ms</title></circle>
+<circle class="c1" cx="339.0" cy="86.8" r="4"><title>/v1/ask erstes Ereignis p95: 8 req/s → 51,748 ms</title></circle>
+<rect class="c2" x="363.0" y="30" width="10" height="10" rx="2"/><text class="sec" x="378.0" y="39">/v1/ask gesamt p95</text>
+<path class="l2" d="M80.0,213.2 L144.7,206.3 L209.5,196.6 L274.2,154.2 L339.0,71.3" fill="none" stroke-width="2"/>
+<circle class="c2" cx="80.0" cy="213.2" r="4"><title>/v1/ask gesamt p95: 0.5 req/s → 2,862 ms</title></circle>
+<circle class="c2" cx="144.7" cy="206.3" r="4"><title>/v1/ask gesamt p95: 1 req/s → 3,351 ms</title></circle>
+<circle class="c2" cx="209.5" cy="196.6" r="4"><title>/v1/ask gesamt p95: 2 req/s → 4,183 ms</title></circle>
+<circle class="c2" cx="274.2" cy="154.2" r="4"><title>/v1/ask gesamt p95: 4 req/s → 11,065 ms</title></circle>
+<circle class="c2" cx="339.0" cy="71.3" r="4"><title>/v1/ask gesamt p95: 8 req/s → 73,811 ms</title></circle>
+</svg>

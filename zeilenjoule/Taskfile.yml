@@ -455,6 +455,11 @@ tasks:
     cmds:
       - '{{.COMPOSE}} {{range splitList " " (.PROFILES | default "gpu observability")}}--profile {{.}} {{end}}up -d --build --wait'
       - '{{.COMPOSE}} ps'
+  demo:
+    desc: "Live demo (unmeasured): task up → ingest the S sample → three German questions over SSE → J/question; then open /demo"
+    cmds:
+      - task: up
+      - scripts/demo.sh
   down:
     desc: Stop the production stack (volumes stay; `task down:volumes` deletes the database)
     cmds:

@@ -1,0 +1,50 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 820 216" width="820" height="216" role="img" aria-label="Track E: Zeit je Stufe, Skala L (s)"><style>.bg{fill:#fcfcfb}.ink{fill:#0b0b0b}.sec{fill:#52514e}.mut{fill:#898781}.grid{stroke:#e1e0d9}.axis{stroke:#c3c2b7}.dom{fill:#c3c2b7}.ref{stroke:#898781;stroke-dasharray:4 4}.c0{fill:#2a78d6}.l0{stroke:#2a78d6}.c1{fill:#eb6834}.l1{stroke:#eb6834}.c2{fill:#1baf7a}.l2{stroke:#1baf7a}.c3{fill:#eda100}.l3{stroke:#eda100}.c4{fill:#e87ba4}.l4{stroke:#e87ba4}@media (prefers-color-scheme:dark){.bg{fill:#1a1a19}.ink{fill:#f0efec}.sec{fill:#c3c2b7}.grid{stroke:#2c2c2a}.axis{stroke:#383835}.dom{fill:#52514e}.c0{fill:#3987e5}.l0{stroke:#3987e5}.c1{fill:#d95926}.l1{stroke:#d95926}.c2{fill:#199e70}.l2{stroke:#199e70}.c3{fill:#c98500}.l3{stroke:#c98500}.c4{fill:#d55181}.l4{stroke:#d55181}}text{font-family:ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;font-size:12px}.mono{font-family:ui-monospace,SFMono-Regular,Menlo,monospace}</style>
+<rect class="bg" width="820" height="216" rx="6"/>
+<text class="ink" x="16" y="22" font-weight="600">Track E: Zeit je Stufe, Skala L (s)</text>
+<rect class="c0" x="16.0" y="34" width="10" height="10" rx="2"/><text class="sec" x="31.0" y="43">ingest</text>
+<rect class="c1" x="88.0" y="34" width="10" height="10" rx="2"/><text class="sec" x="103.0" y="43">embed</text>
+<rect class="c2" x="153.0" y="34" width="10" height="10" rx="2"/><text class="sec" x="168.0" y="43">label</text>
+<rect class="c3" x="218.0" y="34" width="10" height="10" rx="2"/><text class="sec" x="233.0" y="43">index</text>
+<rect class="c4" x="283.0" y="34" width="10" height="10" rx="2"/><text class="sec" x="298.0" y="43">answer</text>
+<line class="grid" x1="200.0" x2="200.0" y1="58" y2="182"/>
+<text class="mut" x="200.0" y="198" text-anchor="middle">0</text>
+<line class="grid" x1="290.5" x2="290.5" y1="58" y2="182"/>
+<text class="mut" x="290.5" y="198" text-anchor="middle">1000</text>
+<line class="grid" x1="380.9" x2="380.9" y1="58" y2="182"/>
+<text class="mut" x="380.9" y="198" text-anchor="middle">2000</text>
+<line class="grid" x1="471.4" x2="471.4" y1="58" y2="182"/>
+<text class="mut" x="471.4" y="198" text-anchor="middle">3000</text>
+<line class="grid" x1="561.8" x2="561.8" y1="58" y2="182"/>
+<text class="mut" x="561.8" y="198" text-anchor="middle">4000</text>
+<line class="grid" x1="652.3" x2="652.3" y1="58" y2="182"/>
+<text class="mut" x="652.3" y="198" text-anchor="middle">5000</text>
+<text class="sec mono" x="192" y="81" text-anchor="end">e03_postgres_only</text>
+<rect class="c0" x="200.0" y="68" width="1.0" height="18" rx="2"><title>e03_postgres_only · ingest: 3 s</title></rect>
+<rect class="c1" x="200.3" y="68" width="86.4" height="18" rx="2"><title>e03_postgres_only · embed: 977 s</title></rect>
+<rect class="c2" x="288.7" y="68" width="14.8" height="18" rx="2"><title>e03_postgres_only · label: 186 s</title></rect>
+<rect class="c3" x="305.5" y="68" width="43.7" height="18" rx="2"><title>e03_postgres_only · index: 505 s</title></rect>
+<rect class="c4" x="351.1" y="68" width="3.9" height="18" rx="2"><title>e03_postgres_only · answer: 65 s</title></rect>
+<text class="ink" x="363.0" y="81">1 736 s</text>
+<text class="sec mono" x="192" y="111" text-anchor="end">e02_modern_embedded</text>
+<rect class="c0" x="200.0" y="98" width="1.0" height="18" rx="2"><title>e02_modern_embedded · ingest: 4 s</title></rect>
+<rect class="c1" x="200.4" y="98" width="97.8" height="18" rx="2"><title>e02_modern_embedded · embed: 1 103 s</title></rect>
+<rect class="c2" x="300.2" y="98" width="27.4" height="18" rx="2"><title>e02_modern_embedded · label: 325 s</title></rect>
+<rect class="c3" x="329.5" y="98" width="17.3" height="18" rx="2"><title>e02_modern_embedded · index: 213 s</title></rect>
+<rect class="c4" x="348.8" y="98" width="17.4" height="18" rx="2"><title>e02_modern_embedded · answer: 214 s</title></rect>
+<text class="ink" x="374.2" y="111">1 860 s</text>
+<text class="sec mono" x="192" y="141" text-anchor="end">e05_best_of_tracks</text>
+<rect class="c0" x="200.0" y="128" width="1.0" height="18" rx="2"><title>e05_best_of_tracks · ingest: 2 s</title></rect>
+<rect class="c1" x="200.1" y="128" width="86.6" height="18" rx="2"><title>e05_best_of_tracks · embed: 979 s</title></rect>
+<rect class="c2" x="288.7" y="128" width="14.5" height="18" rx="2"><title>e05_best_of_tracks · label: 183 s</title></rect>
+<rect class="c3" x="305.2" y="128" width="64.0" height="18" rx="2"><title>e05_best_of_tracks · index: 729 s</title></rect>
+<rect class="c4" x="371.2" y="128" width="3.3" height="18" rx="2"><title>e05_best_of_tracks · answer: 58 s</title></rect>
+<text class="ink" x="382.5" y="141">1 951 s</text>
+<text class="sec mono" x="192" y="171" text-anchor="end">e01_classic_python</text>
+<rect class="c0" x="200.0" y="158" width="1.3" height="18" rx="2"><title>e01_classic_python · ingest: 36 s</title></rect>
+<rect class="c1" x="203.3" y="158" width="408.9" height="18" rx="2"><title>e01_classic_python · embed: 4 543 s</title></rect>
+<rect class="c2" x="614.2" y="158" width="42.3" height="18" rx="2"><title>e01_classic_python · label: 490 s</title></rect>
+<rect class="c3" x="658.6" y="158" width="1.0" height="18" rx="2"><title>e01_classic_python · index: 6 s</title></rect>
+<rect class="c4" x="659.1" y="158" width="20.7" height="18" rx="2"><title>e01_classic_python · answer: 251 s</title></rect>
+<text class="ink" x="687.8" y="171">5 327 s</text>
+<line class="axis" x1="200" x2="200" y1="58" y2="182"/>
+</svg>

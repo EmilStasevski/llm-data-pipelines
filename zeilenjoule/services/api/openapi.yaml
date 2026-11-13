@@ -84,13 +84,23 @@ paths:
             schema: {$ref: "#/components/schemas/AskRequest"}
       responses:
         "200":
-          description: Answer with cited row ids (JSON) or an SSE stream of `route`, `answer`, `done` events
+          description: Answer with cited row ids (JSON) or an SSE stream of `route` (as soon as the router has generated it), `plan` (router SQL or search text), `answer`, `done` events (ADR 0027)
           content:
             application/json:
               schema: {$ref: "#/components/schemas/AskResponse"}
             text/event-stream:
               schema: {type: string}
         "400": {$ref: "#/components/responses/Problem"}
+  /v1/energy:
+    get:
+      operationId: energy
+      summary: Current energy per answered question (Prometheus recording rules; null when not available)
+      responses:
+        "200":
+          description: Gross energy rates over the last minute (GPU board + CPU package, shared by all work on the box)
+          content:
+            application/json:
+              schema: {$ref: "#/components/schemas/EnergyResponse"}
   /healthz:
     get:
       operationId: healthz
@@ -197,9 +207,20 @@ components:
         cited_ids:
           type: array
           items: {type: string}
+        cited_rows:
+          type: array
+          items: {$ref: "#/components/schemas/Hit"}
+          description: route = search only – the cited rows with their display columns, best first
         estimated:
           type: boolean
           description: true when the answer depends on the estimated column `schadensart` (ADR 0020)
+    EnergyResponse:
+      type: object
+      required: [joules_per_ask, watts, source]
+      properties:
+        joules_per_ask: {type: number, nullable: true, description: "zj:joules_per_ask:1m (null: no questions or no data)"}
+        watts: {type: number, nullable: true, description: "zj:energy_watts:rate1m"}
+        source: {type: string, description: "prometheus, or why there is no value (not configured, unreachable)"}
     ExtractRequest:
       type: object
       required: [rows]

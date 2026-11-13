@@ -18,8 +18,8 @@ text{font-family:ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;fon
 <text class="mut" x="670.0" y="170" text-anchor="middle">10k</text>
 <line class="axis" x1="200" x2="200" y1="30" y2="154"/>
 <text class="sec mono" x="192" y="49" text-anchor="end">e06_stack_go</text>
-<path class="s1" d="M200,38H306.6a4,4 0 0 1 4,4v6a4,4 0 0 1 -4,4H200Z"/>
-<text class="ink" x="316.6" y="49">1 719 s · 244 378 J</text>
+<path class="s1" d="M200,38H307.1a4,4 0 0 1 4,4v6a4,4 0 0 1 -4,4H200Z"/>
+<text class="ink" x="317.1" y="49">1 724 s · 245 009 J</text>
 <text class="sec mono" x="192" y="73" text-anchor="end">e03_postgres_only</text>
 <path class="s1" d="M200,62H309.1a4,4 0 0 1 4,4v6a4,4 0 0 1 -4,4H200Z"/>
 <text class="ink" x="319.1" y="73">1 740 s · 247 895 J</text>

@@ -1,0 +1,45 @@
+{
+  "session_id": "535a4a88-e029-4e75-8b59-759b549337ed",
+  "created": "2026-11-13T18:29:01Z",
+  "seed": 20261106,
+  "reps": 3,
+  "warmup": 0,
+  "interleave": true,
+  "threads": 0,
+  "scales": [
+    "L"
+  ],
+  "contestants": [
+    "e07_stack_load"
+  ],
+  "items": [
+    {
+      "contestant": "e07_stack_load",
+      "scale": "L",
+      "rep": 1,
+      "warmup": false
+    },
+    {
+      "contestant": "e07_stack_load",
+      "scale": "L",
+      "rep": 2,
+      "warmup": false
+    },
+    {
+      "contestant": "e07_stack_load",
+      "scale": "L",
+      "rep": 3,
+      "warmup": false
+    }
+  ],
+  "args": [
+    "--id",
+    "e07_stack_load",
+    "--scale",
+    "L",
+    "--reps",
+    "3",
+    "--warmup",
+    "0"
+  ]
+}

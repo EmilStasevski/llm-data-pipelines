@@ -128,6 +128,9 @@ type AskResponse struct {
 	Answer   interface{} `json:"answer,omitempty"`
 	CitedIds []string    `json:"cited_ids"`
 
+	// CitedRows route = search only – the cited rows with their display columns, best first
+	CitedRows *[]Hit `json:"cited_rows,omitempty"`
+
 	// Columns column names, when answer is a table
 	Columns *[]string `json:"columns,omitempty"`
 
@@ -149,6 +152,18 @@ type AskResponseRoute string
 
 // AskResponseSqlStatus route = sql only. rejected = the SQL check refused the statement (layer 1), failed = the database refused or timed out (layer 2, read-only role); the reason is in the gateway log, not in the response.
 type AskResponseSqlStatus string
+
+// EnergyResponse defines model for EnergyResponse.
+type EnergyResponse struct {
+	// JoulesPerAsk zj:joules_per_ask:1m (null: no questions or no data)
+	JoulesPerAsk *float32 `json:"joules_per_ask"`
+
+	// Source prometheus, or why there is no value (not configured, unreachable)
+	Source string `json:"source"`
+
+	// Watts zj:energy_watts:rate1m
+	Watts *float32 `json:"watts"`
+}
 
 // ExtractRequest defines model for ExtractRequest.
 type ExtractRequest struct {
@@ -256,6 +271,9 @@ type ServerInterface interface {
 	// Ask Answer a question (router SQL ↔ search); Server-Sent Events when `Accept: text/event-stream`
 	// (POST /v1/ask)
 	Ask(w http.ResponseWriter, r *http.Request)
+	// Energy Current energy per answered question (Prometheus recording rules; null when not available)
+	// (GET /v1/energy)
+	Energy(w http.ResponseWriter, r *http.Request)
 	// Extract Extract the structured fields of fault notifications (Track D schema)
 	// (POST /v1/extract)
 	Extract(w http.ResponseWriter, r *http.Request)
@@ -312,6 +330,20 @@ func (siw *ServerInterfaceWrapper) Ask(w http.ResponseWriter, r *http.Request) {
 
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.Ask(w, r)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// Energy operation middleware
+func (siw *ServerInterfaceWrapper) Energy(w http.ResponseWriter, r *http.Request) {
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.Energy(w, r)
 	}))
 
 	for _, middleware := range siw.HandlerMiddlewares {
@@ -514,6 +546,7 @@ func HandlerWithOptions(si ServerInterface, options StdHTTPServerOptions) http.H
 	m.HandleFunc(http.MethodPost+" "+options.BaseURL+"/v1/extract", wrapper.Extract)
 	m.HandleFunc(http.MethodPost+" "+options.BaseURL+"/v1/search", wrapper.Search)
 	m.HandleFunc(http.MethodPost+" "+options.BaseURL+"/v1/ask", wrapper.Ask)
+	m.HandleFunc(http.MethodGet+" "+options.BaseURL+"/v1/energy", wrapper.Energy)
 	m.HandleFunc(http.MethodGet+" "+options.BaseURL+"/healthz", wrapper.Healthz)
 	m.HandleFunc(http.MethodGet+" "+options.BaseURL+"/readyz", wrapper.Readyz)
 
@@ -645,6 +678,27 @@ func (response Ask400ApplicationProblemPlusJSONResponse) VisitAskResponse(w http
 	}
 	w.Header().Set("Content-Type", "application/problem+json")
 	w.WriteHeader(400)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type EnergyRequestObject struct {
+}
+
+type EnergyResponseObject interface {
+	VisitEnergyResponse(w http.ResponseWriter) error
+}
+
+type Energy200JSONResponse EnergyResponse
+
+func (response Energy200JSONResponse) VisitEnergyResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
 	_, err := buf.WriteTo(w)
 	return err
 }
@@ -826,6 +880,9 @@ type StrictServerInterface interface {
 	// Ask Answer a question (router SQL ↔ search); Server-Sent Events when `Accept: text/event-stream`
 	// (POST /v1/ask)
 	Ask(ctx context.Context, request AskRequestObject) (AskResponseObject, error)
+	// Energy Current energy per answered question (Prometheus recording rules; null when not available)
+	// (GET /v1/energy)
+	Energy(ctx context.Context, request EnergyRequestObject) (EnergyResponseObject, error)
 	// Extract Extract the structured fields of fault notifications (Track D schema)
 	// (POST /v1/extract)
 	Extract(ctx context.Context, request ExtractRequestObject) (ExtractResponseObject, error)
@@ -958,6 +1015,30 @@ func (sh *strictHandler) Ask(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+// Energy operation middleware
+func (sh *strictHandler) Energy(w http.ResponseWriter, r *http.Request) {
+	var request EnergyRequestObject
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.Energy(ctx, request.(EnergyRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "Energy")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(EnergyResponseObject); ok {
+		if err := validResponse.VisitEnergyResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
 // Extract operation middleware
 func (sh *strictHandler) Extract(w http.ResponseWriter, r *http.Request) {
 	var request ExtractRequestObject
@@ -1077,42 +1158,47 @@ func (sh *strictHandler) Search(w http.ResponseWriter, r *http.Request) {
 // const string: with thousands of chunks the chained `+` fold is several
 // times slower for the Go compiler than parsing a slice literal.
 var swaggerSpec = []string{
-	"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",
+	"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",
 }
 
 // decodeSpec returns the embedded OpenAPI spec as raw JSON bytes,

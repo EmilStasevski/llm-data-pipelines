@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 820 440" width="820" height="440" role="img" aria-label="Track B: Wall-Zeit vs. Energie (brutto), Skala M"><style>.bg{fill:#fcfcfb}.ink{fill:#0b0b0b}.sec{fill:#52514e}.mut{fill:#898781}.grid{stroke:#e1e0d9}.axis{stroke:#c3c2b7}.dom{fill:#c3c2b7}.ref{stroke:#898781;stroke-dasharray:4 4}.c0{fill:#2a78d6}.l0{stroke:#2a78d6}.c1{fill:#eb6834}.l1{stroke:#eb6834}.c2{fill:#1baf7a}.l2{stroke:#1baf7a}.c3{fill:#eda100}.l3{stroke:#eda100}.c4{fill:#e87ba4}.l4{stroke:#e87ba4}@media (prefers-color-scheme:dark){.bg{fill:#1a1a19}.ink{fill:#f0efec}.sec{fill:#c3c2b7}.grid{stroke:#2c2c2a}.axis{stroke:#383835}.dom{fill:#52514e}.c0{fill:#3987e5}.l0{stroke:#3987e5}.c1{fill:#d95926}.l1{stroke:#d95926}.c2{fill:#199e70}.l2{stroke:#199e70}.c3{fill:#c98500}.l3{stroke:#c98500}.c4{fill:#d55181}.l4{stroke:#d55181}}text{font-family:ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;font-size:12px}.mono{font-family:ui-monospace,SFMono-Regular,Menlo,monospace}</style>
+<rect class="bg" width="820" height="440" rx="6"/>
+<text class="ink" x="16" y="22" font-weight="600">Track B: Wall-Zeit vs. Energie (brutto), Skala M</text>
+<line class="grid" x1="80.0" x2="80.0" y1="58" y2="390"/>
+<text class="mut" x="80.0" y="406" text-anchor="middle">100</text>
+<line class="grid" x1="385.8" x2="385.8" y1="58" y2="390"/>
+<text class="mut" x="385.8" y="406" text-anchor="middle">200</text>
+<line class="grid" x1="790.0" x2="790.0" y1="58" y2="390"/>
+<text class="mut" x="790.0" y="406" text-anchor="middle">500</text>
+<line class="grid" x1="80" x2="790" y1="390.0" y2="390.0"/>
+<text class="mut" x="74" y="394.0" text-anchor="end">10k</text>
+<line class="grid" x1="80" x2="790" y1="290.1" y2="290.1"/>
+<text class="mut" x="74" y="294.1" text-anchor="end">20k</text>
+<line class="grid" x1="80" x2="790" y1="157.9" y2="157.9"/>
+<text class="mut" x="74" y="161.9" text-anchor="end">50k</text>
+<line class="grid" x1="80" x2="790" y1="58.0" y2="58.0"/>
+<text class="mut" x="74" y="62.0" text-anchor="end">100k</text>
+<line class="axis" x1="80" x2="790" y1="390" y2="390"/>
+<line class="axis" x1="80" x2="80" y1="58" y2="390"/>
+<text class="sec" x="435.0" y="428" text-anchor="middle">Wall-Zeit s (log)</text>
+<text class="sec" x="16" y="224.0" transform="rotate(-90 16 224.0)" text-anchor="middle">Energie J brutto (log)</text>
+<text class="sec mono" x="16" y="42" font-size="11">1 b06_tei</text>
+<circle class="dom" cx="299.7" cy="279.6" r="4"><title>b07_vllm_pooling: 164,5 s · 21 510 J</title></circle>
+<circle class="dom" cx="478.6" cy="255.3" r="4"><title>b08_llamacpp_embed: 246,8 s · 25 449 J</title></circle>
+<circle class="dom" cx="131.3" cy="281.5" r="4"><title>b03_st_fp16_sorted: 112,3 s · 21 222 J</title></circle>
+<circle class="dom" cx="752.0" cy="76.5" r="4"><title>b01_st_fp32: 458,8 s · 87 936 J</title></circle>
+<circle class="dom" cx="136.8" cy="278.8" r="4"><title>b04_ort_cuda: 113,7 s · 21 624 J</title></circle>
+<circle class="dom" cx="248.4" cy="264.1" r="4"><title>b02_st_fp16: 146,5 s · 23 944 J</title></circle>
+<circle class="dom" cx="122.3" cy="280.0" r="4"><title>b10_rs_ort: 110,1 s · 21 451 J</title></circle>
+<circle class="c0" cx="117.0" cy="292.7" r="5"><title>b06_tei: 108,8 s · 19 632 J</title></circle>
+<text class="ink" x="125.0" y="286.7" font-weight="600" font-size="11">1</text>
+</svg>

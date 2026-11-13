@@ -32,7 +32,12 @@ curl -H "X-API-Key: $KEY" -H 'Accept: text/event-stream' -d '{"question":"Wie vi
 ```
 `/v1/ask` liefert `route` (sql/search, `none` = Router-Antwort unbrauchbar), die ausgeführte SQL mit `sql_status`
 (executed/rejected/failed – Grund im Gateway-Log), die Antwort (Text oder Tabelle: `columns` + Zeilen als Arrays),
-zitierte `meldung_id`s und `estimated = true`, wenn die Antwort auf der geschätzten Spalte `schadensart` beruht.
+zitierte `meldung_id`s (Route `search` zusätzlich `cited_rows` mit Werk, Datum, Text) und `estimated = true`, wenn
+die Antwort auf der geschätzten Spalte `schadensart` beruht. Als SSE (ADR 0027): `route` sobald das Router-LLM die
+Route erzeugt hat, `plan` (SQL bzw. Suchtext), `answer`, `done`.
+`GET /v1/energy`: Joule je Frage und Leistung (Prometheus-Recording-Rules, 1-min-Mittel, brutto; ohne Prometheus
+`null` mit Grund in `source`). **Demo:** `task demo` (Stack starten, Stichprobe S laden, drei Fragen, Energie), dann
+`http://127.0.0.1:8080/demo` im Browser (API-Schlüssel eintragen).
 
 ## 4. Ingest-Ablauf und Schadensart
 Upload → Datei im Volume `uploads` + Zeile in `ingest_jobs` + River-Job (eine Transaktion) → Worker: Rust-Parser →
@@ -82,7 +87,7 @@ Chart `deploy/helm/zeilenjoule` (Namespace `zeilenjoule`, PodSecurity „restric
 
 ## 8. Lastkurve (PLAN §12.3, ADR 0026)
 Gemessen nur über das Harness (CLAUDE.md Regel 7), nie neben einem laufenden Stack:
-`scripts/quiet_box.sh measure run --id e07_stack_load --scale L --reps 3 --warmup 0` (≈ 45 min je Lauf).
+`scripts/quiet_box.sh measure run --id e07_stack_load --scale L --reps 3 --warmup 0` (≈ 45 min je Lauf: Suchstufen bis 640 req/s, ADR 0027).
 Ungemessener Kurztest: `services/bin/zj-load --input data/synth/stoermeldungen/M/stoermeldungen.cp1252.csv
 --output /tmp/out.json --search-rates 1,20 --ask-rates 1 --step 20s --ask-step 20s` (Stack wird gestartet und
 wieder abgebaut, Projekt `zeilenjoule-bench`). Auswertung (Knie, SLOs, J/Anfrage): `task report`.
@@ -92,5 +97,6 @@ wieder abgebaut, Projekt `zeilenjoule-bench`). Auswertung (Knie, SLOs, J/Anfrage
 Prometheus/Grafana with the NVML/RAPL energy exporter (all bound to 127.0.0.1). `task smoke` checks the whole path
 (health, auth, ingest of 10 000 rows, search, ask as JSON and SSE, extraction). The first ingest trains the
 schadensart classifier from 2 000 LLM labels; later ingests reuse it, LLM labels always win. Never run the stack during
-a measured benchmark session. Kubernetes (§7): `task k3s:cluster-setup` once (namespaces with Pod Security labels,
+a measured benchmark session. `task demo` runs a short live walk-through; the demo page is `GET /demo`, J/question
+comes from `GET /v1/energy` (Prometheus). Kubernetes (§7): `task k3s:cluster-setup` once (namespaces with Pod Security labels,
 GPU time-slicing), then `task images && task k3s:up`, `task k3s:test`, `task k3s:smoke`.

@@ -311,7 +311,7 @@ func run() error {
 	flag.IntVar(&o.stack.Threads, "threads", 0, "parser threads (0 = all cores)")
 	flag.IntVar(&o.stack.Port, "port", 8080, "gateway port on 127.0.0.1")
 	flag.StringVar(&o.stack.Compose, "compose", "deploy/compose/compose.yaml", "compose file")
-	flag.StringVar(&search, "search-rates", "5,10,20,40,80,160", "POST /v1/search rates (requests/s), one step each")
+	flag.StringVar(&search, "search-rates", "5,10,20,40,80,160,320,640", "POST /v1/search rates (requests/s), one step each")
 	flag.StringVar(&ask, "ask-rates", "0.5,1,2,4,8", "POST /v1/ask rates (requests/s), one step each")
 	flag.DurationVar(&o.step, "step", 60*time.Second, "duration of one search step")
 	flag.DurationVar(&o.askStep, "ask-step", 90*time.Second, "duration of one ask step")

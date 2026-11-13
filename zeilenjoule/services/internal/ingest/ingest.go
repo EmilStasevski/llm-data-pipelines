@@ -181,9 +181,16 @@ func (w *Worker) run(ctx context.Context, a Args) error {
 		w.Log.Info("search indexes built", "job", a.JobID, "s", time.Since(t).Seconds())
 		bulk = false // the deferred safety net has nothing left to do
 	}
-	_, err = w.Pool.Exec(ctx, "ANALYZE docs")
+	if _, err := w.Pool.Exec(ctx, "ANALYZE docs"); err != nil {
+		return err
+	}
+	t := time.Now()
+	if err := db.RefreshLexDF(ctx, w.Pool); err != nil {
+		return err
+	}
+	metrics.IngestStage.WithLabelValues("lex_df").Observe(time.Since(t).Seconds())
 	w.Log.Info("ingested", "job", a.JobID, "rows", len(rows), "s", time.Since(t0).Seconds())
-	return err
+	return nil
 }
 
 func (w *Worker) parse(ctx context.Context, path string) ([]Row, error) {

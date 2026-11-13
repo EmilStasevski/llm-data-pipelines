@@ -31,6 +31,7 @@ type Config struct {
 	ParserBin     string        // Rust parser (a16) binary
 	Lexicon       string        // spec/track_a_lexicon.json inside the image
 	ParserThreads int
+	PrometheusURL string // GET /v1/energy reads the J/question recording rule here; empty: not available
 }
 
 // Load reads ZJ_* variables; required ones without a value are an error.
@@ -83,6 +84,7 @@ func Load() (Config, error) {
 		ParserBin:     str("ZJ_PARSER_BIN", "/usr/local/bin/zj-parse"),
 		Lexicon:       str("ZJ_LEXICON", "/etc/zj/track_a_lexicon.json"),
 		ParserThreads: num("ZJ_PARSER_THREADS", 8),
+		PrometheusURL: strings.TrimRight(str("ZJ_PROMETHEUS_URL", ""), "/"),
 	}
 	rate, err := strconv.ParseFloat(str("ZJ_RATE_LIMIT", "10"), 64)
 	if err != nil || rate <= 0 {

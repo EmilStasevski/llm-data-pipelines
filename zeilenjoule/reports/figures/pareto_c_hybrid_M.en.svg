@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 820 440" width="820" height="440" role="img" aria-label="Track C hybrid: wall time vs. energy (gross), scale M"><style>.bg{fill:#fcfcfb}.ink{fill:#0b0b0b}.sec{fill:#52514e}.mut{fill:#898781}.grid{stroke:#e1e0d9}.axis{stroke:#c3c2b7}.dom{fill:#c3c2b7}.ref{stroke:#898781;stroke-dasharray:4 4}.c0{fill:#2a78d6}.l0{stroke:#2a78d6}.c1{fill:#eb6834}.l1{stroke:#eb6834}.c2{fill:#1baf7a}.l2{stroke:#1baf7a}.c3{fill:#eda100}.l3{stroke:#eda100}.c4{fill:#e87ba4}.l4{stroke:#e87ba4}@media (prefers-color-scheme:dark){.bg{fill:#1a1a19}.ink{fill:#f0efec}.sec{fill:#c3c2b7}.grid{stroke:#2c2c2a}.axis{stroke:#383835}.dom{fill:#52514e}.c0{fill:#3987e5}.l0{stroke:#3987e5}.c1{fill:#d95926}.l1{stroke:#d95926}.c2{fill:#199e70}.l2{stroke:#199e70}.c3{fill:#c98500}.l3{stroke:#c98500}.c4{fill:#d55181}.l4{stroke:#d55181}}text{font-family:ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;font-size:12px}.mono{font-family:ui-monospace,SFMono-Regular,Menlo,monospace}</style>
+<rect class="bg" width="820" height="440" rx="6"/>
+<text class="ink" x="16" y="22" font-weight="600">Track C hybrid: wall time vs. energy (gross), scale M</text>
+<line class="grid" x1="80.0" x2="80.0" y1="58" y2="390"/>
+<text class="mut" x="80.0" y="406" text-anchor="middle">50</text>
+<line class="grid" x1="435.0" x2="435.0" y1="58" y2="390"/>
+<text class="mut" x="435.0" y="406" text-anchor="middle">100</text>
+<line class="grid" x1="790.0" x2="790.0" y1="58" y2="390"/>
+<text class="mut" x="790.0" y="406" text-anchor="middle">200</text>
+<line class="grid" x1="80" x2="790" y1="390.0" y2="390.0"/>
+<text class="mut" x="74" y="394.0" text-anchor="end">1000</text>
+<line class="grid" x1="80" x2="790" y1="247.0" y2="247.0"/>
+<text class="mut" x="74" y="251.0" text-anchor="end">2000</text>
+<line class="grid" x1="80" x2="790" y1="58.0" y2="58.0"/>
+<text class="mut" x="74" y="62.0" text-anchor="end">5000</text>
+<line class="axis" x1="80" x2="790" y1="390" y2="390"/>
+<line class="axis" x1="80" x2="80" y1="58" y2="390"/>
+<text class="sec" x="435.0" y="428" text-anchor="middle">wall time s (log)</text>
+<text class="sec" x="16" y="224.0" transform="rotate(-90 16 224.0)" text-anchor="middle">energy J gross (log)</text>
+<text class="sec mono" x="16" y="42" font-size="11">1 c08_qdrant_hybrid</text>
+<circle class="dom" cx="587.0" cy="95.4" r="4"><title>c05_duckdb_hybrid: 134.6 s · 4 171 J</title></circle>
+<circle class="dom" cx="748.0" cy="70.8" r="4"><title>c06_sqlite_hybrid: 184.2 s · 4 700 J</title></circle>
+<circle class="dom" cx="549.8" cy="94.6" r="4"><title>c03_pgvector_hybrid: 125.1 s · 4 188 J</title></circle>
+<circle class="dom" cx="444.4" cy="315.4" r="4"><title>c07_lancedb_hybrid: 101.8 s · 1 436 J</title></circle>
+<circle class="c0" cx="227.0" cy="375.7" r="5"><title>c08_qdrant_hybrid: 66.6 s · 1 072 J</title></circle>
+<text class="ink" x="235.0" y="369.7" font-weight="600" font-size="11">1</text>
+</svg>

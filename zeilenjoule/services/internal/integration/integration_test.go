@@ -157,6 +157,26 @@ func TestStack(t *testing.T) {
 		t.Fatalf("label precedence: %s/%s, %s (%v)", sa1, q1, sa2, err)
 	}
 
+	if err := db.RefreshLexDF(ctx, owner); err != nil {
+		t.Fatal(err)
+	}
+	t.Run("common-terms match query", func(t *testing.T) {
+		// 3 rows: "lag" (Lager) and "leckag" in one row each (df 1/3), "lauft" in two (2/3), "xyzzy" in none
+		for _, c := range []struct {
+			cutoff float64
+			text   string
+			want   string
+		}{
+			{0.5, "Lager läuft, Leckage xyzzy", "'lag' | 'leckag'"}, // rare terms that occur, OR
+			{0.01, "Lager läuft, Leckage xyzzy", ""},                // nothing rare: no lexical candidates
+		} {
+			var got string
+			if err := owner.QueryRow(ctx, rag.MatchQuery, c.text, c.cutoff).Scan(&got); err != nil || got != c.want {
+				t.Errorf("%q cutoff %v: %q (%v), want %q", c.text, c.cutoff, got, err, c.want)
+			}
+		}
+	})
+
 	e := &rag.Engine{Owner: owner, Reader: reader, Emb: fakeEmb{}, P: p, SQLTimeout: 300 * time.Millisecond,
 		LLM: fakeLLM{routes: map[string]string{
 			"count": `{"route": "sql", "antwort_aus": "tabelle", "sql": "SELECT werk, count(*) AS n, round(coalesce(sum(kosten_eur), 0), 2) AS k FROM meldungen WHERE datum BETWEEN '2025-01-01' AND '2025-12-31' GROUP BY werk ORDER BY werk"}`,

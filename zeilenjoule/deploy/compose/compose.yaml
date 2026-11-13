@@ -67,6 +67,7 @@ services:
       ZJ_READER_URL: postgres://zj_ask:${ZJ_READER_PASSWORD:?set ZJ_READER_PASSWORD in .env}@postgres:5432/zeilenjoule
       ZJ_API_KEYS: ${ZJ_API_KEYS:?set ZJ_API_KEYS in .env}
       ZJ_RATE_LIMIT: ${ZJ_RATE_LIMIT:-10}
+      ZJ_PROMETHEUS_URL: ${ZJ_PROMETHEUS_URL:-http://prometheus:9090}   # GET /v1/energy; profile observability
       ZJ_RATE_BURST: ${ZJ_RATE_BURST:-20}
     ports: ["127.0.0.1:${ZJ_GATEWAY_PORT:-8080}:8080"]
     volumes: [uploads:/var/lib/zj/uploads]

@@ -342,11 +342,11 @@ Ein Lauf = Roh-CSV → Track-A-Kandidat (S1–S3) → Track-B-Kandidat (S4, bge-
 
 | Wettbewerber | n | Wall s (Median) | IQR s | Zeilen/s | E brutto J | E netto J | mJ/Zeile | €/1 Mio. Zeilen (Haushalt) | €/1 Mio. Zeilen (Industrie) | g CO₂/1 Mio. Zeilen | ZJ-Score | niedr. Konfidenz |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|
-| `e06_stack_go` | 3 | 1 719,384 | 1 718,869–1 719,801 | 582 | 244 378,1 | 231 193,6 | 244,378 | 0,0253 | 0,0113 | 23,35 | 1,00 | 0 % |
+| `e06_stack_go` | 3 | 1 723,631 | 1 723,218–1 725,691 | 580 | 245 009,1 | 232 408,7 | 245,009 | 0,0254 | 0,0114 | 23,41 | 1,00 | 0 % |
 | `e03_postgres_only` | 3 | 1 740,039 | 1 739,477–1 740,492 | 575 | 247 894,5 | 235 170,6 | 247,895 | 0,0257 | 0,0115 | 23,69 | 1,01 | 0 % |
 | `e02_modern_embedded` | 3 | 1 864,437 | 1 863,959–1 873,320 | 536 | 288 648,8 | 274 408,9 | 288,649 | 0,0299 | 0,0134 | 27,58 | 1,13 | 0 % |
 | `e05_best_of_tracks` | 3 | 1 953,578 | 1 950,434–1 954,159 | 512 | 261 518,7 | 246 746,5 | 261,519 | 0,0271 | 0,0121 | 24,99 | 1,10 | 0 % |
-| `e01_classic_python` | 3 | 5 330,080 | 5 329,734–5 331,609 | 188 | 957 824,8 | 918 620,0 | 957,825 | 0,0992 | 0,0444 | 91,53 | 3,49 | 0 % |
+| `e01_classic_python` | 3 | 5 330,080 | 5 329,734–5 331,609 | 188 | 957 824,8 | 918 620,0 | 957,825 | 0,0992 | 0,0444 | 91,53 | 3,48 | 0 % |
 
 ### Stufen, Latenz, Qualität (Mediane)
 
@@ -358,7 +358,7 @@ Stufen in s; Time-to-RAG und Energy-to-RAG = ingest + embed + label + index (bru
 | `e02_modern_embedded` | L | 4,3 | 1 103,3 | 324,6 | 212,9 | 214,4 | 7 131,00 | 18 620,10 | 20 537,60 | 1 646 | 74,7 | 65,2 | 0,880 | 0,830 | 0,809 | 0,600 | 0,234 | 1,000 | 0,744 | 0,728 | 0,745 | ✓ |
 | `e03_postgres_only` | L | 3,2 | 976,9 | 185,9 | 505,0 | 65,1 | 9 906,30 | 19 892,40 | 20 628,20 | 1 672 | 66,4 | 27,2 | 0,885 | 0,850 | 0,822 | 0,590 | 0,233 | 1,000 | 0,757 | 0,732 | 0,754 | ✓ |
 | `e05_best_of_tracks` | L | 1,6 | 979,0 | 182,9 | 729,3 | 58,5 | 9 908,00 | 19 954,00 | 20 677,20 | 1 892 | 70,5 | 26,1 | 0,885 | 0,850 | 0,822 | 0,590 | 0,234 | 1,000 | 0,757 | 0,731 | 0,757 | ✓ |
-| `e06_stack_go` | L | 1 591,7 | – | – | – | 61,2 | 11 033,29 | 19 440,16 | 20 854,03 | 1 592 | 64,8 | 28,2 | 0,885 | 0,840 | 0,815 | 0,600 | 0,261 | 1,000 | 0,753 | 0,733 | 0,751 | ✓ |
+| `e06_stack_go` | L | 1 595,6 | – | – | – | 62,9 | 11 392,60 | 19 819,57 | 21 400,77 | 1 596 | 65,0 | 28,3 | 0,875 | 0,840 | 0,817 | 0,600 | 0,262 | 1,000 | 0,754 | 0,734 | 0,756 | ✓ |
 
 ### Nicht gewertete Läufe (Regel 4: nicht versteckt)
 
@@ -375,25 +375,47 @@ Offene Last (ADR 0026): Anfrage i ist zum Zeitpunkt t0 + i/r fällig, egal ob fr
 
 | Endpunkt | Angebot req/s | Anfragen | ok/s | Fehler | p50 ms | p95 ms | p99 ms | erstes Ereignis p95 ms | J/Anfrage | J/Anfrage netto |
 |---|---|---|---|---|---|---|---|---|---|---|
-| `/v1/search` | 5 | 300 | 5,0 | 0,0 % | 374 | 563 | 570 | nicht gemessen | 15,24 | 13,71 |
-| `/v1/search` | 10 | 600 | 9,8 | 0,0 % | 769 | 2 223 | 2 595 | nicht gemessen | 10,38 | 9,60 |
-| `/v1/search` | 20 | 1 200 | 11,0 | 0,0 % | 53 455 | 71 761 | 73 327 | nicht gemessen | 9,36 | 8,66 |
-| `/v1/search` | 40 | 2 400 | 2,4 | 82,4 % | 62 490 | 116 525 | 119 560 | nicht gemessen | 7,32 | 6,75 |
-| `/v1/search` | 80 | 4 800 | 1,5 | 95,1 % | 67 566 | 115 329 | 119 427 | nicht gemessen | 3,16 | 2,91 |
-| `/v1/search` | 160 | 9 600 | 1,0 | 98,5 % | 79 305 | 116 826 | 118 973 | nicht gemessen | 1,45 | 1,34 |
-| `/v1/ask` | 0,5 | 45 | 0,5 | 0,0 % | 2 741 | 2 940 | 8 907 | 2 023 | 244,83 | 229,47 |
-| `/v1/ask` | 1 | 90 | 1,0 | 0,0 % | 2 795 | 3 347 | 10 492 | 2 430 | 122,42 | 114,56 |
-| `/v1/ask` | 2 | 180 | 2,0 | 0,0 % | 2 679 | 4 691 | 4 763 | 3 345 | 61,02 | 57,21 |
-| `/v1/ask` | 4 | 360 | 3,6 | 0,0 % | 5 622 | 11 547 | 12 998 | 8 800 | 36,60 | 34,47 |
-| `/v1/ask` | 8 | 720 | 4,5 | 0,0 % | 36 173 | 77 769 | 85 214 | 59 438 | 30,43 | 28,75 |
+| `/v1/search` | 5 | 300 | 5,0 | 0,0 % | 33 | 90 | 133 | nicht gemessen | 4,91 | 3,37 |
+| `/v1/search` | 10 | 600 | 10,0 | 0,0 % | 25 | 78 | 100 | nicht gemessen | 2,39 | 1,64 |
+| `/v1/search` | 20 | 1 200 | 20,0 | 0,0 % | 24 | 74 | 98 | nicht gemessen | 1,28 | 0,91 |
+| `/v1/search` | 40 | 2 400 | 40,0 | 0,0 % | 23 | 76 | 101 | nicht gemessen | 0,73 | 0,54 |
+| `/v1/search` | 80 | 4 800 | 80,0 | 0,0 % | 23 | 76 | 102 | nicht gemessen | 0,46 | 0,37 |
+| `/v1/search` | 160 | 9 600 | 160,0 | 0,0 % | 24 | 69 | 99 | nicht gemessen | 0,33 | 0,28 |
+| `/v1/search` | 320 | 19 200 | 319,9 | 0,0 % | 19 | 99 | 168 | nicht gemessen | 0,26 | 0,24 |
+| `/v1/search` | 640 | 38 400 | 471,7 | 20,9 % | 4 222 | 4 699 | 4 769 | nicht gemessen | 0,21 | 0,20 |
+| `/v1/ask` | 0,5 | 45 | 0,5 | 0,0 % | 2 743 | 2 862 | 8 944 | 281 | 248,00 | 233,81 |
+| `/v1/ask` | 1 | 90 | 1,0 | 0,0 % | 2 802 | 3 351 | 10 528 | 341 | 121,99 | 114,83 |
+| `/v1/ask` | 2 | 180 | 2,0 | 0,0 % | 2 674 | 4 183 | 4 340 | 308 | 61,94 | 58,00 |
+| `/v1/ask` | 4 | 360 | 3,7 | 0,0 % | 4 888 | 11 065 | 12 165 | 2 110 | 36,08 | 34,08 |
+| `/v1/ask` | 8 | 720 | 4,6 | 0,0 % | 34 515 | 73 811 | 80 920 | 51 748 | 30,24 | 28,41 |
 
-- Knie `/v1/search`: stabil bis 5 req/s, darüber 10 req/s
+- Knie `/v1/search`: stabil bis 320 req/s, darüber 640 req/s
 - Knie `/v1/ask`: stabil bis 2 req/s, darüber 4 req/s
 
 **SLOs (PLAN §12.3):**
 
 | SLO | gemessen | |
 |---|---|---|
-| `/v1/search` p95 < 100 ms bei 20 req/s | p95 71 761 ms, 0,0 % | ✗ |
-| `/v1/ask` erstes Ereignis p95 < 1,5 s | bei keiner Rate erfüllt | ✗ |
-| Ingest ≥ 0,8 × Zeilen/s des Track-E-Gewinners | 628 Zeilen/s (`e06_stack_go`, Stufe ingest) gegen 0,8 × 575 = 460 Zeilen/s (`e03_postgres_only`, Wall-Zeit) | ✓ |
+| `/v1/search` p95 < 100 ms bei 20 req/s | p95 74 ms, 0,0 % | ✓ |
+| `/v1/ask` erstes Ereignis p95 < 1,5 s | erfüllt bis 2,0 req/s | ✓ |
+| Ingest ≥ 0,8 × Zeilen/s des Track-E-Gewinners | 627 Zeilen/s (`e06_stack_go`, Stufe ingest) gegen 0,8 × 575 = 460 Zeilen/s (`e03_postgres_only`, Wall-Zeit) | ✓ |
+
+## Abbildungen
+
+Generiert aus `results/` (Median der neuesten Sitzung je Wettbewerber und Skala). Pareto-Front (blau, nummeriert, Namen unter dem Titel): kein anderer Wettbewerber ist auf beiden Achsen besser. Anti-Muster und Produktions-Stacks sind nicht eingezeichnet.
+
+![Track A: Wall-Zeit vs. Energie (brutto), Skala L](figures/pareto_a_L.de.svg)
+
+![Track B: Wall-Zeit vs. Energie (brutto), Skala M](figures/pareto_b_M.de.svg)
+
+![Track C dense: Wall-Zeit vs. Energie (brutto), Skala M](figures/pareto_c_M.de.svg)
+
+![Track C hybrid: Wall-Zeit vs. Energie (brutto), Skala M](figures/pareto_c_hybrid_M.de.svg)
+
+![Track E: Wall-Zeit vs. Energie (brutto), Skala L](figures/pareto_e_L.de.svg)
+
+![Track D: Qualität vs. Energie je Zeile, Skala D2k](figures/track_d_f1_energy_D2k.de.svg)
+
+![Track E: Zeit je Stufe, Skala L (s)](figures/stages_e_L.de.svg)
+
+![Lastkurve e07_stack_load, Skala L: p95-Latenz je Angebotsrate](figures/load_curve_e07_stack_load_L.de.svg)

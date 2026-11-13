@@ -583,6 +583,9 @@ def render(repo: Path, lang: str) -> str:
             from zj_analysis import load_curve  # noqa: PLC0415  (load_curve imports this module)
 
             body += "\n" + load_curve.section_md(con, lang)
+        from zj_analysis import figures  # noqa: PLC0415  (figures imports this module)
+
+        body += "\n" + figures.section_md(con, repo / "reports" / "figures", lang)
     else:
         body = f"## {TRACKS['A'][lang][0]}\n\n" + ("_Keine Daten._\n" if lang == "de" else "_No data._\n")
     con.close()
@@ -606,7 +609,13 @@ def main(argv: list[str] | None = None) -> int:
         from zj_analysis import winner  # noqa: PLC0415
 
         done += winner.write(a.repo, con)
+        from zj_analysis import facts  # noqa: PLC0415
+
+        done += facts.update(a.repo, con)
     con.close()
+    from zj_analysis import skills  # noqa: PLC0415
+
+    done += skills.update(a.repo)
     print(
         f"reports/REPORT.de.md, reports/REPORT.md{''.join(', ' + d for d in done)} from {counts['runs']} runs"
     )

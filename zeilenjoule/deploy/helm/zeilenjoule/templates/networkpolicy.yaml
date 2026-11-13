@@ -71,6 +71,10 @@ spec:
     {{- else }}
     - {}   # external model servers
     {{- end }}
+    {{- if .Values.monitoring.enabled }}
+    - to: [{namespaceSelector: {matchLabels: {kubernetes.io/metadata.name: {{ .Values.monitoring.namespace }}}}, podSelector: {matchLabels: {app.kubernetes.io/component: prometheus}}}]
+      ports: [{port: 9090}]   # gateway GET /v1/energy reads the J/question recording rule
+    {{- end }}
 ---
 {{- if .Values.postgres.enabled }}
 apiVersion: networking.k8s.io/v1
