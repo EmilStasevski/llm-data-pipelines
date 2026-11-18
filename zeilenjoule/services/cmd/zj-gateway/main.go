@@ -16,9 +16,7 @@ import (
 
 	"zeilenjoule/services/internal/config"
 	"zeilenjoule/services/internal/db"
-	"zeilenjoule/services/internal/embed"
 	"zeilenjoule/services/internal/httpapi"
-	"zeilenjoule/services/internal/llm"
 	"zeilenjoule/services/internal/prompts"
 	"zeilenjoule/services/internal/rag"
 	"zeilenjoule/services/internal/runtime"
@@ -69,8 +67,10 @@ func run() error {
 	if err := os.MkdirAll(cfg.UploadDir, 0o750); err != nil {
 		return err
 	}
-	lc := llm.New(cfg.LLMURL, cfg.LLMModel, cfg.LLMInFlight)
-	ec := embed.New(cfg.TEIURL, cfg.EmbedInFlight, cfg.EmbedBatch)
+	if err := db.CheckDim(ctx, pool, cfg.EmbedDim); err != nil {
+		return err
+	}
+	lc, ec := cfg.Chat(), cfg.Embedder()
 	srv := &httpapi.Server{
 		Pool: pool, River: rc, UploadDir: cfg.UploadDir, MaxUpload: cfg.MaxUpload, Log: log,
 		Engine:     &rag.Engine{Owner: pool, Reader: reader, LLM: lc, Emb: ec, P: p, SQLTimeout: cfg.SQLTimeout},

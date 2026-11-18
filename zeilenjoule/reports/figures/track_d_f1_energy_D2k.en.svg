@@ -30,21 +30,21 @@
 <text class="sec" x="435.0" y="428" text-anchor="middle">J/row gross (log)</text>
 <text class="sec" x="16" y="224.0" transform="rotate(-90 16 224.0)" text-anchor="middle">macro-F1</text>
 <text class="sec mono" x="16" y="42" font-size="11">1 d10_gliner  ·  2 d11_cascade  ·  3 d02_llamacpp_qwen35_9b_q4_3shot</text>
-<circle class="dom" cx="607.4" cy="127.4" r="4"><title>d02_llamacpp_qwen35_4b_q4: 25.60 J/row · F1 0.936</title></circle>
-<circle class="dom" cx="689.2" cy="123.8" r="4"><title>d02_llamacpp_ministral3_14b_q4: 47.14 J/row · F1 0.938</title></circle>
 <circle class="dom" cx="690.1" cy="111.7" r="4"><title>d01_ollama_qwen35_9b_q4: 47.46 J/row · F1 0.946</title></circle>
-<circle class="dom" cx="664.3" cy="100.7" r="4"><title>d02_llamacpp_qwen35_9b_q4: 39.15 J/row · F1 0.953</title></circle>
-<circle class="dom" cx="625.8" cy="111.4" r="4"><title>d03_vllm_qwen35_9b_fp8: 29.36 J/row · F1 0.946</title></circle>
+<circle class="dom" cx="755.6" cy="154.1" r="4"><title>d02_llamacpp_gemma4_12b_q4: 77.36 J/row · F1 0.919</title></circle>
 <circle class="dom" cx="594.7" cy="89.6" r="4"><title>d02_llamacpp_gemma4_e4b_q4: 23.29 J/row · F1 0.961</title></circle>
 <circle class="dom" cx="594.5" cy="88.0" r="4"><title>d02_llamacpp_gemma4_e4b_q4_3shot: 23.26 J/row · F1 0.962</title></circle>
-<circle class="dom" cx="602.3" cy="84.2" r="4"><title>d03_vllm_qwen35_9b_awq_3shot: 24.65 J/row · F1 0.964</title></circle>
-<circle class="dom" cx="639.0" cy="128.5" r="4"><title>d03_vllm_qwen35_9b_awq: 32.41 J/row · F1 0.935</title></circle>
+<circle class="dom" cx="689.2" cy="123.8" r="4"><title>d02_llamacpp_ministral3_14b_q4: 47.14 J/row · F1 0.938</title></circle>
+<circle class="dom" cx="607.4" cy="127.4" r="4"><title>d02_llamacpp_qwen35_4b_q4: 25.60 J/row · F1 0.936</title></circle>
+<circle class="dom" cx="664.3" cy="100.7" r="4"><title>d02_llamacpp_qwen35_9b_q4: 39.15 J/row · F1 0.953</title></circle>
 <circle class="dom" cx="682.7" cy="107.1" r="4"><title>d02_llamacpp_qwen35_9b_q8: 44.89 J/row · F1 0.949</title></circle>
-<circle class="dom" cx="755.6" cy="154.1" r="4"><title>d02_llamacpp_gemma4_12b_q4: 77.36 J/row · F1 0.919</title></circle>
-<circle class="c0" cx="556.1" cy="81.6" r="5"><title>d11_cascade: 17.46 J/row · F1 0.966</title></circle>
-<text class="ink" x="564.1" y="75.6" font-weight="600" font-size="11">2</text>
+<circle class="dom" cx="639.0" cy="128.5" r="4"><title>d03_vllm_qwen35_9b_awq: 32.41 J/row · F1 0.935</title></circle>
+<circle class="dom" cx="602.3" cy="84.2" r="4"><title>d03_vllm_qwen35_9b_awq_3shot: 24.65 J/row · F1 0.964</title></circle>
+<circle class="dom" cx="625.8" cy="111.4" r="4"><title>d03_vllm_qwen35_9b_fp8: 29.36 J/row · F1 0.946</title></circle>
 <circle class="c0" cx="653.7" cy="73.1" r="5"><title>d02_llamacpp_qwen35_9b_q4_3shot: 36.17 J/row · F1 0.971</title></circle>
 <text class="ink" x="661.7" y="67.1" font-weight="600" font-size="11">3</text>
 <circle class="c0" cx="115.1" cy="374.9" r="5"><title>d10_gliner: 0.65 J/row · F1 0.775</title></circle>
 <text class="ink" x="123.1" y="368.9" font-weight="600" font-size="11">1</text>
+<circle class="c0" cx="556.1" cy="81.6" r="5"><title>d11_cascade: 17.46 J/row · F1 0.966</title></circle>
+<text class="ink" x="564.1" y="75.6" font-weight="600" font-size="11">2</text>
 </svg>

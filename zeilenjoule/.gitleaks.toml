@@ -8,6 +8,8 @@ useDefault = true
 description = "generated, downloaded or secret-by-design paths"
 paths = [
   '''(^|/)\.env$''',
+  '''(^|/)winner/(\.run|dist)/''',             # winner kit: local install (toolchains, PostgreSQL data) and bundles
+  '''(^|/)winner/winner[^/]*\.env$''',         # winner kit config with generated secrets (gitignored, mode 600)
   '''(^|/)(data|models|logs|results)/''',
   '''(^|/)(\.venv|target|node_modules|\.cache|\.ruff_cache|\.pytest_cache|__pycache__)/''',
   '''(^|/)(uv\.lock|Cargo\.lock|go\.sum)$''',

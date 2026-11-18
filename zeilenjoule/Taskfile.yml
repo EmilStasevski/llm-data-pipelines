@@ -341,6 +341,7 @@ tasks:
       - task: lint:go
       - task: lint:docker
       - task: lint:helm
+      - task: lint:sh
       - task: test:py
       - task: test:rs
       - task: test:go
@@ -356,6 +357,20 @@ tasks:
       - task: images
       - task: scan:images
       - task: sbom
+
+  lint:sh:
+    desc: shellcheck on the winner kit scripts (ADR 0028), pinned image
+    cmds:
+      - >-
+        docker run --rm -v "$PWD:/mnt:ro" -w /mnt
+        koalaman/shellcheck:v0.11.0@sha256:61862eba1fcf09a484ebcc6feea46f1782532571a34ed51fedf90dd25f925a8d
+        -x -P winner winner/kit winner/lib/common.sh winner/lib/native.sh winner/lib/docker.sh
+        winner/example/run.sh winner/docker/postgres-init/10-roles.sh
+
+  winner:pack:
+    desc: Bundle the winner kit for a server (winner/dist/zeilenjoule-winner.tar.gz; instruction.md)
+    cmds:
+      - winner/kit pack
 
   lint:docker:
     desc: hadolint on every Dockerfile (.hadolint.yaml; exceptions inline with a reason)
@@ -399,7 +414,7 @@ tasks:
       - >-
         {{.TRIVY}} fs --scanners vuln --exit-code 1 --severity HIGH,CRITICAL --ignore-unfixed
         --ignorefile /repo/.trivyignore.yaml
-        --skip-dirs '**/data,**/models,**/.venv,**/target,**/.cache,**/logs,**/results' /repo
+        --skip-dirs '**/data,**/models,**/.venv,**/target,**/.cache,**/logs,**/results,**/winner/.run,**/winner/dist' /repo
 
   scan:images:
     desc: trivy scan of the built service images (HIGH/CRITICAL with a fix fail the build)

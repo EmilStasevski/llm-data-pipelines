@@ -189,7 +189,7 @@ def svg_scatter(  # noqa: PLR0913
     }
     key = "  ·  ".join(f"{k} {lab}" for lab, k in sorted(num.items(), key=lambda kv: kv[1]))
     out.append(f'<text class="sec mono" x="16" y="42" font-size="11">{esc(key)}</text>')
-    for p in sorted(pts, key=lambda p: p.label in best):  # front drawn last, on top
+    for p in sorted(pts, key=lambda p: (p.label in best, p.label)):  # front drawn last, on top; stable output
         on = p.label in best
         out.append(
             f'<circle class="{"c0" if on else "dom"}" cx="{fx(p.x):.1f}" cy="{fy(p.y):.1f}" '

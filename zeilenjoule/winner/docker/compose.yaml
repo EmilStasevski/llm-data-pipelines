@@ -1,0 +1,155 @@
+# ZeilenJoule winner kit, docker mode (ADR 0028). Driven by ../kit, which passes ../winner.env as --env-file and
+# sets ZJ_LLM_URL_IN / ZJ_EMBED_URL_IN (model URLs as seen from inside the compose network).
+#
+# Profiles (chosen from ZJ_MODEL_SERVER):
+#   (none)     postgres + migrate + gateway + worker; models external (host.docker.internal = the host)
+#   vllm-tei   + vLLM and TEI as measured (one NVIDIA GPU, NVIDIA Container Toolkit)
+#   ollama     + Ollama (GPU when available)
+name: zj-winner
+
+x-images:
+  postgres: &postgres-image pgvector/pgvector:0.8.7-pg18-trixie@sha256:5895949dfcdf308eb0cd31c950c93c14895c77f33fbedfecf1fa511ab1d4bcd2
+  vllm: &vllm-image vllm/vllm-openai:v0.33.0@sha256:d825baf9ce4b1b6bfc5ecc7b79880c7e6748c65a72d697ce3d47607aafa84c6e
+  ollama: &ollama-image ollama/ollama:0.13.5@sha256:2c9595c555fd70a28363489ac03bd5bf9e7c5bdf2890373c3a830ffd7252ce6d
+
+x-gpu: &gpu
+  deploy:
+    resources:
+      reservations:
+        devices: [{driver: nvidia, count: all, capabilities: [gpu]}]
+
+x-service-env: &service-env
+  ZJ_DATABASE_URL: postgres://zeilenjoule:${POSTGRES_PASSWORD:?}@postgres:5432/zeilenjoule
+  ZJ_LLM_URL: ${ZJ_LLM_URL_IN:?run through ./kit}
+  ZJ_LLM_MODEL: ${ZJ_LLM_MODEL:?}
+  ZJ_LLM_API_KEY: ${ZJ_LLM_API_KEY:-}
+  ZJ_LLM_EXTRA_JSON: ${ZJ_LLM_EXTRA_JSON:-}
+  ZJ_LLM_IN_FLIGHT: ${ZJ_LLM_IN_FLIGHT:-4}
+  ZJ_EMBED_URL: ${ZJ_EMBED_URL_IN:?run through ./kit}
+  ZJ_EMBED_API: ${ZJ_EMBED_API:-openai}
+  ZJ_EMBED_MODEL: ${ZJ_EMBED_MODEL:-}
+  ZJ_EMBED_DIM: ${ZJ_EMBED_DIM:-1024}
+  ZJ_EMBED_API_KEY: ${ZJ_EMBED_API_KEY:-}
+  ZJ_EMBED_QUERY_PREFIX: ${ZJ_EMBED_QUERY_PREFIX:-}
+  ZJ_EMBED_DOC_PREFIX: ${ZJ_EMBED_DOC_PREFIX:-}
+  ZJ_EMBED_IN_FLIGHT: ${ZJ_EMBED_IN_FLIGHT:-2}
+  ZJ_EMBED_BATCH: ${ZJ_EMBED_BATCH:-64}
+  ZJ_REQUEST_TIMEOUT: ${ZJ_REQUEST_TIMEOUT:-300s}
+  ZJ_UPLOAD_DIR: /var/lib/zj/uploads
+
+x-app: &app
+  extra_hosts: ["host.docker.internal:host-gateway"]
+  read_only: true
+  security_opt: [no-new-privileges:true]
+  cap_drop: [ALL]
+  restart: unless-stopped
+
+services:
+  postgres:
+    image: *postgres-image
+    environment:
+      POSTGRES_USER: zeilenjoule
+      POSTGRES_DB: zeilenjoule
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?}
+      ZJ_READER_PASSWORD: ${ZJ_READER_PASSWORD:?}
+    command: [postgres, -c, "shared_buffers=${ZJ_PG_SHARED_BUFFERS:-1GB}", -c, work_mem=64MB,
+              -c, maintenance_work_mem=1GB, -c, max_wal_size=4GB]
+    shm_size: 1g
+    volumes:
+      - pgdata:/var/lib/postgresql
+      - ./postgres-init:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: [CMD-SHELL, pg_isready -U zeilenjoule -d zeilenjoule]
+      interval: 5s
+      timeout: 3s
+      retries: 30
+    restart: unless-stopped
+
+  migrate:
+    <<: *app
+    image: zj-winner/worker:dev
+    build: {context: ../.., dockerfile: deploy/docker/services.Dockerfile, target: worker}
+    command: [migrate]
+    environment: *service-env
+    depends_on:
+      postgres: {condition: service_healthy}
+    restart: "no"
+
+  gateway:
+    <<: *app
+    image: zj-winner/gateway:dev
+    build: {context: ../.., dockerfile: deploy/docker/services.Dockerfile, target: gateway}
+    environment:
+      <<: *service-env
+      ZJ_READER_URL: postgres://zj_ask:${ZJ_READER_PASSWORD:?}@postgres:5432/zeilenjoule
+      ZJ_API_KEYS: ${ZJ_API_KEYS:?}
+      ZJ_RATE_LIMIT: ${ZJ_RATE_LIMIT:-10}
+    ports: ["${ZJ_BIND:-127.0.0.1}:${ZJ_GATEWAY_PORT:-8080}:8080"]
+    volumes: [uploads:/var/lib/zj/uploads]
+    tmpfs: [/tmp]
+    depends_on:
+      migrate: {condition: service_completed_successfully}
+
+  worker:
+    <<: *app
+    image: zj-winner/worker:dev
+    environment:
+      <<: *service-env
+      ZJ_PARSER_THREADS: ${ZJ_PARSER_THREADS:-4}
+    volumes: [uploads:/var/lib/zj/uploads]
+    tmpfs: ["/tmp:size=4g"] # parser output (≈ 0.5 GB per 1 M rows)
+    depends_on:
+      migrate: {condition: service_completed_successfully}
+
+  # ---------------------------------------------------------------- profile vllm-tei (the measured winner)
+  tei:
+    <<: *gpu
+    profiles: [vllm-tei]
+    image: ${ZJ_TEI_IMAGE:?}
+    command: --model-id ${ZJ_TEI_MODEL:?} --port 8081 ${ZJ_TEI_ARGS:-}
+    environment: {HF_HUB_DISABLE_TELEMETRY: "1"}
+    volumes:
+      - ${ZJ_MODELS_DIR:?}:/models:ro
+      - tei-data:/data
+    healthcheck:
+      test: [CMD, curl, -fsS, http://127.0.0.1:8081/health]
+      interval: 5s
+      timeout: 3s
+      retries: 360 # first start downloads the model
+    restart: unless-stopped
+
+  vllm:
+    <<: *gpu
+    profiles: [vllm-tei]
+    image: *vllm-image
+    ipc: host
+    environment: {HF_HOME: /cache/hf, VLLM_NO_USAGE_STATS: "1", HF_HUB_DISABLE_TELEMETRY: "1"}
+    command: --model ${ZJ_VLLM_MODEL:?} --served-model-name ${ZJ_LLM_MODEL:?} --host 0.0.0.0 --port 8000 ${ZJ_VLLM_ARGS:-}
+    volumes:
+      - ${ZJ_MODELS_DIR:?}:/models:ro
+      - vllm-cache:/cache
+    depends_on:
+      tei: {condition: service_healthy} # vLLM sizes its KV cache from the memory TEI leaves
+    healthcheck:
+      test: [CMD, curl, -fsS, http://127.0.0.1:8000/health]
+      interval: 10s
+      timeout: 3s
+      retries: 360
+      start_period: 120s
+    restart: unless-stopped
+
+  # ---------------------------------------------------------------- profile ollama
+  ollama:
+    <<: *gpu
+    profiles: [ollama]
+    image: *ollama-image
+    environment: {OLLAMA_HOST: 0.0.0.0:11434}
+    volumes: [ollama:/root/.ollama]
+    restart: unless-stopped
+
+volumes:
+  pgdata:
+  uploads:
+  tei-data:
+  vllm-cache:
+  ollama:

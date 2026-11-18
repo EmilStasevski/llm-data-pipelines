@@ -15,9 +15,7 @@ import (
 
 	"zeilenjoule/services/internal/config"
 	"zeilenjoule/services/internal/db"
-	"zeilenjoule/services/internal/embed"
 	"zeilenjoule/services/internal/ingest"
-	"zeilenjoule/services/internal/llm"
 	"zeilenjoule/services/internal/prompts"
 	"zeilenjoule/services/internal/runtime"
 )
@@ -46,7 +44,7 @@ func run(args []string) error {
 	}
 	defer pool.Close()
 	if len(args) == 1 && args[0] == "migrate" {
-		applied, err := db.Migrate(ctx, pool)
+		applied, err := db.Migrate(ctx, pool, cfg.EmbedDim)
 		log.Info("migrations", "applied", applied, "err", err)
 		return err
 	}
@@ -57,6 +55,9 @@ func run(args []string) error {
 	if err != nil {
 		return err
 	}
+	if err := db.CheckDim(ctx, pool, cfg.EmbedDim); err != nil {
+		return err
+	}
 	// heal a bulk load that died between dropping and rebuilding the search indexes (no-op normally)
 	if err := db.EnsureSearchIndexes(ctx, pool); err != nil {
 		return err
@@ -64,9 +65,9 @@ func run(args []string) error {
 	workers := river.NewWorkers()
 	river.AddWorker(workers, &ingest.Worker{
 		Pool: pool, P: p, Log: log,
-		Emb:       embed.New(cfg.TEIURL, cfg.EmbedInFlight, cfg.EmbedBatch),
-		LLM:       llm.New(cfg.LLMURL, cfg.LLMModel, cfg.LLMInFlight),
-		ParserBin: cfg.ParserBin, Lexicon: cfg.Lexicon, ParserThreads: cfg.ParserThreads,
+		Emb:       cfg.Embedder(),
+		LLM:       cfg.Chat(),
+		ParserBin: cfg.ParserBin, Lexicon: cfg.Lexicon, ParserThreads: cfg.ParserThreads, Dim: cfg.EmbedDim,
 	})
 	rc, err := river.NewClient[pgx.Tx](riverpgxv5.New(pool), &river.Config{
 		Queues:  map[string]river.QueueConfig{ingest.Queue: {MaxWorkers: 1}},

@@ -1,0 +1,46 @@
+[
+  {
+    "frage": "Wie viele Störmeldungen gibt es insgesamt?",
+    "zahl": 100
+  },
+  {
+    "frage": "Wie viele Meldungen gab es im Werk Krefeld?",
+    "zahl": 7
+  },
+  {
+    "frage": "Wie hoch waren die gesamten Kosten in Euro im Werk Lünen?",
+    "zahl": 10000.36
+  },
+  {
+    "frage": "Wie viele Meldungen gab es im Jahr 2025?",
+    "zahl": 32
+  },
+  {
+    "frage": "Wie viele sicherheitsrelevante Meldungen gibt es?",
+    "zahl": 4
+  },
+  {
+    "frage": "Welches Werk hat die meisten Meldungen?",
+    "text": "Düsseldorf"
+  },
+  {
+    "frage": "Welche Meldung hatte den längsten Stillstand?",
+    "text": "2000000057"
+  },
+  {
+    "frage": "Welche Meldungen beschreiben Korrosion an einer Druckluftleitung?",
+    "ids": [
+      "2000000001",
+      "2000000004",
+      "2000000018",
+      "2000000030"
+    ]
+  },
+  {
+    "frage": "Bei welchen Meldungen gab es einen Brand?",
+    "ids": [
+      "2000000003",
+      "2000000076"
+    ]
+  }
+]

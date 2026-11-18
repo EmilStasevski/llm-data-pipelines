@@ -1,0 +1,101 @@
+meldung_id;werk;anlage;equipment_nr;meldungsdatum;schicht;prioritaet;meldungstext;stillstand;kosten;status
+2000000000;Marl;Rohrbrücke 2;V-5141;6.9.2024;Spät;3;Verschleiß am Ventil. ET Mat.-Nr. 10810812 verbaut. Noch keine Maßnahme.;150 min;;in Arbeit
+2000000001;Gütersloh;Schleiferei 3;H-2143;24.3.24;Früh;1;Korrosion an der Druckluftleitung in Schleiferei 3. Falsch montiert. Maßnahme offen.;105 min;156,06 €;offen
+2000000002;Bottrop;Kesselhaus 3;P 9640-B;22.4.26;Nacht;2;Verschleiß an der Kreiselpumpe (P 9640-B). Usache unbekannt. Nachgeschmiert.;450 min;1.223,93;abgeschlossen
+2000000003;Siegen;Glühlinie 1;F 5950-C;06.10.2025;Spät;1;Verschleiß am Förderband. Nachgezogen. Kleiner Brand, sofort gelöscht.;4 Stunden;;abgeschlossen
+2000000004;Dormagen;Tanklager 1;H 4036-B;02.03.2024;Nacht;3;Druckluftleitungskorrosion. Schmierung durchgeführt. Unwuchtig.;6,75 h;;abgeschlossen
+2000000005;Krefeld;Destillationskolonne 2;E 8346-C;12.3.24;Spät;2;Falschmeldung am Umrichter. Leitung abgedichtet.;33 min;2.664,88;in Arbeit
+2000000006;Münster;CIP-Anlage 2;M 9939-B;3.8.2024;Nacht;2;Unruhiger Lauf am Schraubenverdichter. Ursache unbekannt.;170 min;439,28 €;offen
+2000000007;Wesel;Verladerampe 2;S-5558;7.2.2025;Nacht;4;Die Lichtschranke meldet Stoerung ohne Befund (S-5558). Ursache noch unklar. Filtereinsatz gereinigt.;4-5h;222,34 €;abgeschlossen
+2000000008;Krefeld;Granulieranlage 1;E-5942;27.10.26;Spät;3;Kurzschluss am Schütz.;6,25 h;;offen
+2000000009;Neuss;Kühlhaus 2;F 8768-C;18.9.2024;Nacht;3;Kranverschleiß (F 8768-C). Wg. Fremdkörper. Sensor kalibriert.;75 min;1.663,36 €;abgeschlossen
+2000000010;Wuppertal;Prüfstand 3;V-1110;25.11.2024;Früh;2;Wear am Regelventil. Parameter angepasst.;189 min;1 912,00 €;abgeschlossen
+2000000011;Dormagen;Abfüllstation 3;V-3808;21.04.24;Spät;1;Abnutzung am Regelventil in AbfÃ¼llstation 3. Reset der SPS durchgefÃ¼hrt.;ca. 6 Std.;499,63 €;storniert
+2000000012;Münster;Abfülllinie 1;W-5946;08.09.25;Nacht;2;Verstopfung am Ölfilter in Abfülllinie 1. Sollwert korrigiert. Ersatzteil 10779016 eingebaut.;300 min;454,19 €;abgeschlossen
+2000000013;Paderborn;Schleiferei 2;P-2700;28.03.25;Nacht;3;Leckage an der GLRD in Schleiferei 2 (P-2700). Unwucht am Laufrad.;300 min;305,00 €;offen
+2000000014;Lünen;Kommissionierung 1;P-1073;07.03.2026;Früh;2;Die Gleitringdichtung tropft. Ersatzteil 10741443 eingebaut. Starke Verschmutzung.;6,75 h;1.930,74 €;in Arbeit
+2000000015;Lünen;Kommissionierung 1;F-1973;21.11.2024;Früh;3;Die Walze zu warm (F-1973). Parameter angepasst.;;;abgeschlossen
+2000000016;Münster;Molkereianlage 3;F 5912-B;01.02.26;Spät;4;Die Arbeitswalze zu warm in Molkereianlage 3. Noch keine Maßnahme. Ursache noch unklar. Ausfallzeit 180 min.;180 min;403,00 €;offen
+2000000017;Hagen;Sinteranlage 3;W-8424;30.4.2026;Früh;4;Clogging am Plattenwärmetauscher. Fremdkörper im System. Abgeschmiert. Downtime 105 Minuten.;105 Minuten;592,88;abgeschlossen
+2000000018;Mülheim an der Ruhr;Schleiferei 2;H-1422;2025-10-10;Nacht;3;Druckluftleitungskorrosion. Ursache in Klärung.;315 Minuten;440,01 €;offen
+2000000019;Neuss;Abfülllinie 3;P-4103;21.07.2025;Nacht;2;Leck an der Kühlwasserpumpe (P-4103). Dichtung getauscht. Sollwert falsch.;7 Stunden;;abgeschlossen
+2000000020;Siegen;Verzinkungsanlage 2;S-7750;2024-01-31;Früh;4;Bruch am PT100-TemperaturfÃ¼hler in Verzinkungsanlage 2.;0,25 h;587,14 €;in Arbeit
+2000000021;Solingen;Montagehalle 1;F-6739;2024-12-12;Früh;3;Kommunikationsfehler am Brueckenkran (Profinet). Mat.Nr. 10517841 getauscht. Fa. fuer Reparatur bestellt.;4,5 h;1.591,31 €;abgeschlossen
+2000000022;Duisburg;Verzinkungsanlage 2;H-9020;31.3.2025;Spät;2;Der Hubzylinder tropft. Unwuchtig.;3,25 h;;in Arbeit
+2000000023;Lünen;Kühllager 2;F-5983;6.9.2024;Spät;4;Förderbandverschleiß in Kühllager 2. Fa. für Reparatur bestellt. Mat.Nr. 10765306 getauscht.;75 min;428,96 €;abgeschlossen
+2000000024;Bielefeld;CIP-Anlage 3;S-4157;15.10.2024;Nacht;3;Der Druckmessumformer hat ausgelöst (Kurzschluss) in CIP-Anlage 3. Unwucht. Filtereinsatz gereinigt.;6,75 h;;in Arbeit
+2000000025;Düsseldorf;Montagelinie 2;W 4225-C;2025-03-10;Früh;1;Leak am Waermetauscher. Bedienfehler.;;;offen
+2000000026;Solingen;Härterei 3;S-6739;16.04.25;Spät;3;Kommunikationsfehler an der Lichtschranke (Profinet) in Härterei 3. Teil angefordert. Vmtl. Materialermüdung. Ausfallzeit 1 Stunde.;1 Stunde;799,30 €;abgeschlossen
+2000000027;Hamm;Umspannwerk 1;M-8619;2024-07-01;Früh;3;Extruderverstopfung in Umspannwerk 1. Stillstand 17 min. Leck abgedichtet.;17 min;;abgeschlossen
+2000000028;Lünen;Sortieranlage 1;S 5721-A;20.12.24;Nacht;4;Der PT100-Temperaturfühler meldet Störung ohne Befund (S 5721-A). Ursache in Klärung.;2,25 h;1.094,45 €;in Arbeit
+2000000029;Bottrop;Speisewasseranlage 1;S-6319;21.09.25;Früh;2;Sensorbruch in Speisewasseranlage 1. IH informiert.;1-2h;120,00 €;offen
+2000000030;Wesel;Kühllager 1;H-5034;25.4.2024;Früh;3;Rostbildung an der Druckluftleitung in Kühllager 1. Sollwert korrigiert. Ursache in Klärung.;;337,11;abgeschlossen
+2000000031;Dortmund;Sinteranlage 1;E-2224;17.7.25;Früh;3;Die SPS-Baugruppe gebrochen in Sinteranlage 1 Ausfallzeit 255 Minuten Teil angefordert;255 Minuten;1943,00 EUR;abgeschlossen
+2000000032;Gelsenkirchen;Umspannwerk 1;W-8055;17.9.2024;Früh;2;Lochfraß am Wärmeübertrager Starke Verschmutzung Austausch durchgeführt;1 h;842,82;abgeschlossen
+2000000033;Oberhausen;Hochregallager 2;E-6200;21.03.24;Spät;3;Kurzschluss am Frequenzumrichter in Hochregallager 2. Ersatzteil 10464799 eingebaut. Montagefehler.;1 Stunde;777,60 €;offen
+2000000034;Gütersloh;Schleiferei 3;E-3322;8.2.2025;Nacht;3;Fehlalarm an der SPS-Baugruppe. Noch keine Maßnahme.;16 min;2.769,13 €;in Arbeit
+2000000035;Hagen;Kaltwalzwerk 2;M-3497;2024-01-19;Spät;4;Getriebeüberhitzung. Ursache unbekannt. Sollwert korrigiert.;2 Stunden;;abgeschlossen
+2000000036;Wuppertal;Schweißstraße 2;V-9079;2026-04-27;Spät;3;Abnutzung am Regelventil. Ursache noch unklar. Komponente ersetzt. ET Mat.-Nr. 10629699 verbaut.;ca. 5 Std.;3.380,21 €;in Arbeit
+2000000037;Duisburg;Stranggießanlage 1;M-6468;23.01.24;Nacht;2;Rührwerksverschleiß in Stranggießanlage 1. Falsch montiert. Wird an AV übergeben. ET Mat.-Nr. 10419947 verbaut.;0,25 h;3 349,59 €;offen
+2000000038;Münster;Kühlhaus 3;F-8874;2025-07-19;Spät;2;Förderbandverstopfung (F-8874). Bedienfehler. Sensor kalibriert. Stillstand 105 Minuten.;105 Minuten;;abgeschlossen
+2000000039;Krefeld;Rohrbrücke 2;S-3487;2024-09-02;Nacht;3;Falschmeldung am Drucksensor in Rohrbrücke 2. Starke Verschmutzung.;360 min;252,97 €;in Arbeit
+2000000040;Mülheim an der Ruhr;Härterei 1;E-6167;22.12.25;Spät;4;Falschmeldung am Frequenzumrichter. Servicetechniker angefordert. Verschmutzt.;2 Stunden;503,00 €;abgeschlossen
+2000000041;Düsseldorf;Montagelinie 2;M-5928;2024-04-27;Spät;1;Sicherung am Elektromotor geflogen in Montagelinie 2 (M-5928). Sensor kalibriert.;;1480,24 EUR;abgeschlossen
+2000000042;Köln;Tanklager 3;M 4084-A;2025-02-11;Früh;3;Verstopfung am Elektromotor. Noch keine MaÃŸnahme. Ursache unbekannt.;;353,77 €;offen
+2000000043;Lünen;Kommissionierung 1;E 3021-A;15.02.2026;Spät;1;Der Motorschutzschalter hat ausgelöst (Kurzschluss) (E 3021-A) Filter gespült;;5 262,21 €;abgeschlossen
+2000000044;Lünen;Kommissionierung 1;V-2366;25.05.2024;Nacht;3;Das Regelventil stark verschlissen. Mangelschmierung. Anlage stand 3,5 h.;3,5 h;;offen
+2000000045;Düsseldorf;Schweißstraße 3;S-5746;2024-05-24;Früh;4;Der PT100-Temperaturfühler abgerissen in Schweißstraße 3 (S-5746). Überlastet. SPS neu gestartet.;;394,00 €;abgeschlossen
+2000000046;Krefeld;Kälteanlage 3;E-3453;23.3.26;Spät;2;Fehlalarm am Frequenzumrichter in Kälteanlage 3 (E-3453).;105 min;1 224,05 €;offen
+2000000047;Paderborn;Härterei 1;P 1179-B;6.2.2025;Spät;2;Kühlwasserpumpenkavitation (P 1179-B). Ablagerungen. Provisorisch abgedichtet. Ausfallzeit 30 min.;30 min;1 497,90 €;abgeschlossen
+2000000048;Bochum;Lackiererei 2;H-6019;08.08.2026;Nacht;1;Austritt von Medium am Zylinder in Lackiererei 2. Verschmutzt. Verschraubung nachgezogen. MA leicht verletzt.;6,25 h;1.925,00 €;abgeschlossen
+2000000049;Neuss;Backstraße 3;F-6672;3.3.2026;Spät;2;Der Brückenkran ohne Verbindung in Backstraße 3. Unwucht am Laufrad. Austausch durchgeführt.;;;abgeschlossen
+2000000050;Hagen;Sinteranlage 3;F 8276-B;07.02.24;Früh;4;Verschleiß an der Walze. Lufteinschluss. Sollwert korrigiert.;;1.372,74 €;abgeschlossen
+2000000051;Siegen;Hochofen 2;M 5853-C;25.12.24;Spät;3;Sicherung am Elektromotor geflogen. Nach Montage nicht nachgezogen. IH informiert. Mat.Nr. 10818714 getauscht.;4 Stunden;603,79 €;offen
+2000000052;Düsseldorf;Schweißstraße 3;M 4305-A;25.02.2024;Früh;2;Verschleiß am Wälzlager in Schweißstraße 3. Ermüdungsbruch des Materials.;7 h;;offen
+2000000053;Düsseldorf;Montagelinie 2;S 6304-B;30.11.2024;Spät;4;Falschmeldung an der Lichtschranke. Ursache wird geprüft. IH informiert.;ca. 1 Std.;129,00 €;offen
+2000000054;Aachen;Drehzentrum 3;S-3380;31.3.26;Spät;3;Auffälligkeit an der Lichtschranke Fremdkörper eingetragen Leitung abgedichtet;;2 475,00 €;abgeschlossen
+2000000055;Oberhausen;Kommissionierung 3;P-9458;26.05.24;Nacht;2;Kavitation an der Kühlwasserpumpe (P-9458). Maßnahme offen.;330 min;;in Arbeit
+2000000056;Duisburg;Stranggießanlage 1;E-5961;2025-04-08;Spät;4;Fehlalarm an der SPS-Baugruppe in Stranggießanlage 1.   Band nachgespannt.;7,25 h;610,99 €;in Arbeit
+2000000057;Solingen;Bearbeitungszentrum 2;W 3646-C;6.3.26;Früh;3;Rostbildung am Plattenwaermetauscher in Bearbeitungszentrum 2 Anlage stand 660 min Spannungsspitze im Netz;660 min;114,45 €;offen
+2000000058;Düsseldorf;Montagelinie 2;F-4077;28.04.2026;Nacht;2; Walzenverstopfung in Montagelinie 2 (F-4077). Lufteinschluss. Kalibrierung durchgeführt. Anlage  stand 1,75 h.;1,75 h;3.691 €;abgeschlossen
+2000000059;Dormagen;Abfüllstation 3;P 2498-C;10.04.24;Nacht;2;Leck an der Gleitringdichtung in Abfüllstation 3 (P 2498-C). IH informiert. Anlage stand 270 min.;270 min;422,77 €;offen
+2000000060;Marl;Rohrbrücke 2;F-4600;17.06.26;Spät;1;Förderbandbruch. Ausfallzeit 8-9h. Rauchentwicklung festgestellt.;8-9h;134,21;offen
+2000000061;Bonn;Kühlhaus 2;F-9955;31.08.2024;Spät;3;FÃ¶rderbandverstopfung. Mangelschmierung. Stillstand 1,75 h.;1,75 h;2 669,00 €;offen
+2000000062;Paderborn;Lackieranlage 3;P-9638;12.07.2026;Früh;4;AUSTRITT VON MEDIUM AN DER GLEITRINGDICHTUNG IN LACKIERANLAGE 3 (P-9638). URSACHE WIRD GEPRÜFT. AUSTAUSCH DURCHGEFÜHRT.;15 min;;abgeschlossen
+2000000063;Wuppertal;Schweißstraße 2;E-9620;8.3.2025;Spät;2;Kurzschluss am Schütz. Anlage stand 6,25 h. Ursache wird geprüft.;6,25 h;135,52 €;offen
+2000000064;Münster;Backstraße 1;P-8663;28.02.2026;Spät;3;Überhitzung an der Kühlwasserpumpe. Wird an AV übergeben. Stillstand 236 min.;236 min;;in Arbeit
+2000000065;Dortmund;Warmbandstraße 2;P-4349;11.02.24;Früh;3;Dichtungsverschleiß. Ursache in Klärung.;7 Stunden;3.111,00;offen
+2000000066;Oberhausen;Kühllager 1;S 3551-B;30.10.24;Spät;4;Erdschluss am PT100 (S 3551-B). Überspannung. Mat.Nr. 10623308 getauscht. Ausfallzeit 3,25 h.;3,25 h;;offen
+2000000067;Wuppertal;Spritzgießerei 2;V-5986;15.2.25;Spät;1;Ventilleckage. Verschmutzt. Austausch durchgeführt. Ausfallzeit 420 Minuten.;420 Minuten;1.360,00;abgeschlossen
+2000000068;Bochum;Prüfstand 2;F-9357;5.1.25;Früh;4;Die Arbeitswalze ausgeschlagen in Prüfstand 2 (F-9357). Alterung des Bauteils. ET Mat.-Nr. 10092419 verbaut.;2,75 h;563,72 €;in Arbeit
+2000000069;Paderborn;Montagehalle 2;F-1686;16.03.2026;Spät;1;Der Brückenkran läuft heiß. Fremdkörper im System.;1,5 h;263,00 EUR;offen
+2000000070;Köln;Abfüllstation 2;M-2563;2026-08-18;Spät;3;Rührwerksschwingung. Parameter angepasst. Programmfehler in der SPS. ET Mat.-Nr. 10756702 verbaut. Stillstand 7,25 h.;7,25 h;138,81 €;abgeschlossen
+2000000071;Krefeld;Kälteanlage 3;V 4370-B;23.11.2025;Spät;3;Das Regelventil ausgeschlagen in Kälteanlage 3. Noch keine Maßnahme. Luft im System. Material-Nr.: 10100306.;2,5 h;;in Arbeit
+2000000072;Hamm;Rauchgasreinigung 2;P-4233;12.5.26;Nacht;3;Übertemperatur an der Gleitringdichtung in Rauchgasreinigung 2. Ursache wird geprüft. Ausfallzeit 2-3h.;2-3h;266,98 €;offen
+2000000073;Dortmund;Sinteranlage 1;V-1831;16.12.2025;Früh;2;Busfehler am Regelventil. Band nachgespannt.;;;abgeschlossen
+2000000074;Köln;Reaktorbereich 3;M-1139;2025-02-03;Spät;4;Vibration am Schraubenverdichter in Reaktorbereich 3. Ursache noch unklar. Band nachgespannt. Mat.Nr. 10482523 getauscht.;195 Minuten;;in Arbeit
+2000000075;Bottrop;Kühlturm 2;S-4291;2024-11-07;Früh;3;Profibus-Störung am Druckaufnehmer. Neue Dichtung eingebaut.;2,75 h;1196,00 EUR;abgeschlossen
+2000000076;Duisburg;Warmbandstraße 1;S 2737-C;20.7.2024;Nacht;1;Kleiner Brand, sofort gelöscht. Der PT100-Temperaturfühler zugesetzt in Warmbandstraße 1 (S 2737-C). Falsche Parametrierung. ET bestellt, Lieferung offen. Anlage stand 1 Stunde.;1 Stunde;1 379,22 €;abgeschlossen
+2000000077;Leverkusen;Reaktorbereich 1;E 7879-B;2024-02-22;Früh;1;Erdschluss an der SPS-Baugruppe in Reaktorbereich 1. Bedienfehler. IH informiert. Material-Nr.: 10047592.;435 min;772,18 €;offen
+2000000078;Mülheim an der Ruhr;Drehzentrum 1;P-8753;5.12.25;Nacht;3;Verchleiß an der Kreiselpumpe. ET Mat.-Nr. 10633654 verbaut. Ursache: Materialermüdung.;1-2h;261,68 €;offen
+2000000079;Krefeld;Rohrbrücke 2;S-3470;17.11.2025;Nacht;4;Fehlalarm am Drucksensor in Rohrbrücke 2. Unwuchtig. Reset der SPS durchgeführt.;480 min;1 390,00 €;abgeschlossen
+2000000080;Wesel;Hochregallager 2;E 1303-B;10.11.24;Früh;4;Fehlalarm am Motorschutzschalter. Stillstand 78 min. Schmierung fehlte.;78 min;46 €;offen
+2000000081;Duisburg;Glühlinie 1;S 8923-C;04.01.26;Nacht;4;Fehlalarm am Temperaturfühler in Glühlinie 1. Riemen nachgespannt.;6,25 h;1.574,45 €;abgeschlossen
+2000000082;Krefeld;Kälteanlage 3;E-4780;13.07.24;Früh;1;Sicherung an der SPS geflogen in Kälteanlage 3 (E-4780). Fremdkörper im System. Sollwert korrigiert.;6,5 h;359,00;abgeschlossen
+2000000083;Bochum;Schweißstraße 1;M 1143-A;7.10.25;Spät;2;Sicherung am Elektromotor geflogen. Stillstand 7,25 h.;7,25 h;;offen
+2000000084;Düsseldorf;Presswerk 2;V 1246-B;03.06.26;Spät;4;Der Absperrschieber ausgeschlagen in Presswerk 2. Stillstand 5,75 h.;5,75 h;1452,47 EUR;offen
+2000000085;Oberhausen;Hochregallager 2;H 6496-C;2024-02-16;Nacht;3; Busfehler am Hubzylinder. Ursache unbekannt. Leitung  abgedichtet.;7 Stunden;4 202,85 €;abgeschlossen
+2000000086;Neuss;Kühlhaus 2;V-7851;12.3.26;Früh;2;Schieberkorrosion (V-7851). Aderbruch. Neue Dichtung eingebaut. Stillstand 240 Minuten.;240 Minuten;1 427,63 €;abgeschlossen
+2000000087;Dormagen;Destillationskolonne 2;W 4446-A;23.6.2024;Früh;3;Verstopfung am Ölfilter. Ursache: fehlende Schmierung. Noch keine Maßnahme. Material-Nr.: 10105659. Anlage stand 192 min.;192 min;612,86;in Arbeit
+2000000088;Dormagen;Abfüllstation 3;F-4594;16.12.2025;Früh;2;Profibus-Störung am Hallenkran. Unwuchtig. Stillstand ca. 1 Std.;ca. 1 Std.;1.561,00;in Arbeit
+2000000089;Mülheim an der Ruhr;Drehzentrum 1;E 9243-A;27.05.2024;Nacht;3;Overheating am Umrichter. Ursache wird geprüft. Notreparatur.;180 Minuten;2893,48 EUR;storniert
+2000000090;Neuss;Molkereianlage 2;H-4086;19.04.2025;Früh;2;Die DL-Leitung ohne Verbindung in Molkereianlage 2. Vmtl. MaterialermÃ¼dung. IH informiert.;34 min;;offen
+2000000091;Lünen;Sortieranlage 1;P 4035-B;24.02.24;Spät;2; Pumpenkavitation in Sortieranlage 1. Vmtl. Materialermüdung. Schrauben nachgezogen.   Anlage stand 5,25 h.;5,25 h;1 284,00 €;abgeschlossen
+2000000092;Gelsenkirchen;Speisewasseranlage 3;F-8089;19.5.24;Nacht;3;Profibus-Störung am Brückenkran. Lager ersetzt. Stillstand 6 Stunden.;6 Stunden;;abgeschlossen
+2000000093;Gütersloh;Schleiferei 3;S 3026-A;25.12.24;Früh;1;Kurzschluss am Druckmessumformer in Schleiferei 3. Trockenlauf durch Lufteinschluss.;2 Stunden;786,44;offen
+2000000094;Leverkusen;Granulieranlage 1;P 5965-A;30.06.26;Spät;3;Übertemperatur an der Kühlwasserpumpe. Ausfallzeit 0,25 h. Leitung beschädigt (Kabelbruch).;0,25 h;7.333 €;in Arbeit
+2000000095;Duisburg;Warmbandstraße 1;S-4292;20.5.2025;Früh;3; Die Lichtschranke   ohne Verbindung in Warmbandstraße 1 (S-4292). Kabelbruch. Wird an AV übergeben. Material-Nr.: 10129495.  ;135 min;291,00 EUR;in Arbeit
+2000000096;Münster;Verpackungslinie 2;F-4733;13.2.24;Früh;2; Förderbandverschleiß  (F-4733).;;;in Arbeit
+2000000097;Neuss;CIP-Anlage 1;P 5493-B;04.02.2025;Spät;4;Kavitation an der Kreiselpumpe (P 5493-B). Falsche Parametrierung. Servicetechniker angefordert. Anlage stand 205 min.;205 min;;abgeschlossen
+2000000098;Köln;Reaktorbereich 3;M-7371;2025-10-20;Spät;2;Lagerschwingung (M-7371). Falsch montiert. Austausch durchgeführt. Material-Nr.: 10960740.;2,25 h;463,00 EUR;abgeschlossen
+2000000099;Düsseldorf;Prüfstand 1;E-5598;3.1.2025;Früh;3;Der Frequenzumrichter ausgeschlagen (E-5598). Starke Verschmutzung.;6 h;1.619,77 €;offen

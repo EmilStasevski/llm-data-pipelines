@@ -162,6 +162,52 @@ flowchart LR
   M -->|"/v1/energy"| G
 ```
 
+## Den Gewinner selbst installieren
+[`winner/`](winner/) installiert den Gewinner des Benchmarks als eigenständigen Dienst (ADR 0028):
+- **Datenbank:** PostgreSQL mit pgvector und deutschem Volltext.
+- **Dienste:** Go-Gateway und Go-Worker.
+- **Router-LLM:** wählt je Frage zwischen geprüftem SQL und hybrider Suche.
+- **Installation:** mit Docker oder **ohne Docker und ohne sudo**.
+- **Modelle:** beliebige lokale Modelle.
+
+Alle Befehle laufen in `winner/`. Ausführliche Anleitung: [`winner/instruction.de.md`](winner/instruction.de.md).
+
+**Variante A – ohne Docker (kein sudo, Linux x86_64)**
+- Braucht `curl`, `tar` und `python3`.
+- PostgreSQL 18 + pgvector, Go und Rust werden bei Bedarf unter `winner/.run` installiert.
+- Standardmodelle: Ollama mit `qwen3:8b` + `bge-m3`. `--with-ollama` installiert ein Ollama im Benutzerverzeichnis,
+  falls keines vorhanden ist.
+```bash
+./kit setup native --preset ollama        # ~3 min: Datenbank + Programme bauen
+./kit start                               # PostgreSQL, Ollama (lädt die Modelle), Worker, Gateway
+```
+
+**Variante B – mit Docker**
+- Braucht Docker mit compose v2.
+- Das Preset `vllm-tei` nutzt die gemessenen Modelle (vLLM Qwen3.5-9B AWQ + TEI bge-m3). Dafür sind eine
+  NVIDIA-GPU mit 16 GB und das NVIDIA Container Toolkit nötig.
+- Ohne diese GPU: `--preset ollama`.
+```bash
+./kit setup docker --preset vllm-tei      # baut die Gateway-/Worker-Images
+./kit start                               # der erste Start lädt ≈ 9 GB Modelle
+```
+
+**Benutzung**
+```bash
+./example/run.sh                          # 100 Beispielzeilen, 9 Fragen, jede Antwort wird geprüft
+./kit ingest meine_meldungen.csv          # eigene SAP-PM-artige CSV (`;`, cp1252 oder UTF-8)
+./kit ask "Wie viele Meldungen gab es 2025 im Werk Krefeld?"
+./kit search "Lager läuft heiß"
+./kit status   ·   ./kit stop            # Daten bleiben erhalten; ./kit reset-db löscht sie
+```
+- **Browser:** `http://127.0.0.1:8080/demo`.
+- **HTTP-API:** `POST /v1/ask` und `/v1/search` mit dem Header `X-API-Key`. Der Schlüssel steht als `ZJ_API_KEYS`
+  in `winner/winner.env`.
+- **Andere Modelle:** die Zeilen `ZJ_LLM_*` / `ZJ_EMBED_*` in `winner/winner.env` ändern, dann
+  `./kit stop && ./kit start`.
+- **Anderer Server:** `./kit pack` erzeugt ein Bündel von ~200 KB; auf dem Server `tar xzf` ausführen, dann
+  Variante A.
+
 ## Nachmessen in drei Befehlen
 ```bash
 task data:gen SCALE=M                       # deterministische synthetische Daten (Seed in config/bench.yaml)

@@ -1,0 +1,42 @@
+#!/usr/bin/env bash
+# ZeilenJoule winner kit — the measured winner (PostgreSQL + pgvector + German full text, Go gateway/worker, router
+# LLM) as an installable stack, with Docker or without (no sudo), and with any local model (ADR 0028).
+#
+#   ./kit setup native|docker [--preset vllm-tei|ollama|llamacpp|external] [--with-ollama]
+#   ./kit start | stop | status | logs [name]
+#   ./kit ingest FILE.csv            upload a Störmeldungen CSV (cp1252 or UTF-8, ';'), wait for the job
+#   ./kit ask "Frage …"              ask one question (streams route → plan → answer)
+#   ./kit search "Suchtext …"        hybrid search only
+#   ./kit reset-db [--yes]           delete all ingested rows (needed after changing the embedding model)
+#   ./kit pack                       bundle everything a server needs into dist/zeilenjoule-winner.tar.gz
+#
+# instruction.md (English) / instruction.de.md (Deutsch) explain every step.
+set -euo pipefail
+KIT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+ROOT="$(cd "$KIT/.." && pwd)" # repo or bundle root: services/, contestants/rust/, libs/rust/, spec/
+ENV_FILE="${ZJ_ENV_FILE:-$KIT/winner.env}"
+# shellcheck source=lib/common.sh
+. "$KIT/lib/common.sh"
+# shellcheck source=lib/native.sh
+. "$KIT/lib/native.sh"
+# shellcheck source=lib/docker.sh
+. "$KIT/lib/docker.sh"
+
+usage() { sed -n '2,13p' "$0" | sed 's/^# \{0,1\}//'; }
+
+cmd="${1:-help}"
+[ $# -gt 0 ] && shift
+case "$cmd" in
+  setup) setup "$@" ;;
+  start) load_env; "${ZJ_MODE}_start" ;;
+  stop) load_env; "${ZJ_MODE}_stop" ;;
+  status) load_env; "${ZJ_MODE}_status" ;;
+  logs) load_env; "${ZJ_MODE}_logs" "$@" ;;
+  reset-db) load_env; reset_db "$@" ;;
+  ingest) load_env; client_ingest "$@" ;;
+  ask) load_env; client_ask "$@" ;;
+  search) load_env; client_search "$@" ;;
+  pack) pack ;;
+  help | -h | --help) usage ;;
+  *) usage >&2; exit 2 ;;
+esac

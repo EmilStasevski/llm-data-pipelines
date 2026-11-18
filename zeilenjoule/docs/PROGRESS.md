@@ -626,3 +626,24 @@ Open questions:
 - READMEs: Phase 9 und 10 ✅. Blog-Abschnitt 5 um das Ergebnis der Neumessung ergänzt.
 - Optional offen: k3s-Rollout durch den Nutzer (`task k3s:cluster-setup`, `task images && task k3s:up`,
   `task k3s:smoke`).
+
+## 2026-11-18 — Winner-Kit (`winner/`, ADR 0028)
+- **Nutzerwunsch:** Gewinner als automatisierte Installation mit und ohne Docker (Server ohne sudo), beliebige
+  lokale Modelle, Anleitung, Beispiel mit 100 Zeilen.
+- **Services (abwärtskompatibel, Voreinstellung = gemessenes Verhalten):**
+  - `ZJ_EMBED_API=openai` (`/v1/embeddings`, Normierung im Client), `ZJ_EMBED_DIM` (Migration + `db.CheckDim`),
+    Query-/Dokument-Präfixe, `ZJ_LLM_EXTRA_JSON` (z. B. Ollama `reasoning_effort: none`), Bearer-Tokens,
+    Bereitschaft über `/health` oder `/v1/models`.
+  - Common-Terms-Regel mit Untergrenze 50 Zeilen für kleine Tabellen (bei 100 Zeilen fiel „Brand“ sonst aus der
+    lexikalischen Stufe); ab 5 000 Zeilen unverändert, gemessene L-Läufe nicht betroffen.
+  - Tests: Unit (embed, llm), Integration (Dimension, Untergrenze).
+- **Kit:** `winner/kit` (setup/start/stop/status/logs/ingest/ask/search/reset-db/pack), Presets `vllm-tei`,
+  `ollama`, `llamacpp`, `external`; native über micromamba (PostgreSQL 18.7 + pgvector 0.8.6), Go/Rust im
+  Benutzerverzeichnis falls nötig; Docker-Compose mit Profilen. `task lint:sh` (shellcheck) in `task ci`,
+  `task winner:pack`.
+- **Beispiel:** `winner/example/` – 100 Zeilen (erste Datensätze von S), 9 Fragen mit Sollwerten aus den Gold-Daten
+  (`derive_expected.py`), `run.sh` prüft.
+- **Geprüft (ungemessen):** Docker `vllm-tei` 8/9, nativ Ollama 8/9 (auch aus dem Bündel an fremdem Pfad), nativ
+  llama.cpp 7/9 – Fehler sind Modellfehler (SQL), Prompts unverändert. Zwei Kit-Fehler im Test gefunden und behoben
+  (Socket-Pfadlänge → nur TCP; Neu-Setup bei gestoppter Datenbank).
+- **Offen/optional:** Docker + Ollama und Docker + external nicht komplett durchgelaufen (gleiche Bausteine).

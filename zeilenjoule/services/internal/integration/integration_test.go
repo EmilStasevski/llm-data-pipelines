@@ -90,12 +90,15 @@ func setup(t *testing.T) (*pgxpool.Pool, *pgxpool.Pool, *prompts.Set) {
 			t.Fatal(stmt, err)
 		}
 	}
-	if _, err := db.Migrate(ctx, owner); err != nil {
+	if _, err := db.Migrate(ctx, owner, embed.Dim); err != nil {
 		t.Fatal(err)
 	}
-	again, err := db.Migrate(ctx, owner)
+	again, err := db.Migrate(ctx, owner, embed.Dim)
 	if err != nil || len(again) != 0 {
 		t.Fatalf("second migrate not a no-op: %v %v", again, err)
+	}
+	if err := db.CheckDim(ctx, owner, 384); err == nil || !strings.Contains(err.Error(), "1024-dimensional") {
+		t.Fatalf("switched embedding size not detected: %v", err) // ADR 0028
 	}
 	if _, err := owner.Exec(ctx, "CREATE ROLE zj_test_ask LOGIN PASSWORD 'test' IN ROLE zj_reader"); err != nil {
 		t.Fatal(err)
@@ -164,15 +167,18 @@ func TestStack(t *testing.T) {
 		// 3 rows: "lag" (Lager) and "leckag" in one row each (df 1/3), "lauft" in two (2/3), "xyzzy" in none
 		for _, c := range []struct {
 			cutoff float64
+			floor  int
 			text   string
 			want   string
 		}{
-			{0.5, "Lager läuft, Leckage xyzzy", "'lag' | 'leckag'"}, // rare terms that occur, OR
-			{0.01, "Lager läuft, Leckage xyzzy", ""},                // nothing rare: no lexical candidates
+			{0.5, 0, "Lager läuft, Leckage xyzzy", "'lag' | 'leckag'"},             // rare terms that occur, OR
+			{0.01, 0, "Lager läuft, Leckage xyzzy", ""},                            // nothing rare: no lexical candidates
+			{0.01, 1, "Lager läuft, Leckage xyzzy", "'lag' | 'leckag'"},            // floor: df ≤ 1 row is rare
+			{0.01, 50, "Lager läuft, Leckage xyzzy", "'lag' | 'lauft' | 'leckag'"}, // small table (ADR 0028)
 		} {
 			var got string
-			if err := owner.QueryRow(ctx, rag.MatchQuery, c.text, c.cutoff).Scan(&got); err != nil || got != c.want {
-				t.Errorf("%q cutoff %v: %q (%v), want %q", c.text, c.cutoff, got, err, c.want)
+			if err := owner.QueryRow(ctx, rag.MatchQuery, c.text, c.cutoff, c.floor).Scan(&got); err != nil || got != c.want {
+				t.Errorf("%q cutoff %v floor %d: %q (%v), want %q", c.text, c.cutoff, c.floor, got, err, c.want)
 			}
 		}
 	})
@@ -257,7 +263,7 @@ func TestStack(t *testing.T) {
 		}
 	})
 	t.Run("classifier round trip", func(t *testing.T) {
-		m, err := ingest.LoadClassifier(ctx, owner)
+		m, err := ingest.LoadClassifier(ctx, owner, embed.Dim)
 		if err != nil || m != nil {
 			t.Fatalf("empty table: %v %v", m, err)
 		}
@@ -266,7 +272,7 @@ func TestStack(t *testing.T) {
 			p.Classes(), embed.Dim, w); err != nil {
 			t.Fatal(err)
 		}
-		if m, err = ingest.LoadClassifier(ctx, owner); err != nil || m == nil || len(m.Classes) != len(p.Classes()) {
+		if m, err = ingest.LoadClassifier(ctx, owner, embed.Dim); err != nil || m == nil || len(m.Classes) != len(p.Classes()) {
 			t.Fatalf("%v %v", m, err)
 		}
 	})

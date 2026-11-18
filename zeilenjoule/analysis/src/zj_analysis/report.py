@@ -307,7 +307,7 @@ def track_section(con: duckdb.DuckDBPyConnection, track: str, prices: Prices, la
     out: list[str] = [f"## {title_t}", ""] + ([note, ""] if note else [])
     if not summary and not problems:
         return "\n".join(out) + ("_Noch keine gemessenen Läufe._" if de else "_No measured runs yet._") + "\n"
-    for scale in sorted({s.scale for s in summary}, key=lambda x: SCALE_ORDER.get(x, 9)):
+    for scale in sorted({s.scale for s in summary}, key=lambda x: (SCALE_ORDER.get(x, 9), x)):
         rows = sorted((s for s in summary if s.scale == scale), key=lambda s: s.wall)  # fastest first
         energies = [s.e_gross for s in rows if s.e_gross is not None]
         best_e = min(energies) if energies else None

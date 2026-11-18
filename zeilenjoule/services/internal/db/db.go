@@ -4,6 +4,7 @@ package db
 import (
 	"context"
 	"embed"
+	"errors"
 	"fmt"
 	"io/fs"
 	"sort"
@@ -50,7 +51,10 @@ func Open(ctx context.Context, url string, maxConns int32) (*pgxpool.Pool, error
 
 // Migrate applies River's migrations, then every migrations/NNNN_*.sql not yet recorded, each in a transaction
 // under an advisory lock (several replicas may start at once).
-func Migrate(ctx context.Context, pool *pgxpool.Pool) ([]string, error) {
+//
+// dim is the embedding size: the schema is written for bge-m3 (halfvec(1024)) and other models get their size
+// substituted on first creation (ADR 0028). An existing database keeps its size; CheckDim reports a mismatch.
+func Migrate(ctx context.Context, pool *pgxpool.Pool, dim int) ([]string, error) {
 	conn, err := pool.Acquire(ctx)
 	if err != nil {
 		return nil, err
@@ -100,8 +104,9 @@ func Migrate(ctx context.Context, pool *pgxpool.Pool) ([]string, error) {
 		if err != nil {
 			return nil, err
 		}
+		text := strings.ReplaceAll(string(sql), "halfvec(1024)", fmt.Sprintf("halfvec(%d)", dim))
 		if err := pgx.BeginFunc(ctx, conn.Conn(), func(tx pgx.Tx) error {
-			if _, err := tx.Exec(ctx, string(sql)); err != nil {
+			if _, err := tx.Exec(ctx, text); err != nil {
 				return err
 			}
 			_, err := tx.Exec(ctx, "INSERT INTO zj_migrations (version, name) VALUES ($1, $2)", v, name)
@@ -111,5 +116,23 @@ func Migrate(ctx context.Context, pool *pgxpool.Pool) ([]string, error) {
 		}
 		applied = append(applied, name)
 	}
-	return applied, nil
+	return applied, CheckDim(ctx, pool, dim)
+}
+
+// CheckDim fails when the database was created for another embedding size (model switched without a reset).
+func CheckDim(ctx context.Context, pool *pgxpool.Pool, dim int) error {
+	var have int
+	err := pool.QueryRow(ctx, `SELECT atttypmod FROM pg_attribute
+		WHERE attrelid = to_regclass('public.docs') AND attname = 'emb'`).Scan(&have)
+	if errors.Is(err, pgx.ErrNoRows) {
+		return nil // not migrated yet
+	}
+	if err != nil {
+		return err
+	}
+	if have != dim {
+		return fmt.Errorf("database stores %d-dimensional embeddings but ZJ_EMBED_DIM is %d: "+
+			"use the old embedding model or reset the database (winner kit: ./reset-db.sh)", have, dim)
+	}
+	return nil
 }

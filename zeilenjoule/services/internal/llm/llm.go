@@ -1,7 +1,8 @@
-// Package llm is a small client for vLLM's OpenAI-compatible chat endpoint with JSON-schema constrained output.
+// Package llm is a small client for an OpenAI-compatible chat endpoint (vLLM in the measured stack; Ollama,
+// llama.cpp server … in the winner kit, ADR 0028) with JSON-schema constrained output.
 //
 // Settings match the measured Track D/E runs: temperature 0, seed 0, Qwen3.5 thinking off
-// (chat_template_kwargs.enable_thinking=false), response_format json_schema strict.
+// (chat_template_kwargs.enable_thinking=false, the default Extra), response_format json_schema strict.
 package llm
 
 import (
@@ -23,15 +24,36 @@ import (
 // Client talks to one vLLM server; the semaphore keeps in-flight requests ≤ --max-num-seqs.
 type Client struct {
 	base, model string
+	apiKey      string
+	extra       map[string]any
 	http        *http.Client
 	sem         chan struct{}
 	retries     int
 }
 
-// New creates a client; inFlight bounds concurrent requests across all callers.
-func New(base, model string, inFlight int) *Client {
-	return &Client{base: base, model: model, http: &http.Client{Timeout: 120 * time.Second},
-		sem: make(chan struct{}, inFlight), retries: 3}
+// DefaultExtra switches Qwen3.5's thinking off on vLLM (the measured setting). Other servers need other fields,
+// e.g. Ollama {"reasoning_effort": "none"} (ADR 0028).
+func DefaultExtra() map[string]any {
+	return map[string]any{"chat_template_kwargs": map[string]any{"enable_thinking": false}}
+}
+
+// Options are server-specific settings; the zero value is the measured vLLM setup.
+type Options struct {
+	APIKey string         // sent as "Authorization: Bearer …" when set
+	Extra  map[string]any // top-level request fields added to every request; nil means DefaultExtra
+}
+
+// New creates a client for the measured vLLM setup; inFlight bounds concurrent requests across all callers.
+func New(base, model string, inFlight int) *Client { return NewWith(base, model, inFlight, Options{}) }
+
+// NewWith creates a client with server-specific options.
+func NewWith(base, model string, inFlight int, o Options) *Client {
+	extra := o.Extra
+	if extra == nil {
+		extra = DefaultExtra()
+	}
+	return &Client{base: base, model: model, apiKey: o.APIKey, extra: extra,
+		http: &http.Client{Timeout: 120 * time.Second}, sem: make(chan struct{}, inFlight), retries: 3}
 }
 
 // Result is the constrained JSON text and token usage of one completion.
@@ -42,6 +64,7 @@ type Result struct {
 	Finish           string
 }
 
+// chatRequest documents the request fields this client sets itself; Extra adds server-specific ones.
 type chatRequest struct {
 	Model          string            `json:"model"`
 	Messages       []prompts.Message `json:"messages"`
@@ -49,7 +72,6 @@ type chatRequest struct {
 	Seed           int               `json:"seed"`
 	MaxTokens      int               `json:"max_tokens"`
 	ResponseFormat map[string]any    `json:"response_format,omitempty"`
-	ChatTemplate   map[string]any    `json:"chat_template_kwargs"`
 	Stream         bool              `json:"stream,omitempty"`
 	StreamOptions  map[string]any    `json:"stream_options,omitempty"`
 }
@@ -102,12 +124,11 @@ func (c *Client) run(ctx context.Context, op string, msgs []prompts.Message, sch
 		Model: c.model, Messages: msgs, Temperature: 0, Seed: 0, MaxTokens: maxTokens,
 		ResponseFormat: map[string]any{"type": "json_schema",
 			"json_schema": map[string]any{"name": op, "schema": schema, "strict": true}},
-		ChatTemplate: map[string]any{"enable_thinking": false},
 	}
 	if onText != nil {
 		cr.Stream, cr.StreamOptions = true, map[string]any{"include_usage": true}
 	}
-	body, err := json.Marshal(cr)
+	body, err := c.encode(cr)
 	if err != nil {
 		return Result{}, err
 	}
@@ -143,12 +164,35 @@ func (c *Client) run(ctx context.Context, op string, msgs []prompts.Message, sch
 	return res, nil
 }
 
+// encode merges the server-specific Extra fields into the request; the client's own fields win.
+func (c *Client) encode(cr chatRequest) ([]byte, error) {
+	own, err := json.Marshal(cr)
+	if err != nil {
+		return nil, err
+	}
+	m := map[string]any{}
+	for k, v := range c.extra {
+		m[k] = v
+	}
+	var fields map[string]json.RawMessage
+	if err := json.Unmarshal(own, &fields); err != nil {
+		return nil, err
+	}
+	for k, v := range fields {
+		m[k] = v
+	}
+	return json.Marshal(m)
+}
+
 func (c *Client) once(ctx context.Context, body []byte, onText func(string)) (Result, error) {
 	req, err := http.NewRequestWithContext(ctx, http.MethodPost, c.base+"/v1/chat/completions", bytes.NewReader(body))
 	if err != nil {
 		return Result{}, err
 	}
 	req.Header.Set("Content-Type", "application/json")
+	if c.apiKey != "" {
+		req.Header.Set("Authorization", "Bearer "+c.apiKey)
+	}
 	resp, err := c.http.Do(req)
 	if err != nil {
 		return Result{}, err
@@ -225,20 +269,41 @@ func readStream(r io.Reader, onText func(string)) (Result, error) {
 }
 
 // Ready checks GET /health.
-func (c *Client) Ready(ctx context.Context) error { return getOK(ctx, c.http, c.base+"/health") }
+func (c *Client) Ready(ctx context.Context) error { return ReadyCheck(ctx, c.http, c.base, c.apiKey) }
 
-func getOK(ctx context.Context, h *http.Client, url string) error {
+// ReadyCheck is GET /health (vLLM, TEI, llama.cpp); servers without it (Ollama: 404) are checked with
+// GET /v1/models, which every OpenAI-compatible server has.
+func ReadyCheck(ctx context.Context, h *http.Client, base, apiKey string) error {
+	err := getOK(ctx, h, base+"/health", apiKey)
+	var nf notFound
+	if errors.As(err, &nf) {
+		return getOK(ctx, h, base+"/v1/models", apiKey)
+	}
+	return err
+}
+
+type notFound struct{ url string }
+
+func (e notFound) Error() string { return e.url + ": HTTP 404" }
+
+func getOK(ctx context.Context, h *http.Client, url, apiKey string) error {
 	ctx, cancel := context.WithTimeout(ctx, 2*time.Second)
 	defer cancel()
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, url, nil)
 	if err != nil {
 		return err
 	}
+	if apiKey != "" {
+		req.Header.Set("Authorization", "Bearer "+apiKey)
+	}
 	resp, err := h.Do(req)
 	if err != nil {
 		return err
 	}
 	_ = resp.Body.Close()
+	if resp.StatusCode == http.StatusNotFound {
+		return notFound{url}
+	}
 	if resp.StatusCode != http.StatusOK {
 		return fmt.Errorf("%s: HTTP %d", url, resp.StatusCode)
 	}

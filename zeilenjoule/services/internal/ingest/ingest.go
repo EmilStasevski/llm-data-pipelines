@@ -59,7 +59,15 @@ type Worker struct {
 	ParserBin     string
 	Lexicon       string
 	ParserThreads int
+	Dim           int // embedding size (ZJ_EMBED_DIM); 0 means embed.Dim
 	Log           *slog.Logger
+}
+
+func (w *Worker) dim() int {
+	if w.Dim > 0 {
+		return w.Dim
+	}
+	return embed.Dim
 }
 
 // Timeout implements river.Worker: 1 M rows take ≈ 30 min of embedding (ARCHITEKTUR §2).
@@ -250,7 +258,7 @@ func (l *labeller) label(rows []Row, vecs [][]float32) (labels, sources []*strin
 // trains a classifier on the sample's vectors and stores it.
 func (w *Worker) labeller(ctx context.Context, rows []Row) (*labeller, error) {
 	l := &labeller{llm: map[string]string{}, classes: w.P.Classes()}
-	m, err := LoadClassifier(ctx, w.Pool)
+	m, err := LoadClassifier(ctx, w.Pool, w.dim())
 	if err != nil || m != nil {
 		l.model = m
 		return l, err
@@ -319,7 +327,7 @@ func (w *Worker) labeller(ctx context.Context, rows []Row) (*labeller, error) {
 }
 
 // LoadClassifier returns the newest stored classifier or nil.
-func LoadClassifier(ctx context.Context, pool *pgxpool.Pool) (*classifier.Model, error) {
+func LoadClassifier(ctx context.Context, pool *pgxpool.Pool, dim int) (*classifier.Model, error) {
 	var m classifier.Model
 	err := pool.QueryRow(ctx, "SELECT classes, dim, weights FROM classifier ORDER BY id DESC LIMIT 1").Scan(&m.Classes, &m.Dim, &m.W)
 	if errors.Is(err, pgx.ErrNoRows) {
@@ -328,7 +336,7 @@ func LoadClassifier(ctx context.Context, pool *pgxpool.Pool) (*classifier.Model,
 	if err != nil {
 		return nil, err
 	}
-	if len(m.W) != (m.Dim+1)*len(m.Classes) || m.Dim != embed.Dim {
+	if len(m.W) != (m.Dim+1)*len(m.Classes) || m.Dim != dim {
 		return nil, fmt.Errorf("classifier: stored shape %d×%d does not fit %d weights", m.Dim+1, len(m.Classes), len(m.W))
 	}
 	return &m, nil
@@ -360,12 +368,12 @@ func (w *Worker) WriteBatch(ctx context.Context, jobID int64, rows []Row, vecs [
 		})); err != nil {
 			return err
 		}
-		tag, err := tx.Exec(ctx, `INSERT INTO docs (meldung_id, werk, regierungsbezirk, anlage, equipment_nr, datum,
+		tag, err := tx.Exec(ctx, fmt.Sprintf(`INSERT INTO docs (meldung_id, werk, regierungsbezirk, anlage, equipment_nr, datum,
 			prioritaet, stillstand_min, kosten_eur, komponente, schadensart, schadensart_quelle, sicherheitsrelevant,
 			meldungstext, doc_text, emb, job_id)
 			SELECT DISTINCT ON (meldung_id) meldung_id, werk, regierungsbezirk, anlage, equipment_nr, datum, prioritaet,
 			       stillstand_min, kosten_eur, komponente, schadensart, quelle,
-			       sicherheitsrelevant, meldungstext, doc_text, emb::vector(1024)::halfvec(1024), $1
+			       sicherheitsrelevant, meldungstext, doc_text, emb::vector(%[1]d)::halfvec(%[1]d), $1
 			FROM stage ORDER BY meldung_id
 			ON CONFLICT (meldung_id) DO UPDATE SET werk = EXCLUDED.werk, regierungsbezirk = EXCLUDED.regierungsbezirk,
 			  anlage = EXCLUDED.anlage, equipment_nr = EXCLUDED.equipment_nr, datum = EXCLUDED.datum,
@@ -378,7 +386,7 @@ func (w *Worker) WriteBatch(ctx context.Context, jobID int64, rows []Row, vecs [
 			      AND docs.doc_text = EXCLUDED.doc_text THEN 'llm' ELSE EXCLUDED.schadensart_quelle END,
 			  sicherheitsrelevant = EXCLUDED.sicherheitsrelevant,
 			  meldungstext = EXCLUDED.meldungstext, doc_text = EXCLUDED.doc_text, emb = EXCLUDED.emb,
-			  job_id = EXCLUDED.job_id, ingested_at = now()`, jobID)
+			  job_id = EXCLUDED.job_id, ingested_at = now()`, w.dim()), jobID)
 		if err != nil {
 			return err
 		}

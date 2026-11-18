@@ -162,6 +162,49 @@ flowchart LR
   M -->|"/v1/energy"| G
 ```
 
+## Install the winner yourself
+[`winner/`](winner/) installs the benchmark winner as a standalone service (ADR 0028):
+- **Database:** PostgreSQL with pgvector and German full-text search.
+- **Services:** a Go gateway and worker.
+- **Router LLM:** chooses between checked SQL and hybrid search for each question.
+- **Install options:** with Docker, or **without Docker and without sudo**.
+- **Models:** any local model.
+
+All commands run in `winner/`. Full guide: [`winner/instruction.md`](winner/instruction.md).
+
+**Option A – without Docker (no sudo, Linux x86_64)**
+- Needs `curl`, `tar` and `python3`.
+- PostgreSQL 18 + pgvector, Go and Rust are installed under `winner/.run` when missing.
+- Default models: Ollama with `qwen3:8b` + `bge-m3`. `--with-ollama` installs a user-level Ollama if none is present.
+```bash
+./kit setup native --preset ollama        # ~3 min: database + builds the binaries
+./kit start                               # PostgreSQL, Ollama (pulls the models), worker, gateway
+```
+
+**Option B – with Docker**
+- Needs Docker with compose v2.
+- Preset `vllm-tei` uses the measured models (vLLM Qwen3.5-9B AWQ + TEI bge-m3) and needs an NVIDIA GPU with
+  16 GB plus the NVIDIA Container Toolkit.
+- Without that GPU, use `--preset ollama`.
+```bash
+./kit setup docker --preset vllm-tei      # builds the gateway/worker images
+./kit start                               # first start downloads ≈ 9 GB of models
+```
+
+**Use it**
+```bash
+./example/run.sh                          # 100 sample rows, 9 questions, each answer checked
+./kit ingest my_reports.csv               # your own SAP-PM-like CSV (`;`, cp1252 or UTF-8)
+./kit ask "Wie viele Meldungen gab es 2025 im Werk Krefeld?"
+./kit search "Lager läuft heiß"
+./kit status   ·   ./kit stop            # data is kept; ./kit reset-db deletes it
+```
+- **Browser:** `http://127.0.0.1:8080/demo`.
+- **HTTP API:** `POST /v1/ask` and `/v1/search` with the header `X-API-Key`. The key is `ZJ_API_KEYS` in
+  `winner/winner.env`.
+- **Other models:** edit the `ZJ_LLM_*` / `ZJ_EMBED_*` lines in `winner/winner.env`, then `./kit stop && ./kit start`.
+- **Another server:** `./kit pack` creates a ~200 KB bundle; on the server run `tar xzf` and then Option A.
+
 ## Reproduce in three commands
 ```bash
 task data:gen SCALE=M                       # deterministic synthetic data (seed in config/bench.yaml)

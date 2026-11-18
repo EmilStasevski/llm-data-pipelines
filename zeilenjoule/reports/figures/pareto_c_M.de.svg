@@ -30,14 +30,14 @@
 <text class="sec" x="435.0" y="428" text-anchor="middle">Wall-Zeit s (log)</text>
 <text class="sec" x="16" y="224.0" transform="rotate(-90 16 224.0)" text-anchor="middle">Energie J brutto (log)</text>
 <text class="sec mono" x="16" y="42" font-size="11">1 c00_exact_gpu</text>
-<circle class="dom" cx="716.3" cy="101.6" r="4"><title>c03_pgvector: 124,0 s · 3 278 J</title></circle>
-<circle class="dom" cx="480.2" cy="190.2" r="4"><title>c05_duckdb_vss: 26,8 s · 1 388 J</title></circle>
-<circle class="dom" cx="578.5" cy="259.0" r="4"><title>c08_qdrant_gpu: 50,7 s · 712 J</title></circle>
-<circle class="dom" cx="564.6" cy="216.0" r="4"><title>c07_lancedb: 46,4 s · 1 081 J</title></circle>
-<circle class="dom" cx="564.8" cy="236.5" r="4"><title>c08_qdrant_cpu: 46,4 s · 886 J</title></circle>
-<circle class="dom" cx="644.8" cy="125.2" r="4"><title>c06_sqlite_vec: 78,0 s · 2 607 J</title></circle>
 <circle class="dom" cx="408.9" cy="210.4" r="4"><title>c01_faiss_cpu: 16,9 s · 1 140 J</title></circle>
 <circle class="dom" cx="255.3" cy="361.4" r="4"><title>c02_cuvs_cagra: 6,2 s · 264 J</title></circle>
+<circle class="dom" cx="716.3" cy="101.6" r="4"><title>c03_pgvector: 124,0 s · 3 278 J</title></circle>
+<circle class="dom" cx="480.2" cy="190.2" r="4"><title>c05_duckdb_vss: 26,8 s · 1 388 J</title></circle>
+<circle class="dom" cx="644.8" cy="125.2" r="4"><title>c06_sqlite_vec: 78,0 s · 2 607 J</title></circle>
+<circle class="dom" cx="564.6" cy="216.0" r="4"><title>c07_lancedb: 46,4 s · 1 081 J</title></circle>
+<circle class="dom" cx="564.8" cy="236.5" r="4"><title>c08_qdrant_cpu: 46,4 s · 886 J</title></circle>
+<circle class="dom" cx="578.5" cy="259.0" r="4"><title>c08_qdrant_gpu: 50,7 s · 712 J</title></circle>
 <circle class="c0" cx="204.3" cy="376.3" r="5"><title>c00_exact_gpu: 4,5 s · 228 J</title></circle>
 <text class="ink" x="212.3" y="370.3" font-weight="600" font-size="11">1</text>
 </svg>

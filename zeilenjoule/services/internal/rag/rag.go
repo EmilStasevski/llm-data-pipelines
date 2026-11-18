@@ -403,15 +403,20 @@ const tsQuery = "replace(plainto_tsquery('german', $1)::text, '&', '|')::tsquery
 // CommonCutoff is the document share above which a query lexeme counts as common (ADR 0027).
 const CommonCutoff = 0.01
 
+// CommonFloor keeps lexemes in up to this many rows rare on small tables (ADR 0028): with 100 rows, 1 % would make
+// every word in two rows common. No effect from 5 000 rows on (1 % ≥ 50), so the measured L runs are unchanged.
+const CommonFloor = 50
+
 // MatchQuery is the lexical leg's match condition, in the spirit of Lucene/Elasticsearch's common-terms query: the
-// OR of the query lexemes that occur in the data and are rare (document frequency ≤ CommonCutoff × rows, lex_df).
+// OR of the query lexemes that occur in the data and are rare (document frequency ≤ max(CommonCutoff × rows,
+// CommonFloor), lex_df).
 // Without a rare lexeme the leg has no candidates and the dense leg answers alone – ts_rank has no IDF, so a ranking
 // over common words only (field labels such as "meldung" stand in every row) carries little signal and costs up to a
 // scan of the whole table. Ranking still uses the whole OR query (tsQuery), so a row matching rare terms gains from
 // the common ones too. Candidates are bounded by CommonCutoff × rows per rare lexeme.
 const MatchQuery = `SELECT coalesce(string_agg(quote_literal(w), ' | ' ORDER BY w), '')
 FROM unnest(tsvector_to_array(to_tsvector('german', $1))) w JOIN lex_df d ON d.word = w
-WHERE d.ndoc <= $2::float8 * d.nrows`
+WHERE d.ndoc <= greatest($2::float8 * d.nrows, $3::float8)`
 
 // Search runs the filtered hybrid search and returns the top k hits with their display columns.
 func (e *Engine) Search(ctx context.Context, text string, f Filters, k int) ([]Hit, error) {
@@ -444,7 +449,7 @@ func (e *Engine) Search(ctx context.Context, text string, f Filters, k int) ([]H
 			return err
 		}
 		var match string
-		if err := tx.QueryRow(ctx, MatchQuery, text, CommonCutoff).Scan(&match); err != nil {
+		if err := tx.QueryRow(ctx, MatchQuery, text, CommonCutoff, CommonFloor).Scan(&match); err != nil {
 			return err
 		}
 		if match == "" {

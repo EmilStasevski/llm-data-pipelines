@@ -1,0 +1,5 @@
+# Added by ./kit when ZJ_DOCKER_GPU=0: Ollama without the NVIDIA GPU reservation (CPU-only Docker hosts).
+# vllm-tei needs a GPU and is not affected. Needs docker compose ≥ 2.24.4 (!reset).
+services:
+  ollama:
+    deploy: !reset {}
